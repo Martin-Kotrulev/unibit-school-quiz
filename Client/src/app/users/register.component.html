@@ -1,0 +1,82 @@
+<div class="container">
+<h1>Register User</h1>
+<form 
+  #registerForm="ngForm"
+  (submit)="register()">
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input 
+      type="text"
+      class="form-control"
+      id="name"
+      name="name"
+      required
+      #userName="ngModel"
+      [(ngModel)]="user.name">
+      <span 
+        [hidden]="userName.valid || userName.pristine"
+        class="">
+          User name is required!
+      </span>
+  </div>
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input
+      type="email"
+      class="form-control"
+      id="email"
+      name="email"
+      required
+      #userEmail="ngModel"
+      [(ngModel)]="user.email">
+      <span 
+        [hidden]="userEmail.valid || userEmail.pristine"
+        class="help-inline">
+          Email is required!
+      </span>
+  </div>
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input
+      type="password"
+      class="form-control"
+      id="password"
+      name="password"
+      required
+      #userPassword="ngModel"
+      [(ngModel)]="user.password">
+      <span 
+        [hidden]="userPassword.valid || userPassword.pristine"
+        class="help-inline">
+          Password is required!
+      </span>
+  </div>
+  <div class="form-group">
+    <label for="confirmPassword">Confirm Password</label>
+    <input
+      type="password"
+      class="form-control"
+      id="confirmPassword"
+      name="confirmPassword"
+      required
+      #userConfirmPassword="ngModel"
+      [(ngModel)]="user.confirmPassword">
+      <span 
+        [hidden]="userConfirmPassword.valid || userPassword.pristine"
+        class="help-inline"
+          >Confirm Password is required!
+      </span>
+      <span 
+        [hidden]="userConfirmPassword.pristine || (userPassword.value === userConfirmPassword.value)"
+        class="help-inline">
+          Password and Confirm Password do not match!
+      </span>
+  </div>
+  <button 
+    type="submit"
+    class="btn btn-success"
+    [disabled]="!registerForm.valid || (userPassword.value !== userConfirmPassword.value)">
+    Register
+  </button>
+</form>
+</div>
