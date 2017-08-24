@@ -21,6 +21,8 @@ namespace App.Persistence
 
     public DbSet<QuizProgress> QuizProgresses { get; set; }
 
+    public DbSet<Question> Questions { get; set; }
+
     public AppDbContext(DbContextOptions<AppDbContext> options) 
         : base(options) 
     {
@@ -43,6 +45,9 @@ namespace App.Persistence
         modelBuilder.Entity<QuizGroup>()
           .HasIndex(qg => qg.Name)
           .IsUnique();
+
+        modelBuilder.Entity<UsersGroups>()
+          .HasKey(ug => new {ug.UserId, ug.QuizGroupId});
     }
   }
 }

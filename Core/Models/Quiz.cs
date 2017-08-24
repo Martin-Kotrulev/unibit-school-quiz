@@ -9,9 +9,8 @@ namespace App.Core.Models
         public int Id { get; set; }
 
         [Required]
+        [MaxLength(255)]
         public string Title { get; set; }
-
-        public int MaxAnswers { get; set; } = 3;
 
         public DateTime StartDateTime { get; set; }
 
@@ -25,14 +24,14 @@ namespace App.Core.Models
 
         public ICollection<Tag> Tags { get; set; }
 
-        public ICollection<Answer> Answers { get; set; }
+        public ICollection<Question> Questions { get; set; }
 
         public ICollection<Score> Scores { get; set; }
 
         public Quiz()
         {
             Tags = new HashSet<Tag>();
-            Answers = new HashSet<Answer>();
+            Questions = new HashSet<Answer>();
             Scores = new HashSet<Score>();
         }
     }
