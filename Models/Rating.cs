@@ -5,15 +5,15 @@ namespace App.Models
 {
     public class Rating
     {
-        [Key]
-        [ForeignKey("User")]
-        public int UserId { get; set; }
-
         [Range(1.0, 5.0)]
         public double Value { get; set; }
 
+        public string UserId { get; set; }
+
         public ApplicationUser User { get; set; }
 
+        public int QuizId { get; set; }
+        
         public Quiz Quiz { get; set; }
     }
 }

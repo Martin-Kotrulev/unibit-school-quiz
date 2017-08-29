@@ -15,14 +15,14 @@ namespace App.Models
 
         public ICollection<Quiz> Quizes { get; set; }
         
-        public ICollection<ApplicationUser> Members { get; set; }
+        public ICollection<UsersGroups> Members { get; set; }
 
         public ICollection<Tag> Tags { get; set; }
 
         public QuizGroup()
         {
             Quizes = new HashSet<Quiz>();
-            Members = new HashSet<ApplicationUser>();
+            Members = new HashSet<UsersGroups>();
             Tags = new HashSet<Tag>();
         }
     }

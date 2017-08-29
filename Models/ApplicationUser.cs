@@ -14,7 +14,7 @@ namespace App.Models
 
     public ICollection<QuizGroup> OwnGroups { get; set; }
 
-    public ICollection<QuizGroup> InQuizGroups { get; set; }
+    public ICollection<UsersGroups> InQuizGroups { get; set; }
 
     public ICollection<Notification> Notifications { get; set; }
     
@@ -23,7 +23,7 @@ namespace App.Models
       TakenQuizes = new HashSet<Quiz>();
       Scores = new HashSet<Score>();
       OwnGroups = new HashSet<QuizGroup>();
-      InQuizGroups = new HashSet<QuizGroup>();
+      InQuizGroups = new HashSet<UsersGroups>();
       Notifications = new HashSet<Notification>();
     }
   }

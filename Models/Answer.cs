@@ -11,5 +11,7 @@ namespace App.Models
         public string Value { get; set; }
 
         public bool IsRight { get; set; } = false;
+
+        public Question FromQuestion { get; set; }
     }
 }
