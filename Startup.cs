@@ -1,114 +1,102 @@
-using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Threading.Tasks;
+using App.Config;
+using App.Controllers;
+using App.Models;
+using App.Persistence;
+using App.Services.Security;
+using App.Services.Security.Extensions;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SpaServices.Webpack;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using App.Persistence;
-using App.Middleware;
-using Microsoft.AspNetCore.Diagnostics;
 using Newtonsoft.Json;
-using Microsoft.AspNetCore.Http;
-using App.Services.Security.Extensions;
-using App.Config;
-using App.Services.Security;
 
-namespace WebApplicationBasic
+namespace App
 {
     public class Startup
     {
-        public IConfigurationRoot Configuration { get; }
+        public IConfiguration Configuration { get; }
 
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
+            Configuration = configuration;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add JWT token configurations
             services.Configure<JWTSettings>(Configuration.GetSection("JWTSettings"));
 
-            // Add framework services.
-            // Custom extension method for Identity configuration
+            services.AddDbContext<AppDbContext>(opt => {
+                opt.UseNpgsql(connectionString: Configuration.GetConnectionString("Default"));
+            });
+
             services.AddIdentityService();
 
-            // Custom authentication service
-            services.AddScoped<IAuthenticationService, AuthenticationService>();
-            
-            services.AddMvc();
+            services.AddTransient<IAuthenticationService, AuthenticationService>();
 
-            // Configuring the DbContext
-            services.AddDbContext<AppDbContext>(
-                options => options.UseNpgsql(
-                    connectionString: Configuration.GetConnectionString("Default")
-                )
-            );
-            services.AddAutoMapper();
+            services.AddSecurity(config: Configuration);
+
+            services.ConfigureApplicationCookie(opt =>
+            {
+                opt.Events = new CookieAuthenticationEvents()
+                {
+                    OnRedirectToLogin = ctx =>
+                    {
+                        ctx.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                        return Task.FromResult(0);
+                    }
+                };
+            });
+
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-
             if (env.IsDevelopment())
             {
-                // Uncomment in case of webpack usage
-
-                //app.UseDeveloperExceptionPage();
-                // app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions {
-                //     HotModuleReplacement = true
-                // });
+                app.UseDeveloperExceptionPage();
+                app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
+                {
+                    HotModuleReplacement = true
+                });
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
             }
 
-            // Custom exception handler
-            app.UseExceptionHandler(err => {
-                err.Run(async context =>
-                {
-                    context.Response.ContentType = "application/json";
+            app.UseStatusCodePages();
 
-                    var error = context.Features.Get<IExceptionHandlerFeature>();
-                    if (error != null)
-                    {
-                        var ex = error.Error;
-
-                        await context.Response.WriteAsync(
-                            JsonConvert.SerializeObject(new {
-                                StatusCode = context.Response.StatusCode,
-                                Message = ex.Message,
-                                Success = false,
-                            })
-                        );
-                    }
-                });
+            // Redirects not found status back to root if it's not an api call
+            app.Use(async (context, next) => {
+                await next();
+                if (context.Response.StatusCode == 404 &&
+                    !Path.HasExtension(context.Request.Path.Value) &&
+                    !context.Request.Path.Value.StartsWith("/api/")) {
+                        context.Request.Path = "/";
+                        await next();
+                }
             });
 
             app.UseStaticFiles();
 
-            app.UseIdentity();
+            app.UseAuthentication();
 
-            //app.UserJsonResponseWrapper();
-            
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller}/{action}/{id?}");
-            });
+            app.UseMvcWithDefaultRoute();
         }
     }
 }

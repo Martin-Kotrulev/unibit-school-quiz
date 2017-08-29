@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using App.Controllers.Resources;
-using App.Core.Models;
+using App.Models;
 using App.Services.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace App.Controllers
 {
+    [Route("api/[controller]")]
     public class AccountController : Controller
     {
         private readonly IAuthenticationService _authService; 
@@ -20,6 +22,7 @@ namespace App.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [Route("[action]")]
         public async Task<IActionResult> Register([FromBody] CredentialsResource credentials)
         {
             if (ModelState.IsValid) {
@@ -41,19 +44,22 @@ namespace App.Controllers
             return BadRequest(new ApiResponse(ModelState));
         }
 
-        [HttpPost]
+        [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] CredentialsResource credentials)
         {
             if (ModelState.IsValid) {
                 var token = await _authService.SignInUserAsync(credentials);
                     
-                if ((token.AccessToken ?? token.IdToken) != null)
+                if ((token.AccessToken ?? token.IdToken ?? token.Token) != null)
                 {
                     return Ok(new ApiResponse(token, $"User '{token.Username}' logged successfully."));
                 }
 
-                return BadRequest(new ApiResponse(400, "Wrong username or password."));
+                return BadRequest(new ApiResponse(
+                    (int)HttpStatusCode.Unauthorized, 
+                    "Wrong username or password.")
+                );
             }
 
             return BadRequest(new ApiResponse(ModelState));

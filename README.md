@@ -1,1 +1,0 @@
-# Unibit SchoolQuizz project

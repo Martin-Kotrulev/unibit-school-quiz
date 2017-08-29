@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using System.Threading.Tasks;
 using App.Config;
 using App.Controllers.Resources;
-using App.Core.Models;
+using App.Models;
 using JWT;
 using JWT.Algorithms;
 using JWT.Serializers;
@@ -11,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace App.Services.Security
 {
@@ -48,62 +51,30 @@ namespace App.Services.Security
 
                 return new TokenResource() {
                     Username = user.UserName ?? user.Email,
-                    AccessToken = GetAccessToken(user.Email),
-                    IdToken = GetIdToken(user)
+                    Token = GetToken()
                 };
             }
 
             return new TokenResource();
         }
 
-        private string GetIdToken(IdentityUser user)
+        private string GetToken(Dictionary<string, object> payload = null)
         {
-            var payload = new Dictionary<string, object>()
+            var symmetricKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.SecretKey));
+
+            var tokenDescriptor = new SecurityTokenDescriptor()
             {
-                { "id", user.Id },
-                { "username", user.UserName },
-                { "sub", user.Email },
-                { "email", user.Email },
-                { "emailConfirmed", user.EmailConfirmed }
+                Audience = _options.Audience,
+                Issuer = _options.Issuer,
+                IssuedAt = DateTime.UtcNow,
+                NotBefore = DateTime.UtcNow,
+                Expires = DateTime.UtcNow.AddDays(_options.ExpirationDays),
+                SigningCredentials = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256)
             };
 
-            return GetToken(payload);
-        }
+            var handler = new JwtSecurityTokenHandler();
 
-        private string GetAccessToken(string Email)
-        {
-            var payload = new Dictionary<string, object>()
-            {
-                { "sub", Email },
-                { "email", Email }
-            };
-
-            return GetToken(payload);
-        }
-
-        private string GetToken(Dictionary<string, object> payload)
-        {
-            var secret = _options.SecretKey;
-
-            payload.Add("iss", _options.Issuer);
-            payload.Add("aut", _options.Audience);
-            payload.Add("nbf", ConvertToUnixTimestamp(DateTime.Now));
-            payload.Add("iat", ConvertToUnixTimestamp(DateTime.Now));
-            payload.Add("exp", ConvertToUnixTimestamp(DateTime.Now.AddDays(_options.ExpirationDays)));
-
-            IJwtAlgorithm algorithm = new HMACSHA256Algorithm();
-            IJsonSerializer serializer = new JsonNetSerializer();
-            IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
-            IJwtEncoder encoder = new JwtEncoder(algorithm, serializer, urlEncoder);
-
-            return encoder.Encode(payload, secret);
-        }
-
-        private static double ConvertToUnixTimestamp(DateTime date)
-        {
-            DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            TimeSpan diff = date.ToUniversalTime() - origin;
-            return Math.Floor(diff.TotalSeconds);
+            return handler.CreateEncodedJwt(tokenDescriptor);
         }
   }
 }

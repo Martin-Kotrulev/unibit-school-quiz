@@ -1,17 +1,14 @@
-using Microsoft.EntityFrameworkCore;
-using App.Core.Models;
+using App.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace App.Persistence
-{
+{ 
   public class AppDbContext : IdentityDbContext<ApplicationUser>
   {
     // DbSets
-    public DbSet<Quiz> Quizes { get; set; }
-    
     public DbSet<Answer> Answers { get; set; }
-
-    public DbSet<QuizGroup> QuizGroups { get; set; }
 
     public DbSet<Tag> Tags { get; set; }
 
@@ -19,26 +16,30 @@ namespace App.Persistence
 
     public DbSet<Rating> Ratings { get; set; }
 
+    public DbSet<Quiz> Quizes { get; set; }
+
+    public DbSet<QuizGroup> QuizGroups { get; set; }
+
     public DbSet<QuizProgress> QuizProgresses { get; set; }
+
+    public DbSet<QuizSubscribtion> QuizSubscribtions { get; set; }
 
     public DbSet<Question> Questions { get; set; }
 
-    public AppDbContext(DbContextOptions<AppDbContext> options) 
-        : base(options) 
+    public DbSet<Notification> Notifications { get; set; }
+
+    public DbSet<GroupSubscribtion> GroupSubscribtions { get; set; }
+
+    public AppDbContext(DbContextOptions options) 
+      : base(options)
     {
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder) 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
-        
-        modelBuilder.Entity<ApplicationUser>()
-          .ToTable("Users");
-        
-        modelBuilder.Entity<IdentityRole>()
-          .ToTable("Roles");
+      base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Tag>()
+      modelBuilder.Entity<Tag>()
           .HasIndex(t => t.Name)
           .IsUnique();
 

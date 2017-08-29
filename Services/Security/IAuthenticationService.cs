@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using App.Controllers.Resources;
-using App.Core.Models;
+using App.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

@@ -61,6 +61,8 @@ namespace App.Controllers
         {
             switch(statusCode)
             {
+                case 401:
+                    return "Unauthorized";
                 case 404:
                     return "Resource not found";
                 case 500:
