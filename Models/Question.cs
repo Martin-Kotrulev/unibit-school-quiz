@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace App.Models
 {
@@ -6,6 +7,7 @@ namespace App.Models
     {
         public int Id { get; set; }
 
+        [Required]
         public string Value { get; set; }
 
         public int MaxAnswers { get; set; } = 3;

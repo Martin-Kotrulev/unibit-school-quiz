@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace App.Models
 {
@@ -8,6 +9,7 @@ namespace App.Models
 
         public string Message { get; set; }
 
+        [Required]
         public DateTime Date { get; set; }
 
         public Quiz Quiz { get; set; }
@@ -15,5 +17,7 @@ namespace App.Models
         public QuizGroup QuizGroup { get; set; }
 
         public ApplicationUser Issuer { get; set; }
+
+        public bool Seen { get; set; } = false;
     }
 }

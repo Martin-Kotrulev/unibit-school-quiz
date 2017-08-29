@@ -1,11 +1,13 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace App.Models
 {
     public class QuizSubscribtion
     {
-        public int Id { get; set; }
-
+        [Required]
         public string UserId { get; set; }
 
+        [Required]
         public int QuizId { get; set; }
     }
 }
