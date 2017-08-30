@@ -22,7 +22,7 @@ namespace App.Persistence
 
 		public DbSet<QuizProgress> QuizProgresses { get; set; }
 
-		public DbSet<QuizSubscribtion> QuizSubscribtions { get; set; }
+		public DbSet<QuizSubscription> QuizSubscribtions { get; set; }
 
 		public DbSet<Question> Questions { get; set; }
 
@@ -56,7 +56,7 @@ namespace App.Persistence
 				modelBuilder.Entity<GroupSubscribtion>()
 					.HasKey(gs => new {gs.UserId, gs.QuizGroupId});
 
-				modelBuilder.Entity<QuizSubscribtion>()
+				modelBuilder.Entity<QuizSubscription>()
 					.HasKey(qs => new {qs.UserId, qs.QuizId});
 		}
 	}

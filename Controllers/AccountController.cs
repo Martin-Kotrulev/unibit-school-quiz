@@ -67,5 +67,11 @@ namespace App.Controllers
 
       return BadRequest(new ApiResponse(ModelState));
     }
+
+    [HttpGet("hello")]
+    public IActionResult Hello() {
+      var user = _authService.GetAuthenticatedUser();
+      return Ok();
+    }
   }
 }

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace App.Models
 {
-  public class QuizSubscribtion
+  public class QuizSubscription
   {
     [Required]
     public string UserId { get; set; }

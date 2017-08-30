@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using App.Config;
@@ -32,6 +33,11 @@ namespace App.Services.Security
       _options = optionsAccessor.Value;
     }
 
+    public ApplicationUser GetAuthenticatedUser()
+    {
+      throw new NotImplementedException();
+    }
+
     public async Task<IdentityResult> RegisterUserAsync(ApplicationUser user, string password)
     {
       return await _userManager.CreateAsync(user, password);
@@ -49,16 +55,22 @@ namespace App.Services.Security
         return new TokenResource()
         {
           Username = user.UserName ?? user.Email,
-          Token = GetToken()
+          Token = GetToken(user)
         };
       }
 
       return new TokenResource();
     }
 
-    private string GetToken(Dictionary<string, object> payload = null)
+    private string GetToken(ApplicationUser user)
     {
       var symmetricKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.SecretKey));
+
+      var claimsIdentity = new ClaimsIdentity(new List<Claim>()
+      {
+          new Claim(ClaimTypes.Sid, user.Id),
+          new Claim(ClaimTypes.NameIdentifier, user.Email)
+      });
 
       var tokenDescriptor = new SecurityTokenDescriptor()
       {
@@ -66,6 +78,7 @@ namespace App.Services.Security
         Issuer = _options.Issuer,
         IssuedAt = DateTime.UtcNow,
         NotBefore = DateTime.UtcNow,
+        Subject = claimsIdentity,
         Expires = DateTime.UtcNow.AddDays(_options.ExpirationDays),
         SigningCredentials = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256)
       };

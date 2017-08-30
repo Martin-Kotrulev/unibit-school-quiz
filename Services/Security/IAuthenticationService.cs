@@ -10,5 +10,6 @@ namespace App.Services.Security
   {
     Task<IdentityResult> RegisterUserAsync(ApplicationUser user, string password);
     Task<TokenResource> SignInUserAsync(CredentialsResource credentials);
+    ApplicationUser GetAuthenticatedUser();
   }
 }

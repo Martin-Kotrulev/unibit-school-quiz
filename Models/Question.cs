@@ -13,7 +13,5 @@ namespace App.Models
     public int MaxAnswers { get; set; } = 3;
 
     public ICollection<Answer> Answers { get; set; }
-
-    public ICollection<Answer> RightAnswers { get; set; }
   }
 }

@@ -19,7 +19,7 @@ namespace App.Persistence.Repositories.Interfaces
 
     IQuizProgressRepository QuizProgreseses { get; }
 
-    IQuizSubscribtionRepository QuizSubscribtions { get; }
+    //IQuizSubscribtionRepository QuizSubscribtions { get; }
 
     IRatingRepository Ratings { get; }
 

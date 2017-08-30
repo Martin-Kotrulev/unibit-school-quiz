@@ -21,7 +21,7 @@ namespace App.Persistence.Repositories
 
     public IQuizProgressRepository QuizProgreseses { get; private set; }
 
-    public IQuizSubscribtionRepository QuizSubscribtions { get; private set; }
+    public IQuizSubsciptionRepository QuizSubscriptions { get; set; }
 
     public IRatingRepository Ratings { get; private set; }
 
@@ -42,7 +42,7 @@ namespace App.Persistence.Repositories
       this.QuizGroups = new QuizGroupRepository(_context);
       this.QuizProgreseses = new QuizProgressRepository(_context);
       this.Quizes = new QuizRepository(_context);
-      this.QuizSubscribtions = new QuizSubscribtionRepository(_context);
+      this.QuizSubscriptions = new QuizSubscriptionRepository(_context);
       this.Ratings = new RatingRepository(_context);
       this.Scores = new ScoreRepository(_context);
       this.Tags = new TagRepository(_context);
