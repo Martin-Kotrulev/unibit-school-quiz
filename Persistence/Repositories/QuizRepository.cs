@@ -3,11 +3,12 @@ using App.Persistence.Repositories.Interfaces;
 
 namespace App.Persistence.Repositories
 {
-  internal class RatingRepository : Repository<Rating>, IRatingRepository
+  internal class QuizRepository : Repository<Quiz>, IQuizRepository
   {
-    public RatingRepository(AppDbContext context)
+    public QuizRepository(AppDbContext context)
       : base(context)
     {
+        
     }
   }
 }

@@ -13,11 +13,15 @@ namespace App.Persistence.Repositories
 
     public INotficationRepository Notifications { get; private set; }
 
-    public IQuestionRepositroy Questions { get; private set; }
+    public IQuizRepository Quizes { get; set; }
+
+    public IQuestionRepository Questions { get; private set; }
 
     public IQuizGroupRepository QuizGroups { get; private set; }
 
-    public IQuizSubscribtion QuizSubscribtions { get; private set; }
+    public IQuizProgressRepository QuizProgreseses { get; private set; }
+
+    public IQuizSubscribtionRepository QuizSubscribtions { get; private set; }
 
     public IRatingRepository Ratings { get; private set; }
 
@@ -36,6 +40,8 @@ namespace App.Persistence.Repositories
       this.Notifications = new NotificationRepository(_context);
       this.Questions = new QuestionRepository(_context);
       this.QuizGroups = new QuizGroupRepository(_context);
+      this.QuizProgreseses = new QuizProgressRepository(_context);
+      this.Quizes = new QuizRepository(_context);
       this.QuizSubscribtions = new QuizSubscribtionRepository(_context);
       this.Ratings = new RatingRepository(_context);
       this.Scores = new ScoreRepository(_context);

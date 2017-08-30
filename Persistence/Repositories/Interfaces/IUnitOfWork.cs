@@ -13,11 +13,13 @@ namespace App.Persistence.Repositories.Interfaces
 
     INotficationRepository Notifications { get; }
 
-    IQuestionRepositroy Questions { get; }
+    IQuestionRepository Questions { get; }
 
     IQuizGroupRepository QuizGroups { get; }
 
-    IQuizSubscribtion QuizSubscribtions { get; }
+    IQuizProgressRepository QuizProgreseses { get; }
+
+    IQuizSubscribtionRepository QuizSubscribtions { get; }
 
     IRatingRepository Ratings { get; }
 

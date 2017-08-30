@@ -11,6 +11,7 @@ using App.Models;
 using App.Persistence;
 using App.Persistence.Repositories;
 using App.Persistence.Repositories.Interfaces;
+using App.Services;
 using App.Services.Security;
 using App.Services.Security.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -50,6 +51,7 @@ namespace App
       services.AddScoped<IUnitOfWork, UnitOfWork>();
 
       services.AddTransient<IAuthenticationService, AuthenticationService>();
+      services.AddTransient<IQuizService, QuizService>();
 
       services.AddSecurity(config: Configuration);
 
