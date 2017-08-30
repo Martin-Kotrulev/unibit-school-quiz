@@ -7,45 +7,45 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace App.Services.Security.Extensions
 {
-    public static class SecurityExtensions
+  public static class SecurityExtensions
+  {
+    public static IServiceCollection AddSecurity(this IServiceCollection services, IConfiguration config)
     {
-        public static IServiceCollection AddSecurity(this IServiceCollection services, IConfiguration config)
-        {
-            var audience = config["JWTSettings:Audience"];
-            var issuer = config["JWTSettings:Issuer"];
-            var secretKey = config["JWTSettings:SecretKey"];
+      var audience = config["JWTSettings:Audience"];
+      var issuer = config["JWTSettings:Issuer"];
+      var secretKey = config["JWTSettings:SecretKey"];
 
-            var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
-            
-            var tokenValidationParameters = new TokenValidationParameters() 
-            {
-                // Signing key validation
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = signingKey,
+      var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
 
-                // Issuer validation
-                ValidateIssuer = true,
-                ValidIssuer = issuer,
+      var tokenValidationParameters = new TokenValidationParameters()
+      {
+        // Signing key validation
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = signingKey,
 
-                // Audience validation
-                ValidateAudience = true,
-                ValidAudience = audience,
-                
-                // Lifetime validation
-                ValidateLifetime = true
-            };
+        // Issuer validation
+        ValidateIssuer = true,
+        ValidIssuer = issuer,
 
-            services.AddAuthentication(opt =>
-            {
-                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(opt =>  
-            {
-                opt.TokenValidationParameters = tokenValidationParameters;
-            });
+        // Audience validation
+        ValidateAudience = true,
+        ValidAudience = audience,
 
-            return services;
-        }
+        // Lifetime validation
+        ValidateLifetime = true
+      };
+
+      services.AddAuthentication(opt =>
+      {
+        opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+      })
+      .AddJwtBearer(opt =>
+      {
+        opt.TokenValidationParameters = tokenValidationParameters;
+      });
+
+      return services;
     }
+  }
 }

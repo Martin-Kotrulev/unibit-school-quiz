@@ -17,64 +17,65 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace App.Services.Security
 {
-    public class AuthenticationService : IAuthenticationService
+  public class AuthenticationService : IAuthenticationService
+  {
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly JWTSettings _options;
+
+    public AuthenticationService(UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        RoleManager<IdentityRole> roleManager,
+        IOptions<JWTSettings> optionsAccessor)
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly JWTSettings _options;
+      _userManager = userManager;
+      _signInManager = signInManager;
+      _roleManager = roleManager;
+      _options = optionsAccessor.Value;
+    }
 
-        public AuthenticationService(UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            RoleManager<IdentityRole> roleManager,
-            IOptions<JWTSettings> optionsAccessor)
+    public async Task<IdentityResult> RegisterUserAsync(ApplicationUser user, string password)
+    {
+      return await _userManager.CreateAsync(user, password);
+    }
+
+    public async Task<TokenResource> SignInUserAsync(CredentialsResource credentials)
+    {
+      var result = await _signInManager
+          .PasswordSignInAsync(credentials.Email, credentials.Password, false, false);
+
+      if (result.Succeeded)
+      {
+        var user = await _userManager.FindByEmailAsync(credentials.Email);
+
+        return new TokenResource()
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _roleManager = roleManager;
-            _options = optionsAccessor.Value;
-        }
+          Username = user.UserName ?? user.Email,
+          Token = GetToken()
+        };
+      }
 
-        public async Task<IdentityResult> RegisterUserAsync(ApplicationUser user, string password)
-        {
-            return await _userManager.CreateAsync(user, password);
-        }
+      return new TokenResource();
+    }
 
-        public async Task<TokenResource> SignInUserAsync(CredentialsResource credentials)
-        {
-            var result = await _signInManager
-                .PasswordSignInAsync(credentials.Email, credentials.Password, false, false);
-            
-            if (result.Succeeded)
-            {
-                var user = await _userManager.FindByEmailAsync(credentials.Email);
+    private string GetToken(Dictionary<string, object> payload = null)
+    {
+      var symmetricKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.SecretKey));
 
-                return new TokenResource() {
-                    Username = user.UserName ?? user.Email,
-                    Token = GetToken()
-                };
-            }
+      var tokenDescriptor = new SecurityTokenDescriptor()
+      {
+        Audience = _options.Audience,
+        Issuer = _options.Issuer,
+        IssuedAt = DateTime.UtcNow,
+        NotBefore = DateTime.UtcNow,
+        Expires = DateTime.UtcNow.AddDays(_options.ExpirationDays),
+        SigningCredentials = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256)
+      };
 
-            return new TokenResource();
-        }
+      var handler = new JwtSecurityTokenHandler();
 
-        private string GetToken(Dictionary<string, object> payload = null)
-        {
-            var symmetricKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.SecretKey));
-
-            var tokenDescriptor = new SecurityTokenDescriptor()
-            {
-                Audience = _options.Audience,
-                Issuer = _options.Issuer,
-                IssuedAt = DateTime.UtcNow,
-                NotBefore = DateTime.UtcNow,
-                Expires = DateTime.UtcNow.AddDays(_options.ExpirationDays),
-                SigningCredentials = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256)
-            };
-
-            var handler = new JwtSecurityTokenHandler();
-
-            return handler.CreateEncodedJwt(tokenDescriptor);
-        }
+      return handler.CreateEncodedJwt(tokenDescriptor);
+    }
   }
 }

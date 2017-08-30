@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace App.Services.Security
 {
-    public interface IAuthenticationService
-    {   
-        Task<IdentityResult> RegisterUserAsync(ApplicationUser user, string password);
-        Task<TokenResource> SignInUserAsync(CredentialsResource credentials);
-    }
+  public interface IAuthenticationService
+  {
+    Task<IdentityResult> RegisterUserAsync(ApplicationUser user, string password);
+    Task<TokenResource> SignInUserAsync(CredentialsResource credentials);
+  }
 }

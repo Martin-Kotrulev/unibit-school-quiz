@@ -3,12 +3,32 @@ using System.Threading.Tasks;
 
 namespace App.Persistence.Repositories.Interfaces
 {
-    public interface IUnitOfWork : IDisposable
-    {
-        // Declare repository interfaces here
-        // IRepository SomeRepository { get; }
-        void Complete();
+  public interface IUnitOfWork : IDisposable
+  {
+    // Declare repository interfaces here
+    // IRepository SomeRepository { get; }
+    IAnswerRepository Answers { get; }
 
-        Task<int> CompleteAsync();
-    }
+    IGroupSubscribtionRepository GroupSubscribtions { get; }
+
+    INotficationRepository Notifications { get; }
+
+    IQuestionRepositroy Questions { get; }
+
+    IQuizGroupRepository QuizGroups { get; }
+
+    IQuizSubscribtion QuizSubscribtions { get; }
+
+    IRatingRepository Ratings { get; }
+
+    IScoreRepository Scores { get; }
+
+    ITagRepository Tags { get; }
+
+    IUserRepository Users { get; }
+
+    void Complete();
+
+    Task<int> CompleteAsync();
+  }
 }
