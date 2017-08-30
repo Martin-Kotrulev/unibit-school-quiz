@@ -6,7 +6,7 @@ namespace App.Controllers.Resources
   // Provides different structure for the returned token based on user's needs
   public class TokenResource
   {
-    public string Username { get; set; }
+    public string User { get; set; }
 
     [JsonProperty(PropertyName = "email", NullValueHandling = NullValueHandling.Ignore)]
     public string Email { get; set; }

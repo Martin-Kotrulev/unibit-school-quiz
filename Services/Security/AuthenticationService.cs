@@ -33,9 +33,9 @@ namespace App.Services.Security
       _options = optionsAccessor.Value;
     }
 
-    public ApplicationUser GetAuthenticatedUser()
+    public async Task<ApplicationUser> GetAuthenticatedUser(ClaimsPrincipal principal)
     {
-      throw new NotImplementedException();
+      return await _userManager.GetUserAsync(principal);
     }
 
     public async Task<IdentityResult> RegisterUserAsync(ApplicationUser user, string password)
@@ -54,8 +54,9 @@ namespace App.Services.Security
 
         return new TokenResource()
         {
-          Username = user.UserName ?? user.Email,
-          Token = GetToken(user)
+          User = user.UserName ?? user.Email,
+          Token = GetToken(user),
+          Expires = DateTime.UtcNow.AddDays(_options.ExpirationDays)
         };
       }
 
@@ -68,8 +69,8 @@ namespace App.Services.Security
 
       var claimsIdentity = new ClaimsIdentity(new List<Claim>()
       {
-          new Claim(ClaimTypes.Sid, user.Id),
-          new Claim(ClaimTypes.NameIdentifier, user.Email)
+          new Claim(ClaimTypes.Email, user.Email),
+          new Claim(ClaimTypes.NameIdentifier, user.Id)
       });
 
       var tokenDescriptor = new SecurityTokenDescriptor()

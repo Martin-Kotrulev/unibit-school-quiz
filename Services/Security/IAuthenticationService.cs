@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading.Tasks;
 using App.Controllers.Resources;
 using App.Models;
@@ -10,6 +11,6 @@ namespace App.Services.Security
   {
     Task<IdentityResult> RegisterUserAsync(ApplicationUser user, string password);
     Task<TokenResource> SignInUserAsync(CredentialsResource credentials);
-    ApplicationUser GetAuthenticatedUser();
+    Task<ApplicationUser> GetAuthenticatedUser(ClaimsPrincipal principal);
   }
 }

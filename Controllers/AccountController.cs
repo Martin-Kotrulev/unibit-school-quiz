@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using App.Controllers.Resources;
 using App.Models;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace App.Controllers
 {
@@ -36,7 +38,7 @@ namespace App.Controllers
 
           return Ok(new ApiResponse(
               token,
-              $"User '{token.Username}' registered successfully."
+              $"User '{token.User}' registered successfully."
           ));
         }
 
@@ -56,11 +58,11 @@ namespace App.Controllers
 
         if ((token.AccessToken ?? token.IdToken ?? token.Token) != null)
         {
-          return Ok(new ApiResponse(token, $"User '{token.Username}' logged successfully."));
+          return Ok(new ApiResponse(token, $"User '{token.User}' logged successfully."));
         }
 
         return BadRequest(new ApiResponse(
-            (int)HttpStatusCode.Unauthorized,
+            (int) HttpStatusCode.Unauthorized,
             "Wrong username or password.")
         );
       }
@@ -69,9 +71,11 @@ namespace App.Controllers
     }
 
     [HttpGet("hello")]
-    public IActionResult Hello() {
-      var user = _authService.GetAuthenticatedUser();
-      return Ok();
+    [Authorize]
+    public async Task<IActionResult> Hello() {
+      var user = await _authService.GetAuthenticatedUser(User);
+
+      return Ok(user.Email);
     }
   }
 }
