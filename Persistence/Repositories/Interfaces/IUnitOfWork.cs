@@ -9,17 +9,19 @@ namespace App.Persistence.Repositories.Interfaces
     // IRepository SomeRepository { get; }
     IAnswerRepository Answers { get; }
 
-    IGroupSubscribtionRepository GroupSubscribtions { get; }
+    IGroupSubscriptionRepository GroupSubscriptions { get; }
 
-    INotficationRepository Notifications { get; }
+    INotificationRepository Notifications { get; }
 
     IQuestionRepository Questions { get; }
 
     IQuizGroupRepository QuizGroups { get; }
 
-    IQuizProgressRepository QuizProgreseses { get; }
+    IQuizRepository Quizzes { get; }
 
-    //IQuizSubscribtionRepository QuizSubscribtions { get; }
+    IQuizProgressRepository QuizProgresses { get; }
+
+    IQuizSubscriptionRepository QuizSubscriptions { get; }
 
     IRatingRepository Ratings { get; }
 

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace App.Models
 {
-  public class GroupSubscribtion
+  public class GroupSubscription
   {
     [Required]
     public string UserId { get; set; }

@@ -6,9 +6,9 @@ namespace App.Models
 {
   public class ApplicationUser : IdentityUser
   {
-    public ICollection<Quiz> OwnQuizes { get; set; }
+    public ICollection<Quiz> OwnQuizzes { get; set; }
 
-    public ICollection<Quiz> TakenQuizes { get; set; }
+    public ICollection<QuizzesUsers> TakenQuizzes { get; set; }
 
     public ICollection<Score> Scores { get; set; }
 
@@ -19,8 +19,8 @@ namespace App.Models
     public ICollection<Notification> Notifications { get; set; }
     
     public ApplicationUser() {
-      OwnQuizes = new HashSet<Quiz>();
-      TakenQuizes = new HashSet<Quiz>();
+      OwnQuizzes = new HashSet<Quiz>();
+      TakenQuizzes = new HashSet<QuizzesUsers>();
       Scores = new HashSet<Score>();
       OwnGroups = new HashSet<QuizGroup>();
       InQuizGroups = new HashSet<UsersGroups>();

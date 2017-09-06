@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,9 +12,11 @@ namespace App.Models
     [StringLength(255)]
     public string Name { get; set; }
 
+    public DateTime CreatedOn { get; set; }
+
     public ApplicationUser Owner { get; set; }
 
-    public ICollection<Quiz> Quizes { get; set; }
+    public ICollection<Quiz> Quizzes { get; set; }
 
     public ICollection<UsersGroups> Members { get; set; }
 
@@ -21,7 +24,7 @@ namespace App.Models
 
     public QuizGroup()
     {
-      Quizes = new HashSet<Quiz>();
+      Quizzes = new HashSet<Quiz>();
       Members = new HashSet<UsersGroups>();
       Tags = new HashSet<Tag>();
     }

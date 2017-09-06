@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace App.Persistence.Repositories
 {
-  internal class GroupSubscribtionRepository : Repository<GroupSubscribtion>, IGroupSubscribtionRepository
+  internal class GroupSubscriptionRepository : Repository<GroupSubscription>, IGroupSubscriptionRepository
   {
-    public GroupSubscribtionRepository(AppDbContext context) 
+    public GroupSubscriptionRepository(AppDbContext context) 
       : base(context)
     {
     }

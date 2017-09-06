@@ -12,6 +12,8 @@ namespace App.Models
     [MaxLength(255)]
     public string Title { get; set; }
 
+    public DateTime CreatedOn { get; set; }
+
     public DateTime StartDateTime { get; set; }
 
     public DateTime EndDateTime { get; set; }
@@ -24,17 +26,22 @@ namespace App.Models
 
     public QuizGroup QuizGroup { get; set; }
 
+    public ApplicationUser Creator { get; set; }
+
     public ICollection<Tag> Tags { get; set; }
 
     public ICollection<Question> Questions { get; set; }
 
     public ICollection<Score> Scores { get; set; }
 
+    public ICollection<ApplicationUser> Participants { get; set; }
+
     public Quiz()
     {
       Tags = new HashSet<Tag>();
       Questions = new HashSet<Question>();
       Scores = new HashSet<Score>();
+      Participants = new HashSet<ApplicationUser>();
     }
   }
 }

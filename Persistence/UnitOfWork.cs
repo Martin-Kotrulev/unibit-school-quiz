@@ -9,19 +9,19 @@ namespace App.Persistence.Repositories
 
     public IAnswerRepository Answers { get; private set; }
 
-    public IGroupSubscribtionRepository GroupSubscribtions { get; private set; }
+    public IGroupSubscriptionRepository GroupSubscriptions { get; private set; }
 
-    public INotficationRepository Notifications { get; private set; }
+    public INotificationRepository Notifications { get; private set; }
 
-    public IQuizRepository Quizes { get; set; }
+    public IQuizRepository Quizzes { get; set; }
 
     public IQuestionRepository Questions { get; private set; }
 
     public IQuizGroupRepository QuizGroups { get; private set; }
 
-    public IQuizProgressRepository QuizProgreseses { get; private set; }
+    public IQuizProgressRepository QuizProgresses { get; private set; }
 
-    public IQuizSubsciptionRepository QuizSubscriptions { get; set; }
+    public IQuizSubscriptionRepository QuizSubscriptions { get; set; }
 
     public IRatingRepository Ratings { get; private set; }
 
@@ -36,17 +36,18 @@ namespace App.Persistence.Repositories
       this._context = context;
 
       this.Answers = new AnswerRepository(_context);
-      this.GroupSubscribtions = new GroupSubscribtionRepository(_context);
+      this.GroupSubscriptions = new GroupSubscriptionRepository(_context);
       this.Notifications = new NotificationRepository(_context);
       this.Questions = new QuestionRepository(_context);
       this.QuizGroups = new QuizGroupRepository(_context);
-      this.QuizProgreseses = new QuizProgressRepository(_context);
-      this.Quizes = new QuizRepository(_context);
+      this.QuizProgresses = new QuizProgressRepository(_context);
+      this.Quizzes = new QuizRepository(_context);
       this.QuizSubscriptions = new QuizSubscriptionRepository(_context);
       this.Ratings = new RatingRepository(_context);
       this.Scores = new ScoreRepository(_context);
       this.Tags = new TagRepository(_context);
       this.Users = new UserRepository(_context);
+      this.QuizSubscriptions = new QuizSubscriptionRepository(_context);
     }
 
     public void Complete()

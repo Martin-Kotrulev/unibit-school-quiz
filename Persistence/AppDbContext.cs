@@ -16,19 +16,19 @@ namespace App.Persistence
 
 		public DbSet<Rating> Ratings { get; set; }
 
-		public DbSet<Quiz> Quizes { get; set; }
+		public DbSet<Quiz> Quizzes { get; set; }
 
 		public DbSet<QuizGroup> QuizGroups { get; set; }
 
 		public DbSet<QuizProgress> QuizProgresses { get; set; }
 
-		public DbSet<QuizSubscription> QuizSubscribtions { get; set; }
+		public DbSet<QuizSubscription> QuizSubscriptions { get; set; }
 
 		public DbSet<Question> Questions { get; set; }
 
 		public DbSet<Notification> Notifications { get; set; }
 
-		public DbSet<GroupSubscribtion> GroupSubscribtions { get; set; }
+		public DbSet<GroupSubscription> GroupSubscriptions { get; set; }
 
 		public AppDbContext(DbContextOptions options) 
 			: base(options)
@@ -53,11 +53,21 @@ namespace App.Persistence
 				modelBuilder.Entity<Rating>()
 					.HasKey(r => new {r.UserId, r.QuizId});
 
-				modelBuilder.Entity<GroupSubscribtion>()
+				modelBuilder.Entity<GroupSubscription>()
 					.HasKey(gs => new {gs.UserId, gs.QuizGroupId});
 
 				modelBuilder.Entity<QuizSubscription>()
 					.HasKey(qs => new {qs.UserId, qs.QuizId});
+
+				modelBuilder.Entity<QuizzesUsers>()
+					.HasKey(qu => new { qu.QuizId, qu.UserId });
+
+				modelBuilder.Entity<ApplicationUser>()
+					.HasMany(u => u.OwnQuizzes)
+					.WithOne(q => q.Creator);
+
+				modelBuilder.Entity<QuizProgress>()
+					.HasKey(qp => new {qp.QuizId, qp.QuestionId, qp.UserId});
 		}
 	}
 }

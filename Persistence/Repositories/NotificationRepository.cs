@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace App.Persistence.Repositories
 {
-  internal class NotificationRepository : Repository<Notification>, INotficationRepository
+  internal class NotificationRepository : Repository<Notification>, INotificationRepository
   {
     public NotificationRepository(AppDbContext context) 
       : base(context)

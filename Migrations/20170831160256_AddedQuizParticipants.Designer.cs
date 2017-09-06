@@ -11,9 +11,10 @@ using System;
 namespace App.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170831160256_AddedQuizParticipants")]
+    partial class AddedQuizParticipants
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,20 +30,12 @@ namespace App.Migrations
 
                     b.Property<bool>("IsRight");
 
-                    b.Property<int?>("QuizProgressQuestionId");
-
-                    b.Property<int?>("QuizProgressQuizId");
-
-                    b.Property<string>("QuizProgressUserId");
-
                     b.Property<string>("Value")
                         .IsRequired();
 
                     b.HasKey("Id");
 
                     b.HasIndex("FromQuestionId");
-
-                    b.HasIndex("QuizProgressQuizId", "QuizProgressQuestionId", "QuizProgressUserId");
 
                     b.ToTable("Answers");
                 });
@@ -164,8 +157,6 @@ namespace App.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("CreatedOn");
-
                     b.Property<string>("CreatorId");
 
                     b.Property<DateTime>("EndDateTime");
@@ -211,8 +202,6 @@ namespace App.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("CreatedOn");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255);
@@ -231,15 +220,21 @@ namespace App.Migrations
 
             modelBuilder.Entity("App.Models.QuizProgress", b =>
                 {
-                    b.Property<int>("QuizId");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("AnswerId");
 
                     b.Property<int>("QuestionId");
 
-                    b.Property<string>("UserId");
+                    b.Property<int>("QuizId");
+
+                    b.Property<string>("UserId")
+                        .IsRequired();
 
                     b.Property<DateTime>("ValidTo");
 
-                    b.HasKey("QuizId", "QuestionId", "UserId");
+                    b.HasKey("Id");
 
                     b.ToTable("QuizProgresses");
                 });
@@ -442,10 +437,6 @@ namespace App.Migrations
                     b.HasOne("App.Models.Question", "FromQuestion")
                         .WithMany("Answers")
                         .HasForeignKey("FromQuestionId");
-
-                    b.HasOne("App.Models.QuizProgress")
-                        .WithMany("GivenAnswers")
-                        .HasForeignKey("QuizProgressQuizId", "QuizProgressQuestionId", "QuizProgressUserId");
                 });
 
             modelBuilder.Entity("App.Models.ApplicationUser", b =>
