@@ -8,8 +8,13 @@ namespace App.Models
   {
     public int Id { get; set; }
 
+    public int CreationOrder { get; set; }
+
     [Required]
     public string Value { get; set; }
+
+    [Range(1, 10)]
+    public int Weight { get; set; }
 
     public bool IsRight { get; set; } = false;
 
@@ -19,5 +24,9 @@ namespace App.Models
     public int QuestionId { get; set; }
     
     public Question Question { get; set; }
+
+    public int QuizId { get; set; }
+
+    public Quiz Quiz { get; set; }
   }
 }

@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using App.Models;
 using App.Persistence.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -15,13 +16,23 @@ namespace App.Persistence.Repositories
         
     }
 
-    public QuizProgress FindQuizProgress(int quizId, int questionId, string userId)
+    public async Task<QuizProgress> FindQuizProgressAsync(int quizId, int questionId, string userId)
     {
-      return AppDbContext.QuizProgresses
+      return await AppDbContext.QuizProgresses
         .Include(qp => qp.GivenAnswers)
-        .FirstOrDefault(qp => qp.QuizId == quizId 
+        .FirstOrDefaultAsync(qp => qp.QuizId == quizId 
           && qp.QuestionId == questionId
           && qp.UserId == userId);
+    }
+
+    public async Task<int> GetProgressAnswersWeightSumAsync(string userId, int quizId)
+    {
+      return await AppDbContext.QuizProgresses
+        .Where(qp => qp.UserId == userId && qp.QuizId == quizId)
+        .Include(qp => qp.GivenAnswers)
+        .SelectMany(qp => qp.GivenAnswers)
+        .Where(ga => ga.IsRight)
+        .SumAsync(ga => ga.Weight);
     }
   }
 }

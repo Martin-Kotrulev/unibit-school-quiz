@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using App.Models;
 using App.Persistence.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -17,23 +18,46 @@ namespace App.Persistence.Repositories
         
     }
 
-    public IEnumerable<Quiz> GetGroupQuizzesPaged(int quizId, int page = 1, int pageSize = 10)
+    public async Task<IEnumerable<Quiz>> GetGroupQuizzesPagedAsync(int quizId, int page = 1, int pageSize = 10)
     {
-      return AppDbContext.Quizzes
+      return await AppDbContext.Quizzes
         .Where(q => q.QuizGroupId != null && q.QuizGroupId == quizId)
         .OrderBy(q => q.CreatedOn)
         .Skip((page - 1) * pageSize)
         .Take(pageSize)
-        .ToList();
+        .ToListAsync();
     }
 
-    public void MarkQuizAsTaken(int quizId, string userId)
+    public async void MarkQuizAsTakenAsync(int quizId, string userId)
     {
-      AppDbContext.QuizzesUsers.Add(new QuizzesUsers() 
+      await AppDbContext.QuizzesUsers.AddAsync(new QuizzesUsers() 
       {
         QuizId = quizId,
         UserId = userId
       });
+    }
+
+    public async Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags)
+    {
+      return await AppDbContext.Quizzes
+        .Where(q => q.Tags
+          .Select(t => t.Name)
+          .Any(t => tags.Contains(t))
+        )
+        .ToListAsync();
+    }
+
+    public async Task<int> GetQuizTotalScoreAsync(int quizId)
+    {
+      return await AppDbContext.Answers
+        .Where(a => a.QuizId == quizId && a.IsRight)
+        .SumAsync(a => a.Weight);
+    }
+
+    public async Task<Quiz> GetQuizWithPasswordAsync(int quizId, string password)
+    {
+      return await AppDbContext.Quizzes
+        .FirstOrDefaultAsync(q => q.Id == quizId && q.Password == password);
     }
   }
 }

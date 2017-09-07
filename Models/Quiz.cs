@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace App.Models
 {
@@ -20,6 +21,7 @@ namespace App.Models
 
     public bool IsOneTime { get; set; } = false;
 
+    [JsonIgnore]
     public string Password { get; set; }
 
     public bool Locked { get; set; } = false;

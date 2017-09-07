@@ -40,6 +40,7 @@ namespace App
     public void ConfigureServices(IServiceCollection services)
     {
       services.Configure<JWTSettings>(Configuration.GetSection("JWTSettings"));
+      services.Configure<GradesSettings>(Configuration.GetSection("GradesSettings"));
 
       services.AddDbContext<AppDbContext>(opt =>
       {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using App.Models;
 using App.Persistence.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -15,11 +16,11 @@ namespace App.Persistence.Repositories
     {
     }
 
-    public Question GetQuestionWithProgress(int questionId, QuizProgress progress)
+    public async Task<Question> GetQuestionWithProgressAsync(int questionId, QuizProgress progress)
     {
-      var question = AppDbContext.Questions
+      var question = await AppDbContext.Questions
         .Include(q => q.Answers)
-        .FirstOrDefault(q => q.Id == questionId);
+        .FirstOrDefaultAsync(q => q.Id == questionId);
 
       question.Answers = question.Answers
         .Select(a => {
@@ -32,13 +33,13 @@ namespace App.Persistence.Repositories
       return question;
     }
 
-    public IEnumerable<Question> GetQuestionsForQuiz(int quizId)
+    public async Task<IEnumerable<Question>> GetQuestionsForQuizAsync(int quizId)
     {
       var rnd = new Random();
 
-      var questions = AppDbContext.Questions
+      var questions = await AppDbContext.Questions
         .Where(q => q.QuizId == quizId)
-        .ToList();
+        .ToListAsync();
 
       // Random answers order
       foreach (var q in questions) 
@@ -51,12 +52,12 @@ namespace App.Persistence.Repositories
       return questions;
     }
 
-    public Question GetQuestionWithAnswers(int questionId)
+    public async Task<Question> GetQuestionWithAnswersAsync(int questionId)
     {
       var rnd = new Random();
-      var question = AppDbContext.Questions
+      var question = await AppDbContext.Questions
         .Include(q => q.Answers)
-        .FirstOrDefault(q => q.Id == questionId);
+        .FirstOrDefaultAsync(q => q.Id == questionId);
 
       question.Answers = question.Answers
         .OrderBy(x => rnd.Next())

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using App.Models;
 
 namespace App.Services
@@ -7,42 +8,44 @@ namespace App.Services
   {
     void CreateGroup(QuizGroup quizGroup);
 
-    void CreateQuiz(Quiz quiz, int? quizGroupId = null);
+    void CreateQuiz(Quiz quiz);
 
-    void CreateQuestion(Question question, int quizId);
+    void CreateQuestion(Question question);
 
-    void CreateAnswer(Answer answer, int questionId);
+    void CreateAnswer(Answer answer);
 
     void CreateProgress(QuizProgress progress);
 
-    void ScoreUser(ApplicationUser user, int quizId, ICollection<Answer> answers);
+    void ScoreUserAsync(ApplicationUser user, int quizId, ICollection<int> answersIds);
+
+    void MarkQuizAsTaken(int quizId, string userId);
 
     void Subscribe(QuizSubscription subscription);
 
     void Subscribe(GroupSubscription subscription);
 
-    void MarkQuizAsTaken(int quizId, string userId);
-
-    IEnumerable<Question> GetQuestions(int quizId);
+    Task<IEnumerable<Question>> GetQuestionsAsync(int quizId);
 
     IEnumerable<Answer> GetAnswersForIds(ICollection<int> ids);
 
     IEnumerable<QuizGroup> GetQuizGroups(int page = 1, int pageSize = 10);
 
-    IEnumerable<QuizGroup> SearchQuizGroupsByTags(ICollection<string> tags);
+    Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(ICollection<string> tags);
 
     IEnumerable<Quiz> GetQuizzes(int page = 1, int pageSize = 10);
 
-    IEnumerable<Quiz> SearchQuizzesByTags(ICollection<string> tags);
+    Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags);
 
-    IEnumerable<Quiz> GetGroupQuizzes(int quizGroupId, int page = 1, int pageSize = 10);
+    Task<IEnumerable<Quiz>> GetGroupQuizzesAsync(int quizGroupId, int page = 1, int pageSize = 10);
 
     IEnumerable<Quiz> GetUserOwnQuizzes(ApplicationUser user);
 
     IEnumerable<Quiz> GetUserTakenQuizzes(ApplicationUser user);
 
-    Question GetQuestionWithAnswers(int questionId, int quizId, string userId);
+    Task<Question> GetQuestionWithAnswersAsync(int questionId, int quizId, string userId);
 
-    IEnumerable<int> GetRandomQuestionsOrder(int quizId);
+    Task<IEnumerable<int>> GetRandomQuestionsOrderAsync(int quizId);
+
+    Task<Quiz> GetQuizWithPasswordAsync(int quizId, string password);
   }
 }
