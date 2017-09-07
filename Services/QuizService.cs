@@ -49,10 +49,12 @@ namespace App.Services
 
     public void CreateQuiz(Quiz quiz, int? quizGroupId = null)
     {
-      if (quizGroupId != null) {
+      if (quizGroupId != null) 
+      {
         var quizGroup = _unitOfWork.QuizGroups.Get((int) quizGroupId);
         quizGroup.Quizzes.Add(quiz);
-      } else {
+      }
+      else {
         _unitOfWork.Quizzes.Add(quiz);
       }
 
@@ -62,6 +64,7 @@ namespace App.Services
     public void MarkQuizAsTaken(int quizId, string userId)
     {
       _unitOfWork.Quizzes.MarkQuizAsTaken(quizId, userId);
+      _unitOfWork.Complete();
     }
 
     public IEnumerable<Answer> GetAnswersForIds(ICollection<int> ids)
@@ -86,10 +89,12 @@ namespace App.Services
       var progress = _unitOfWork.QuizProgresses
         .FindQuizProgress(quizId, questionId, userId);
 
-      if (progress != null) {
+      if (progress != null) 
+      {
         return _unitOfWork.Questions
           .GetQuestionWithProgress(questionId, progress);
-      } else {
+      }
+      else {
         return _unitOfWork.Questions
           .GetQuestionWithAnswers(questionId);
       }
