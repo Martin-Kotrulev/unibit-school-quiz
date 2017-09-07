@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using App.Models;
@@ -19,12 +20,20 @@ namespace App.Persistence.Repositories
     public IEnumerable<Quiz> GetGroupQuizzesPaged(int quizId, int page = 1, int pageSize = 10)
     {
       return AppDbContext.Quizzes
-        .Include(q => q.QuizGroup)
-        .Where(q => q.QuizGroup != null && q.QuizGroup.Id == quizId)
+        .Where(q => q.QuizGroupId != null && q.QuizGroupId == quizId)
         .OrderBy(q => q.CreatedOn)
         .Skip((page - 1) * pageSize)
         .Take(pageSize)
         .ToList();
+    }
+
+    public void MarkQuizAsTaken(int quizId, string userId)
+    {
+      AppDbContext.QuizzesUsers.Add(new QuizzesUsers() 
+      {
+        QuizId = quizId,
+        UserId = userId
+      });
     }
   }
 }

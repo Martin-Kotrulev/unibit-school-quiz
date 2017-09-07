@@ -21,7 +21,9 @@ namespace App.Services
 
     void Subscribe(GroupSubscription subscription);
 
-    IEnumerable<Question> GetQuestions(int quizId, int page = 1, int size = 1);
+    void MarkQuizAsTaken(int quizId, string userId);
+
+    IEnumerable<Question> GetQuestions(int quizId);
 
     IEnumerable<Answer> GetAnswersForIds(ICollection<int> ids);
 
@@ -39,8 +41,8 @@ namespace App.Services
 
     IEnumerable<Quiz> GetUserTakenQuizzes(ApplicationUser user);
 
-    IEnumerable<Answer> GetQuestionAnswers(int questionId);
+    Question GetQuestionWithAnswers(int questionId, int quizId, string userId);
 
-    IEnumerable<Quiz> GetQuiz(ApplicationUser user, int quizId);
+    IEnumerable<int> GetRandomQuestionsOrder(int quizId);
   }
 }

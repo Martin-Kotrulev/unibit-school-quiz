@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using App.Models;
 using App.Persistence.Repositories.Interfaces;
@@ -58,9 +59,14 @@ namespace App.Services
       _unitOfWork.Complete();
     }
 
+    public void MarkQuizAsTaken(int quizId, string userId)
+    {
+      _unitOfWork.Quizzes.MarkQuizAsTaken(quizId, userId);
+    }
+
     public IEnumerable<Answer> GetAnswersForIds(ICollection<int> ids)
     {
-      throw new System.NotImplementedException();
+      return _unitOfWork.Answers.Find(a => ids.Contains(a.Id));
     }
 
     public IEnumerable<Quiz> GetGroupQuizzes(int quizGroupId, int page = 1, int pageSize = 10)
@@ -68,39 +74,55 @@ namespace App.Services
       return _unitOfWork.Quizzes.GetGroupQuizzesPaged(quizGroupId, page, pageSize);
     }
 
-    public IEnumerable<Answer> GetQuestionAnswers(int questionId)
+    /// <summary>
+    /// Checks if there is a progress made by the current user.
+    /// </summary>
+    /// <param name="questionId"></param>
+    /// <param name="quizId"></param>
+    /// <param name="userId"></param>
+    /// <returns>Question by Id or Question with added progress.</returns>
+    public Question GetQuestionWithAnswers(int questionId, int quizId, string userId)
     {
-      throw new System.NotImplementedException();
+      var progress = _unitOfWork.QuizProgresses
+        .FindQuizProgress(quizId, questionId, userId);
+
+      if (progress != null) {
+        return _unitOfWork.Questions
+          .GetQuestionWithProgress(questionId, progress);
+      } else {
+        return _unitOfWork.Questions
+          .GetQuestionWithAnswers(questionId);
+      }
     }
 
-    public IEnumerable<Question> GetQuestions(int quizId, int page = 1, int size = 1)
+    /// <summary>
+    /// Used to get given quiz with all questions and answers
+    /// </summary>
+    /// <param name="quizId"></param>
+    /// <returns></returns>
+    public IEnumerable<Question> GetQuestions(int quizId)
     {
-      throw new System.NotImplementedException();
-    }
-
-    public IEnumerable<Quiz> GetQuiz(ApplicationUser user, int quizId)
-    {
-      throw new System.NotImplementedException();
+      return _unitOfWork.Questions.GetQuestionsForQuiz(quizId);
     }
 
     public IEnumerable<QuizGroup> GetQuizGroups(int page = 1, int pageSize = 10)
     {
-      throw new System.NotImplementedException();
+      return _unitOfWork.QuizGroups.Paged(page, pageSize);
     }
 
     public IEnumerable<Quiz> GetQuizzes(int page = 1, int pageSize = 10)
     {
-      throw new System.NotImplementedException();
+      return _unitOfWork.Quizzes.Paged(page, pageSize);
     }
 
     public IEnumerable<Quiz> GetUserOwnQuizzes(ApplicationUser user)
     {
-      throw new System.NotImplementedException();
+      return _unitOfWork.Quizzes.Find(q => q.CreatorId == user.Id);
     }
 
     public IEnumerable<Quiz> GetUserTakenQuizzes(ApplicationUser user)
     {
-      throw new System.NotImplementedException();
+      return _unitOfWork.Users.GetUserTakenQuizzes(user.Id);
     }
 
     public void ScoreUser(ApplicationUser user, int quizId, ICollection<Answer> answers)
@@ -126,6 +148,11 @@ namespace App.Services
     public void Subscribe(GroupSubscription subscription)
     {
       throw new System.NotImplementedException();
+    }
+
+    public IEnumerable<int> GetRandomQuestionsOrder(int quizId)
+    {
+      return _unitOfWork.Answers.GetRandomOrderForAnswerIds(quizId);
     }
   }
 }

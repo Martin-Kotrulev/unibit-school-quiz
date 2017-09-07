@@ -12,6 +12,9 @@ namespace App.Persistence.Repositories.Interfaces
 
     IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
 
+    IEnumerable<TEntity> Paged(int page = 1, int pageSize = 10,
+      Expression<Func<TEntity, bool>> predicate = null);
+
     void Add(TEntity entity);
 
     void AddRange(IEnumerable<TEntity> entities);

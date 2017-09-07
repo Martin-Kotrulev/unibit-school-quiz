@@ -31,6 +31,23 @@ namespace App.Persistence.Repositories
       return this.Context.Set<TEntity>().Where(predicate);
     }
 
+    public IEnumerable<TEntity> Paged(int page = 1, int pageSize = 10,
+      Expression<Func<TEntity, bool>> predicate = null)
+    {
+      var query = this.Context.Set<TEntity>().AsQueryable();
+
+      if (predicate != null)
+      {
+        query = query.Where(predicate);
+      }
+      
+      query
+        .Skip((page - 1) * pageSize)
+        .Take(pageSize);
+
+      return query.ToList();
+    }
+
     public TEntity Get(int id)
     {
       return this.Context.Set<TEntity>().Find(id);

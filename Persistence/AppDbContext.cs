@@ -30,6 +30,8 @@ namespace App.Persistence
 
 		public DbSet<GroupSubscription> GroupSubscriptions { get; set; }
 
+		public DbSet<QuizzesUsers> QuizzesUsers { get; set; }
+
 		public AppDbContext(DbContextOptions options) 
 			: base(options)
 		{

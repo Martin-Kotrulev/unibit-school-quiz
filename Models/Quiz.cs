@@ -24,8 +24,12 @@ namespace App.Models
 
     public bool Locked { get; set; } = false;
 
+    public int? QuizGroupId { get; set; }
+
     public QuizGroup QuizGroup { get; set; }
 
+    public string CreatorId { get; set; }
+    
     public ApplicationUser Creator { get; set; }
 
     public ICollection<Tag> Tags { get; set; }

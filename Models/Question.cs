@@ -12,6 +12,12 @@ namespace App.Models
 
     public int MaxAnswers { get; set; } = 3;
 
+    public bool IsMultiselect { get; set; }
+
+    public int QuizId { get; set; }
+    
+    public Quiz Quiz { get; set; }
+
     public ICollection<Answer> Answers { get; set; }
   }
 }
