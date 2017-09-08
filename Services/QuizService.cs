@@ -134,19 +134,19 @@ namespace App.Services
       return await _unitOfWork.Quizzes.GetQuizWithPasswordAsync(quizId, password);
     }
 
-    public IEnumerable<Quiz> GetUserOwnQuizzes(ApplicationUser user)
+    public IEnumerable<Quiz> GetUserOwnQuizzes(ApplicationUser user, int page = 1, int pageSize = 10)
     {
-      return _unitOfWork.Quizzes.Find(q => q.CreatorId == user.Id);
+      return _unitOfWork.Quizzes.Paged(page, pageSize, q => q.CreatorId == user.Id);
     }
 
-    public IEnumerable<QuizGroup> GetUserOwnGroups(ApplicationUser user)
+    public IEnumerable<QuizGroup> GetUserOwnGroups(ApplicationUser user, int page = 1, int pageSize = 10)
     {
-      return _unitOfWork.QuizGroups.Find(qg => qg.OwnerId == user.Id);
+      return _unitOfWork.QuizGroups.Paged(page, pageSize, qg => qg.OwnerId == user.Id);
     }
 
-    public IEnumerable<Quiz> GetUserTakenQuizzes(ApplicationUser user)
+    public IEnumerable<Quiz> GetUserTakenQuizzes(ApplicationUser user, int page = 1, int pageSize = 10)
     {
-      return _unitOfWork.Users.GetUserTakenQuizzes(user.Id);
+      return _unitOfWork.Users.GetUserTakenQuizzesPaged(user.Id, page, pageSize);
     }
 
     public async Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(ICollection<string> tags)

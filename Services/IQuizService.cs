@@ -14,7 +14,7 @@ namespace App.Services
 
     void CreateAnswer(Answer answer);
 
-    void CreateProgress(QuizProgress progress);
+    void CreateProgressAsync(QuizProgress progress, IEnumerable<int> answersIds);
 
     void ScoreUserAsync(ApplicationUser user, int quizId, ICollection<int> answersIds);
 
@@ -28,21 +28,21 @@ namespace App.Services
 
     IEnumerable<Answer> GetAnswersForIds(ICollection<int> ids);
 
-    IEnumerable<QuizGroup> GetQuizGroups(int page = 1, int pageSize = 10);
+    IEnumerable<QuizGroup> GetQuizGroups(int page, int pageSize);
 
     Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(ICollection<string> tags);
 
-    IEnumerable<Quiz> GetQuizzes(int page = 1, int pageSize = 10);
+    IEnumerable<Quiz> GetQuizzes(int page, int pageSize);
 
     Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags);
 
-    Task<IEnumerable<Quiz>> GetGroupQuizzesAsync(int quizGroupId, int page = 1, int pageSize = 10);
+    Task<IEnumerable<Quiz>> GetGroupQuizzesAsync(int quizGroupId, int page, int pageSize);
 
-    IEnumerable<Quiz> GetUserOwnQuizzes(ApplicationUser user);
+    IEnumerable<Quiz> GetUserOwnQuizzes(ApplicationUser user, int page, int pageSize);
 
-    IEnumerable<QuizGroup> GetUserOwnGroups(ApplicationUser user);
+    IEnumerable<QuizGroup> GetUserOwnGroups(ApplicationUser user, int page, int pageSize);
 
-    IEnumerable<Quiz> GetUserTakenQuizzes(ApplicationUser user);
+    IEnumerable<Quiz> GetUserTakenQuizzes(ApplicationUser user, int page, int pageSize);
 
     Task<Question> GetQuestionWithAnswersAsync(int questionId, int quizId, string userId);
 
