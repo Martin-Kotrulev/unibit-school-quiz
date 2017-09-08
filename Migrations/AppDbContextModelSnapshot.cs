@@ -25,9 +25,13 @@ namespace App.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("FromQuestionId");
+                    b.Property<int>("CreationOrder");
 
                     b.Property<bool>("IsRight");
+
+                    b.Property<int>("QuestionId");
+
+                    b.Property<int>("QuizId");
 
                     b.Property<int?>("QuizProgressQuestionId");
 
@@ -38,9 +42,13 @@ namespace App.Migrations
                     b.Property<string>("Value")
                         .IsRequired();
 
+                    b.Property<int>("Weight");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("FromQuestionId");
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("QuizId");
 
                     b.HasIndex("QuizProgressQuizId", "QuizProgressQuestionId", "QuizProgressUserId");
 
@@ -101,7 +109,7 @@ namespace App.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("App.Models.GroupSubscribtion", b =>
+            modelBuilder.Entity("App.Models.GroupSubscription", b =>
                 {
                     b.Property<string>("UserId");
 
@@ -109,7 +117,7 @@ namespace App.Migrations
 
                     b.HasKey("UserId", "QuizGroupId");
 
-                    b.ToTable("GroupSubscribtions");
+                    b.ToTable("GroupSubscriptions");
                 });
 
             modelBuilder.Entity("App.Models.Notification", b =>
@@ -145,9 +153,11 @@ namespace App.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<bool>("IsMultiselect");
+
                     b.Property<int>("MaxAnswers");
 
-                    b.Property<int?>("QuizId");
+                    b.Property<int>("QuizId");
 
                     b.Property<string>("Value")
                         .IsRequired();
@@ -190,20 +200,7 @@ namespace App.Migrations
 
                     b.HasIndex("QuizGroupId");
 
-                    b.ToTable("Quizes");
-                });
-
-            modelBuilder.Entity("App.Models.QuizesUsers", b =>
-                {
-                    b.Property<int>("QuizId");
-
-                    b.Property<string>("UserId");
-
-                    b.HasKey("QuizId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("QuizesUsers");
+                    b.ToTable("Quizzes");
                 });
 
             modelBuilder.Entity("App.Models.QuizGroup", b =>
@@ -252,7 +249,20 @@ namespace App.Migrations
 
                     b.HasKey("UserId", "QuizId");
 
-                    b.ToTable("QuizSubscribtions");
+                    b.ToTable("QuizSubscriptions");
+                });
+
+            modelBuilder.Entity("App.Models.QuizzesUsers", b =>
+                {
+                    b.Property<int>("QuizId");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("QuizId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("QuizzesUsers");
                 });
 
             modelBuilder.Entity("App.Models.Rating", b =>
@@ -275,7 +285,7 @@ namespace App.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("QuizId");
+                    b.Property<int>("QuizId");
 
                     b.Property<DateTime>("ScoredAt");
 
@@ -439,9 +449,15 @@ namespace App.Migrations
 
             modelBuilder.Entity("App.Models.Answer", b =>
                 {
-                    b.HasOne("App.Models.Question", "FromQuestion")
+                    b.HasOne("App.Models.Question", "Question")
                         .WithMany("Answers")
-                        .HasForeignKey("FromQuestionId");
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("App.Models.Quiz", "Quiz")
+                        .WithMany()
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("App.Models.QuizProgress")
                         .WithMany("GivenAnswers")
@@ -472,33 +488,21 @@ namespace App.Migrations
 
             modelBuilder.Entity("App.Models.Question", b =>
                 {
-                    b.HasOne("App.Models.Quiz")
+                    b.HasOne("App.Models.Quiz", "Quiz")
                         .WithMany("Questions")
-                        .HasForeignKey("QuizId");
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("App.Models.Quiz", b =>
                 {
                     b.HasOne("App.Models.ApplicationUser", "Creator")
-                        .WithMany("OwnQuizes")
+                        .WithMany("OwnQuizzes")
                         .HasForeignKey("CreatorId");
 
                     b.HasOne("App.Models.QuizGroup", "QuizGroup")
-                        .WithMany("Quizes")
+                        .WithMany("Quizzes")
                         .HasForeignKey("QuizGroupId");
-                });
-
-            modelBuilder.Entity("App.Models.QuizesUsers", b =>
-                {
-                    b.HasOne("App.Models.Quiz", "Quiz")
-                        .WithMany()
-                        .HasForeignKey("QuizId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("App.Models.ApplicationUser", "User")
-                        .WithMany("TakenQuizes")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("App.Models.QuizGroup", b =>
@@ -506,6 +510,19 @@ namespace App.Migrations
                     b.HasOne("App.Models.ApplicationUser", "Owner")
                         .WithMany("OwnGroups")
                         .HasForeignKey("OwnerId");
+                });
+
+            modelBuilder.Entity("App.Models.QuizzesUsers", b =>
+                {
+                    b.HasOne("App.Models.Quiz", "Quiz")
+                        .WithMany()
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("App.Models.ApplicationUser", "User")
+                        .WithMany("TakenQuizzes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("App.Models.Rating", b =>
@@ -525,7 +542,8 @@ namespace App.Migrations
                 {
                     b.HasOne("App.Models.Quiz", "Quiz")
                         .WithMany("Scores")
-                        .HasForeignKey("QuizId");
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("App.Models.ApplicationUser", "User")
                         .WithMany("Scores")

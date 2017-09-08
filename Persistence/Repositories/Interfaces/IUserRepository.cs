@@ -5,6 +5,6 @@ namespace App.Persistence.Repositories.Interfaces
 {
   public interface IUserRepository : IRepository<ApplicationUser>
   {
-    IEnumerable<Quiz> GetUserTakenQuizzes(string userId);
+    IEnumerable<Quiz> GetUserTakenQuizzesPaged(string userId, int page, int pageSize);
   }
 }

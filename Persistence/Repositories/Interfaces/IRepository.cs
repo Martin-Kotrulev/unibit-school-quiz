@@ -17,10 +17,10 @@ namespace App.Persistence.Repositories.Interfaces
 
     IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
 
-    IEnumerable<TEntity> Paged(int page = 1, int pageSize = 10,
+    IEnumerable<TEntity> Paged(int page, int pageSize,
       Expression<Func<TEntity, bool>> predicate = null);
 
-    Task<IEnumerable<TEntity>> PagedAsync(int page = 1, int pageSize = 10,
+    Task<IEnumerable<TEntity>> PagedAsync(int page, int pageSize,
       Expression<Func<TEntity, bool>> predicate = null);
 
     void Add(TEntity entity);

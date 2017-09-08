@@ -40,6 +40,8 @@ namespace App.Services
 
     IEnumerable<Quiz> GetUserOwnQuizzes(ApplicationUser user);
 
+    IEnumerable<QuizGroup> GetUserOwnGroups(ApplicationUser user);
+
     IEnumerable<Quiz> GetUserTakenQuizzes(ApplicationUser user);
 
     Task<Question> GetQuestionWithAnswersAsync(int questionId, int quizId, string userId);
@@ -47,5 +49,7 @@ namespace App.Services
     Task<IEnumerable<int>> GetRandomQuestionsOrderAsync(int quizId);
 
     Task<Quiz> GetQuizWithPasswordAsync(int quizId, string password);
+
+    Task<bool> EnterQuizAsync(int quizId, ApplicationUser user);
   }
 }

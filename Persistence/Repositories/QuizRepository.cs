@@ -28,9 +28,9 @@ namespace App.Persistence.Repositories
         .ToListAsync();
     }
 
-    public async void MarkQuizAsTakenAsync(int quizId, string userId)
+    public void MarkQuizAsTaken(int quizId, string userId)
     {
-      await AppDbContext.QuizzesUsers.AddAsync(new QuizzesUsers() 
+      AppDbContext.QuizzesUsers.Add(new QuizzesUsers() 
       {
         QuizId = quizId,
         UserId = userId

@@ -6,8 +6,8 @@ namespace App.Persistence.Repositories.Interfaces
 {
   public interface IQuizRepository : IRepository<Quiz> 
   {
-    Task<IEnumerable<Quiz>> GetGroupQuizzesPagedAsync(int quizId, int page = 1, int pageSize = 10);
-    void MarkQuizAsTakenAsync(int quizId, string userId);
+    Task<IEnumerable<Quiz>> GetGroupQuizzesPagedAsync(int quizId, int page, int pageSize);
+    void MarkQuizAsTaken(int quizId, string userId);
     Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags);
     Task<int> GetQuizTotalScoreAsync(int quizId);
     Task<Quiz> GetQuizWithPasswordAsync(int quizId, string password);

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using App.Models;
@@ -33,6 +34,28 @@ namespace App.Persistence.Repositories
         .SelectMany(qp => qp.GivenAnswers)
         .Where(ga => ga.IsRight)
         .SumAsync(ga => ga.Weight);
+    }
+
+    public async Task AddProgressAsync(QuizProgress progress, IEnumerable<int> answersIds)
+    {
+      var existingProgress = await AppDbContext.QuizProgresses
+        .Include(qp => qp.GivenAnswers)
+        .FirstOrDefaultAsync(qp => qp.QuizId == progress.QuizId
+          && qp.QuestionId == progress.QuestionId
+          && qp.UserId == progress.UserId);
+
+      var answers = await AppDbContext.Answers
+          .Where(a => answersIds.Contains(a.Id))
+          .ToListAsync();
+
+      if (existingProgress != null)
+      {
+        existingProgress.GivenAnswers = answers;
+      }
+      else
+      {
+        progress.GivenAnswers = answers;
+      }
     }
   }
 }

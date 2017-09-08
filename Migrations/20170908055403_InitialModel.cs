@@ -24,32 +24,7 @@ namespace App.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int4", nullable: false),
-                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
-                    Email = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bool", nullable: false),
-                    LockoutEnabled = table.Column<bool>(type: "bool", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
-                    PasswordHash = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bool", nullable: false),
-                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
-                    TwoFactorEnabled = table.Column<bool>(type: "bool", nullable: false),
-                    UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GroupSubscribtions",
+                name: "GroupSubscriptions",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "text", nullable: false),
@@ -57,28 +32,25 @@ namespace App.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GroupSubscribtions", x => new { x.UserId, x.QuizGroupId });
+                    table.PrimaryKey("PK_GroupSubscriptions", x => new { x.UserId, x.QuizGroupId });
                 });
 
             migrationBuilder.CreateTable(
                 name: "QuizProgresses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int4", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    AnswerId = table.Column<int>(type: "int4", nullable: false),
-                    QuestionId = table.Column<int>(type: "int4", nullable: false),
                     QuizId = table.Column<int>(type: "int4", nullable: false),
+                    QuestionId = table.Column<int>(type: "int4", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
                     ValidTo = table.Column<DateTime>(type: "timestamp", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QuizProgresses", x => x.Id);
+                    table.PrimaryKey("PK_QuizProgresses", x => new { x.QuizId, x.QuestionId, x.UserId });
                 });
 
             migrationBuilder.CreateTable(
-                name: "QuizSubscribtions",
+                name: "QuizSubscriptions",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "text", nullable: false),
@@ -86,7 +58,7 @@ namespace App.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QuizSubscribtions", x => new { x.UserId, x.QuizId });
+                    table.PrimaryKey("PK_QuizSubscriptions", x => new { x.UserId, x.QuizId });
                 });
 
             migrationBuilder.CreateTable(
@@ -111,47 +83,6 @@ namespace App.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int4", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    ClaimType = table.Column<string>(type: "text", nullable: true),
-                    ClaimValue = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserLogins",
-                columns: table => new
-                {
-                    LoginProvider = table.Column<string>(type: "text", nullable: false),
-                    ProviderKey = table.Column<string>(type: "text", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
@@ -167,12 +98,35 @@ namespace App.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int4", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    ClaimValue = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    ProviderKey = table.Column<string>(type: "text", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
                 });
 
             migrationBuilder.CreateTable(
@@ -187,12 +141,24 @@ namespace App.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int4", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    Date = table.Column<DateTime>(type: "timestamp", nullable: false),
+                    IssuerId = table.Column<string>(type: "text", nullable: true),
+                    Message = table.Column<string>(type: "text", nullable: true),
+                    QuizGroupId = table.Column<int>(type: "int4", nullable: true),
+                    QuizId = table.Column<int>(type: "int4", nullable: true),
+                    Seen = table.Column<bool>(type: "bool", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -201,28 +167,23 @@ namespace App.Migrations
                 {
                     Id = table.Column<int>(type: "int4", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp", nullable: false),
                     Name = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
                     OwnerId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_QuizGroups", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_QuizGroups_AspNetUsers_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Quizes",
+                name: "Quizzes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int4", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    ApplicationUserId = table.Column<string>(type: "text", nullable: true),
-                    ApplicationUserId1 = table.Column<string>(type: "text", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp", nullable: false),
+                    CreatorId = table.Column<string>(type: "text", nullable: true),
                     EndDateTime = table.Column<DateTime>(type: "timestamp", nullable: false),
                     IsOneTime = table.Column<bool>(type: "bool", nullable: false),
                     Locked = table.Column<bool>(type: "bool", nullable: false),
@@ -233,23 +194,169 @@ namespace App.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Quizes", x => x.Id);
+                    table.PrimaryKey("PK_Quizzes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Quizes_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Quizes_AspNetUsers_ApplicationUserId1",
-                        column: x => x.ApplicationUserId1,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Quizes_QuizGroups_QuizGroupId",
+                        name: "FK_Quizzes_QuizGroups_QuizGroupId",
                         column: x => x.QuizGroupId,
                         principalTable: "QuizGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int4", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
+                    Email = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bool", nullable: false),
+                    LockoutEnabled = table.Column<bool>(type: "bool", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bool", nullable: false),
+                    QuizId = table.Column<int>(type: "int4", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
+                    TwoFactorEnabled = table.Column<bool>(type: "bool", nullable: false),
+                    UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Quizzes_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quizzes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Questions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int4", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    IsMultiselect = table.Column<bool>(type: "bool", nullable: false),
+                    MaxAnswers = table.Column<int>(type: "int4", nullable: false),
+                    QuizId = table.Column<int>(type: "int4", nullable: false),
+                    Value = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Questions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Questions_Quizzes_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quizzes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tags",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int4", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    Name = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
+                    QuizGroupId = table.Column<int>(type: "int4", nullable: true),
+                    QuizId = table.Column<int>(type: "int4", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tags", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tags_QuizGroups_QuizGroupId",
+                        column: x => x.QuizGroupId,
+                        principalTable: "QuizGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Tags_Quizzes_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quizzes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "QuizzesUsers",
+                columns: table => new
+                {
+                    QuizId = table.Column<int>(type: "int4", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_QuizzesUsers", x => new { x.QuizId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_QuizzesUsers_Quizzes_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quizzes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_QuizzesUsers_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Ratings",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    QuizId = table.Column<int>(type: "int4", nullable: false),
+                    Value = table.Column<double>(type: "float8", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ratings", x => new { x.UserId, x.QuizId });
+                    table.ForeignKey(
+                        name: "FK_Ratings_Quizzes_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quizzes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Ratings_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Scores",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int4", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    QuizId = table.Column<int>(type: "int4", nullable: false),
+                    ScoredAt = table.Column<DateTime>(type: "timestamp", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    Value = table.Column<double>(type: "float8", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Scores", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Scores_Quizzes_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quizzes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Scores_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -279,167 +386,58 @@ namespace App.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Notifications",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int4", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    Date = table.Column<DateTime>(type: "timestamp", nullable: false),
-                    IssuerId = table.Column<string>(type: "text", nullable: true),
-                    Message = table.Column<string>(type: "text", nullable: true),
-                    QuizGroupId = table.Column<int>(type: "int4", nullable: true),
-                    QuizId = table.Column<int>(type: "int4", nullable: true),
-                    Seen = table.Column<bool>(type: "bool", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notifications", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Notifications_AspNetUsers_IssuerId",
-                        column: x => x.IssuerId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Notifications_QuizGroups_QuizGroupId",
-                        column: x => x.QuizGroupId,
-                        principalTable: "QuizGroups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Notifications_Quizes_QuizId",
-                        column: x => x.QuizId,
-                        principalTable: "Quizes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Questions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int4", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    MaxAnswers = table.Column<int>(type: "int4", nullable: false),
-                    QuizId = table.Column<int>(type: "int4", nullable: true),
-                    Value = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Questions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Questions_Quizes_QuizId",
-                        column: x => x.QuizId,
-                        principalTable: "Quizes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Ratings",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    QuizId = table.Column<int>(type: "int4", nullable: false),
-                    Value = table.Column<double>(type: "float8", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Ratings", x => new { x.UserId, x.QuizId });
-                    table.ForeignKey(
-                        name: "FK_Ratings_Quizes_QuizId",
-                        column: x => x.QuizId,
-                        principalTable: "Quizes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Ratings_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Scores",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int4", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    QuizId = table.Column<int>(type: "int4", nullable: true),
-                    ScoredAt = table.Column<DateTime>(type: "timestamp", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: true),
-                    Value = table.Column<double>(type: "float8", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Scores", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Scores_Quizes_QuizId",
-                        column: x => x.QuizId,
-                        principalTable: "Quizes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Scores_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Tags",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int4", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    Name = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
-                    QuizGroupId = table.Column<int>(type: "int4", nullable: true),
-                    QuizId = table.Column<int>(type: "int4", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tags", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Tags_QuizGroups_QuizGroupId",
-                        column: x => x.QuizGroupId,
-                        principalTable: "QuizGroups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Tags_Quizes_QuizId",
-                        column: x => x.QuizId,
-                        principalTable: "Quizes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Answers",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int4", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    FromQuestionId = table.Column<int>(type: "int4", nullable: true),
+                    CreationOrder = table.Column<int>(type: "int4", nullable: false),
                     IsRight = table.Column<bool>(type: "bool", nullable: false),
-                    Value = table.Column<string>(type: "text", nullable: false)
+                    QuestionId = table.Column<int>(type: "int4", nullable: false),
+                    QuizId = table.Column<int>(type: "int4", nullable: false),
+                    QuizProgressQuestionId = table.Column<int>(type: "int4", nullable: true),
+                    QuizProgressQuizId = table.Column<int>(type: "int4", nullable: true),
+                    QuizProgressUserId = table.Column<string>(type: "text", nullable: true),
+                    Value = table.Column<string>(type: "text", nullable: false),
+                    Weight = table.Column<int>(type: "int4", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Answers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Answers_Questions_FromQuestionId",
-                        column: x => x.FromQuestionId,
+                        name: "FK_Answers_Questions_QuestionId",
+                        column: x => x.QuestionId,
                         principalTable: "Questions",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Answers_Quizzes_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quizzes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Answers_QuizProgresses_QuizProgressQuizId_QuizProgressQuestionId_QuizProgressUserId",
+                        columns: x => new { x.QuizProgressQuizId, x.QuizProgressQuestionId, x.QuizProgressUserId },
+                        principalTable: "QuizProgresses",
+                        principalColumns: new[] { "QuizId", "QuestionId", "UserId" },
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Answers_FromQuestionId",
+                name: "IX_Answers_QuestionId",
                 table: "Answers",
-                column: "FromQuestionId");
+                column: "QuestionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Answers_QuizId",
+                table: "Answers",
+                column: "QuizId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Answers_QuizProgressQuizId_QuizProgressQuestionId_QuizProgressUserId",
+                table: "Answers",
+                columns: new[] { "QuizProgressQuizId", "QuizProgressQuestionId", "QuizProgressUserId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -479,6 +477,11 @@ namespace App.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_QuizId",
+                table: "AspNetUsers",
+                column: "QuizId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Notifications_IssuerId",
                 table: "Notifications",
                 column: "IssuerId");
@@ -499,21 +502,6 @@ namespace App.Migrations
                 column: "QuizId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Quizes_ApplicationUserId",
-                table: "Quizes",
-                column: "ApplicationUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Quizes_ApplicationUserId1",
-                table: "Quizes",
-                column: "ApplicationUserId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Quizes_QuizGroupId",
-                table: "Quizes",
-                column: "QuizGroupId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_QuizGroups_Name",
                 table: "QuizGroups",
                 column: "Name",
@@ -523,6 +511,21 @@ namespace App.Migrations
                 name: "IX_QuizGroups_OwnerId",
                 table: "QuizGroups",
                 column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Quizzes_CreatorId",
+                table: "Quizzes",
+                column: "CreatorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Quizzes_QuizGroupId",
+                table: "Quizzes",
+                column: "QuizGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_QuizzesUsers_UserId",
+                table: "QuizzesUsers",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ratings_QuizId",
@@ -559,10 +562,86 @@ namespace App.Migrations
                 name: "IX_UsersGroups_QuizGroupId",
                 table: "UsersGroups",
                 column: "QuizGroupId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                table: "AspNetUserRoles",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                table: "AspNetUserClaims",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                table: "AspNetUserLogins",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                table: "AspNetUserTokens",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Notifications_Quizzes_QuizId",
+                table: "Notifications",
+                column: "QuizId",
+                principalTable: "Quizzes",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Notifications_AspNetUsers_IssuerId",
+                table: "Notifications",
+                column: "IssuerId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Notifications_QuizGroups_QuizGroupId",
+                table: "Notifications",
+                column: "QuizGroupId",
+                principalTable: "QuizGroups",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_QuizGroups_AspNetUsers_OwnerId",
+                table: "QuizGroups",
+                column: "OwnerId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Quizzes_AspNetUsers_CreatorId",
+                table: "Quizzes",
+                column: "CreatorId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_AspNetUsers_Quizzes_QuizId",
+                table: "AspNetUsers");
+
             migrationBuilder.DropTable(
                 name: "Answers");
 
@@ -582,16 +661,16 @@ namespace App.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "GroupSubscribtions");
+                name: "GroupSubscriptions");
 
             migrationBuilder.DropTable(
                 name: "Notifications");
 
             migrationBuilder.DropTable(
-                name: "QuizProgresses");
+                name: "QuizSubscriptions");
 
             migrationBuilder.DropTable(
-                name: "QuizSubscribtions");
+                name: "QuizzesUsers");
 
             migrationBuilder.DropTable(
                 name: "Ratings");
@@ -609,10 +688,13 @@ namespace App.Migrations
                 name: "Questions");
 
             migrationBuilder.DropTable(
+                name: "QuizProgresses");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Quizes");
+                name: "Quizzes");
 
             migrationBuilder.DropTable(
                 name: "QuizGroups");

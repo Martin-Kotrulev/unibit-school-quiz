@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using App.Config;
 using App.Models;
@@ -44,15 +45,15 @@ namespace App.Services
       _unitOfWork.Complete();
     }
 
-    public void CreateProgress(QuizProgress progress)
+    public async void CreateProgressAsync(QuizProgress progress, IEnumerable<int> answersIds)
     {
-      _unitOfWork.QuizProgresses.Add(progress);
+      await _unitOfWork.QuizProgresses.AddProgressAsync(progress, answersIds);
       _unitOfWork.Complete();
     }
 
     public void MarkQuizAsTaken(int quizId, string userId)
     {
-      _unitOfWork.Quizzes.MarkQuizAsTakenAsync(quizId, userId);
+      _unitOfWork.Quizzes.MarkQuizAsTaken(quizId, userId);
       _unitOfWork.Complete();
     }
 
@@ -138,6 +139,11 @@ namespace App.Services
       return _unitOfWork.Quizzes.Find(q => q.CreatorId == user.Id);
     }
 
+    public IEnumerable<QuizGroup> GetUserOwnGroups(ApplicationUser user)
+    {
+      return _unitOfWork.QuizGroups.Find(qg => qg.OwnerId == user.Id);
+    }
+
     public IEnumerable<Quiz> GetUserTakenQuizzes(ApplicationUser user)
     {
       return _unitOfWork.Users.GetUserTakenQuizzes(user.Id);
@@ -171,6 +177,29 @@ namespace App.Services
     public async Task<IEnumerable<int>> GetRandomQuestionsOrderAsync(int quizId)
     {
       return await _unitOfWork.Answers.GetRandomOrderForAnswerIdsAsync(quizId);
+    }
+
+    /// <summary>
+    /// Tries to add an user to particular quiz.
+    /// </summary>
+    /// <param name="quizId"></param>
+    /// <param name="user"></param>
+    /// <returns>True if success, false otherwise.</returns>
+    public async Task<bool> EnterQuizAsync(int quizId, ApplicationUser user)
+    {
+      var quiz = await _unitOfWork.Quizzes.GetAsync(quizId);
+
+      if (quiz == null)
+        return false;
+      else if (DateTime.UtcNow < quiz.StartDateTime && DateTime.UtcNow > quiz.EndDateTime)
+        return false;
+      else if (quiz.IsOneTime && quiz.Participants.Any(p => p.Id == user.Id))
+        // Checks if the user is already in this quiz
+        return false;
+
+      quiz.Participants.Add(user);
+      _unitOfWork.Complete();
+      return true;
     }
 
     public void Subscribe(QuizSubscription subscription)

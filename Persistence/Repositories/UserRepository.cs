@@ -15,14 +15,22 @@ namespace App.Persistence.Repositories
         
     }
 
-    public IEnumerable<Quiz> GetUserTakenQuizzes(string userId)
+    public IEnumerable<Quiz> GetUserTakenQuizzesPaged(string userId, int page = 1, int pageSize = 10)
     {
       var user = AppDbContext.Users
-        .Include(u => u.TakenQuizzes)
         .FirstOrDefault(u => u.Id == userId);
+      
+      var userEntry = AppDbContext.Entry(user);
 
-      return user?.TakenQuizzes
+      var takenQuizes = userEntry.Collection(ue => ue.TakenQuizzes)
+        .Query()
+        .Skip((page - 1) * pageSize)
+        .Take(pageSize)
         .Select(tq => tq.Quiz);
+      
+      takenQuizes.Load();
+
+      return takenQuizes;
     }
   }
 }

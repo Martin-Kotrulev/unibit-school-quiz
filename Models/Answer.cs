@@ -8,7 +8,7 @@ namespace App.Models
   {
     public int Id { get; set; }
 
-    public int CreationOrder { get; set; }
+    public char Letter { get; set; }
 
     [Required]
     public string Value { get; set; }
