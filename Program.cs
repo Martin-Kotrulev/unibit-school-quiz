@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using App.Extensions;
 using App.Persistence;
+using Hangfire;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -19,9 +21,8 @@ namespace App
     {
       BuildWebHost(args)
         .MigrateDatabase()
+        .RecurringJobs()
         .Run();
-
-      
     }
 
     public static IWebHost BuildWebHost(string[] args) =>

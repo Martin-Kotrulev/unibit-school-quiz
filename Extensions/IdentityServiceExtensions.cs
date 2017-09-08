@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace App.Services.Security.Extensions
+namespace App.Extensions
 {
   public static class IdentityServiceExtensions
   {

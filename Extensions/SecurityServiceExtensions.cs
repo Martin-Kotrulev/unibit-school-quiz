@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
-namespace App.Services.Security.Extensions
+namespace App.Extensions
 {
   public static class SecurityExtensions
   {

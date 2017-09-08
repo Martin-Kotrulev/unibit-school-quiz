@@ -214,6 +214,7 @@ namespace App.Services
 
     private double Difference(double upperBound, double actualScore)
     {
+      // Makes sure the difference is always 1.0 point max
       var diff = actualScore - upperBound;
       var diffByTen = diff * 10;
 

@@ -13,7 +13,9 @@ using App.Persistence.Repositories;
 using App.Persistence.Repositories.Interfaces;
 using App.Services;
 using App.Services.Security;
-using App.Services.Security.Extensions;
+using App.Extensions;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -45,6 +47,10 @@ namespace App
       services.AddDbContext<AppDbContext>(opt =>
       {
         opt.UseNpgsql(connectionString: Configuration.GetConnectionString("Default"));
+      });
+
+      services.AddHangfire(config => {
+        config.UsePostgreSqlStorage(Configuration.GetConnectionString("Default"));
       });
 
       services.AddIdentityService();
@@ -86,6 +92,8 @@ namespace App
       {
         app.UseExceptionHandler("/Home/Error");
       }
+
+      app.UseHangfireServer();
 
       app.UseStatusCodePages();
 
