@@ -9,9 +9,7 @@ namespace App.Controllers
 {
   public class ApiResponse
   {
-    public int StatusCode { get; set; }
-
-    public bool Success { get; set; } = false;
+    public bool Success { get; set; }
 
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public string Message { get; set; }
@@ -22,21 +20,23 @@ namespace App.Controllers
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public IEnumerable<string> Errors { get; set; }
 
-    public ApiResponse(int statusCode, string message = null)
+    public ApiResponse()
     {
-      StatusCode = statusCode;
-      Message = message ?? GetDefaultMessageForStatusCode(statusCode);
     }
 
-    public ApiResponse(object result, string message)
-        : this(200, message)
+    public ApiResponse(object result, string message = null)
     {
       Result = result;
       Success = true;
     }
 
+    public ApiResponse(string message, bool success = true)
+    {
+      Message = message;
+      Success = success;
+    }
+
     public ApiResponse(ModelStateDictionary modelState)
-        : this(400)
     {
       if (modelState.IsValid)
       {
@@ -50,26 +50,10 @@ namespace App.Controllers
     }
 
     public ApiResponse(IdentityResult result)
-        : this(400)
     {
       Errors = result.Errors
           .Select(e => e.Description)
           .ToArray();
-    }
-
-    private static string GetDefaultMessageForStatusCode(int statusCode)
-    {
-      switch (statusCode)
-      {
-        case 401:
-          return "Unauthorized";
-        case 404:
-          return "Resource not found";
-        case 500:
-          return "An unhandled error occurred";
-        default:
-          return null;
-      }
     }
   }
 }

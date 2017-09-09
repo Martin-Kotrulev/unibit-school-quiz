@@ -139,14 +139,14 @@ namespace App.Services
       return _unitOfWork.Quizzes.Paged(page, pageSize, q => q.CreatorId == user.Id);
     }
 
-    public IEnumerable<QuizGroup> GetUserOwnGroups(ApplicationUser user, int page = 1, int pageSize = 10)
+    public async Task<IEnumerable<QuizGroup>> GetUserOwnGroupsAsync(ApplicationUser user, int page = 1, int pageSize = 10)
     {
-      return _unitOfWork.QuizGroups.Paged(page, pageSize, qg => qg.OwnerId == user.Id);
+      return await _unitOfWork.QuizGroups.GetUserGroupsPagedAsync(user.Id, page, pageSize);
     }
 
-    public IEnumerable<Quiz> GetUserTakenQuizzes(ApplicationUser user, int page = 1, int pageSize = 10)
+    public async Task<IEnumerable<Quiz>> GetUserTakenQuizzesAsync(ApplicationUser user, int page = 1, int pageSize = 10)
     {
-      return _unitOfWork.Users.GetUserTakenQuizzesPaged(user.Id, page, pageSize);
+      return await _unitOfWork.Users.GetUserTakenQuizzesPaged(user.Id, page, pageSize);
     }
 
     public async Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(ICollection<string> tags)
@@ -200,6 +200,19 @@ namespace App.Services
       quiz.Participants.Add(user);
       _unitOfWork.Complete();
       return true;
+    }
+
+    public async Task<bool> GroupExistsAsync(QuizGroup quizGroup)
+    {
+      return await _unitOfWork.QuizGroups
+        .FirstOrDefaultAsync(g => g.Name == quizGroup.Name) != null;
+    }
+
+    public IEnumerable<Tag> CheckForExistingTags(ICollection<string> tags)
+    {
+      return _unitOfWork.Tags
+        .Find(t => tags.Contains(t.Name))
+        .ToList();
     }
 
     public void Subscribe(QuizSubscription subscription)

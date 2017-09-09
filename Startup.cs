@@ -26,6 +26,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using AutoMapper;
 
 namespace App
 {
@@ -41,20 +42,25 @@ namespace App
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+      // Custom configurations
       services.Configure<JWTSettings>(Configuration.GetSection("JWTSettings"));
       services.Configure<GradesSettings>(Configuration.GetSection("GradesSettings"));
 
+      // DbContext
       services.AddDbContext<AppDbContext>(opt =>
       {
         opt.UseNpgsql(connectionString: Configuration.GetConnectionString("Default"));
       });
 
+      // Hangfire scheduler
       services.AddHangfire(config => {
         config.UsePostgreSqlStorage(Configuration.GetConnectionString("Default"));
       });
 
+      // Identity
       services.AddIdentityService();
 
+      // Applications services
       services.AddScoped<IUnitOfWork, UnitOfWork>();
 
       services.AddTransient<IAuthenticationService, AuthenticationService>();
@@ -62,6 +68,7 @@ namespace App
 
       services.AddSecurity(config: Configuration);
 
+      // Redirection configuration
       services.ConfigureApplicationCookie(opt =>
       {
         opt.Events = new CookieAuthenticationEvents()
@@ -74,15 +81,18 @@ namespace App
         };
       });
 
+      services.AddAutoMapper();
+
       services.AddMvc();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
+      app.UseCustomExceptionHandler();
       if (env.IsDevelopment())
       {
-        app.UseDeveloperExceptionPage();
+        //app.UseDeveloperExceptionPage();
         app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
         {
           HotModuleReplacement = true
@@ -97,13 +107,14 @@ namespace App
 
       app.UseStatusCodePages();
 
-      // Redirects not found status back to root if it's not an api call
+      //Redirects not found status back to root if it's not an api call
       app.Use(async (context, next) =>
       {
         await next();
+        
         if (context.Response.StatusCode == 404 &&
-            !Path.HasExtension(context.Request.Path.Value) &&
-            !context.Request.Path.Value.StartsWith("/api/"))
+          !Path.HasExtension(context.Request.Path.Value) &&
+          !context.Request.Path.Value.StartsWith("/api/"))
         {
           context.Request.Path = "/";
           await next();

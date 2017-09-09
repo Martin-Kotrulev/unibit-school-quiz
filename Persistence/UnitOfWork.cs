@@ -52,7 +52,7 @@ namespace App.Persistence.Repositories
 
     public void Complete()
     {
-      _context.SaveChangesAsync();
+      _context.SaveChanges();
     }
 
     public async Task<int> CompleteAsync()

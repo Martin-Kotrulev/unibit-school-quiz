@@ -28,23 +28,27 @@ namespace App.Services
 
     IEnumerable<Answer> GetAnswersForIds(ICollection<int> ids);
 
-    IEnumerable<QuizGroup> GetQuizGroups(int page, int pageSize);
+    IEnumerable<QuizGroup> GetQuizGroups(int page = 1, int pageSize = 10);
 
     Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(ICollection<string> tags);
 
-    IEnumerable<Quiz> GetQuizzes(int page, int pageSize);
+    IEnumerable<Quiz> GetQuizzes(int page = 1, int pageSize = 10);
 
     Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags);
 
-    Task<IEnumerable<Quiz>> GetGroupQuizzesAsync(int quizGroupId, int page, int pageSize);
+    Task<IEnumerable<Quiz>> GetGroupQuizzesAsync(int quizGroupId, int page = 1, int pageSize = 10);
 
-    IEnumerable<Quiz> GetUserOwnQuizzes(ApplicationUser user, int page, int pageSize);
+    IEnumerable<Quiz> GetUserOwnQuizzes(ApplicationUser user, int page = 1, int pageSize = 10);
 
-    IEnumerable<QuizGroup> GetUserOwnGroups(ApplicationUser user, int page, int pageSize);
+    Task<IEnumerable<QuizGroup>> GetUserOwnGroupsAsync(ApplicationUser user, int page = 1, int pageSize = 10);
 
-    IEnumerable<Quiz> GetUserTakenQuizzes(ApplicationUser user, int page, int pageSize);
+    Task<bool> GroupExistsAsync(QuizGroup quizGroup);
+
+    Task<IEnumerable<Quiz>> GetUserTakenQuizzesAsync(ApplicationUser user, int page = 1, int pageSize = 10);
 
     Task<Question> GetQuestionWithAnswersAsync(int questionId, int quizId, string userId);
+
+    IEnumerable<Tag> CheckForExistingTags(ICollection<string> tags);
 
     Task<IEnumerable<int>> GetRandomQuestionsOrderAsync(int quizId);
 

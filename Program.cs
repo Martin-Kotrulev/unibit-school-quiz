@@ -20,8 +20,8 @@ namespace App
     public static void Main(string[] args)
     {
       BuildWebHost(args)
-        .MigrateDatabase()
-        .RecurringJobs()
+        //.MigrateDatabase()
+        //.RecurringJobs()
         .Run();
     }
 
@@ -40,7 +40,7 @@ namespace App
             var services = scope.ServiceProvider;
             var dbContext = services.GetRequiredService<AppDbContext>();
 
-            dbContext.Database.Migrate();
+            //dbContext.Database.Migrate();
         }
 
         return webHost;

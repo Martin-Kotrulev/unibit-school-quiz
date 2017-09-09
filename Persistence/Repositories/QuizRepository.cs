@@ -40,8 +40,9 @@ namespace App.Persistence.Repositories
     public async Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags)
     {
       return await AppDbContext.Quizzes
+        .Include(q => q.Tags)
         .Where(q => q.Tags
-          .Select(t => t.Name)
+          .Select(t => t.Tag.Name)
           .Any(t => tags.Contains(t))
         )
         .ToListAsync();

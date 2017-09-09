@@ -15,13 +15,19 @@ namespace App.Persistence.Repositories.Interfaces
 
     Task<IEnumerable<TEntity>> GetAllAsync();
 
+    TEntity FirstOrDefault(Expression<Func<TEntity, bool>> predicate);
+
+    Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate);
+
     IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
 
     IEnumerable<TEntity> Paged(int page, int pageSize,
-      Expression<Func<TEntity, bool>> predicate = null);
+      Expression<Func<TEntity, bool>> predicate = null,
+      params string[] includes);
 
     Task<IEnumerable<TEntity>> PagedAsync(int page, int pageSize,
-      Expression<Func<TEntity, bool>> predicate = null);
+      Expression<Func<TEntity, bool>> predicate = null,
+      params string[] includes);
 
     void Add(TEntity entity);
 

@@ -62,6 +62,19 @@ namespace App.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Tags",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int4", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    Name = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tags", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -177,6 +190,30 @@ namespace App.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GroupsTags",
+                columns: table => new
+                {
+                    GroupId = table.Column<int>(type: "int4", nullable: false),
+                    TagId = table.Column<int>(type: "int4", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GroupsTags", x => new { x.GroupId, x.TagId });
+                    table.ForeignKey(
+                        name: "FK_GroupsTags_QuizGroups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "QuizGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GroupsTags_Tags_TagId",
+                        column: x => x.TagId,
+                        principalTable: "Tags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Quizzes",
                 columns: table => new
                 {
@@ -258,30 +295,27 @@ namespace App.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tags",
+                name: "QuizzesTags",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int4", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    Name = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
-                    QuizGroupId = table.Column<int>(type: "int4", nullable: true),
-                    QuizId = table.Column<int>(type: "int4", nullable: true)
+                    QuizId = table.Column<int>(type: "int4", nullable: false),
+                    TagId = table.Column<int>(type: "int4", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tags", x => x.Id);
+                    table.PrimaryKey("PK_QuizzesTags", x => new { x.QuizId, x.TagId });
                     table.ForeignKey(
-                        name: "FK_Tags_QuizGroups_QuizGroupId",
-                        column: x => x.QuizGroupId,
-                        principalTable: "QuizGroups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Tags_Quizzes_QuizId",
+                        name: "FK_QuizzesTags_Quizzes_QuizId",
                         column: x => x.QuizId,
                         principalTable: "Quizzes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_QuizzesTags_Tags_TagId",
+                        column: x => x.TagId,
+                        principalTable: "Tags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -391,8 +425,8 @@ namespace App.Migrations
                 {
                     Id = table.Column<int>(type: "int4", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    CreationOrder = table.Column<int>(type: "int4", nullable: false),
                     IsRight = table.Column<bool>(type: "bool", nullable: false),
+                    Letter = table.Column<char>(type: "text", nullable: false),
                     QuestionId = table.Column<int>(type: "int4", nullable: false),
                     QuizId = table.Column<int>(type: "int4", nullable: false),
                     QuizProgressQuestionId = table.Column<int>(type: "int4", nullable: true),
@@ -482,6 +516,11 @@ namespace App.Migrations
                 column: "QuizId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_GroupsTags_TagId",
+                table: "GroupsTags",
+                column: "TagId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Notifications_IssuerId",
                 table: "Notifications",
                 column: "IssuerId");
@@ -523,6 +562,11 @@ namespace App.Migrations
                 column: "QuizGroupId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_QuizzesTags_TagId",
+                table: "QuizzesTags",
+                column: "TagId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_QuizzesUsers_UserId",
                 table: "QuizzesUsers",
                 column: "UserId");
@@ -547,16 +591,6 @@ namespace App.Migrations
                 table: "Tags",
                 column: "Name",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tags_QuizGroupId",
-                table: "Tags",
-                column: "QuizGroupId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tags_QuizId",
-                table: "Tags",
-                column: "QuizId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UsersGroups_QuizGroupId",
@@ -661,6 +695,9 @@ namespace App.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "GroupsTags");
+
+            migrationBuilder.DropTable(
                 name: "GroupSubscriptions");
 
             migrationBuilder.DropTable(
@@ -670,6 +707,9 @@ namespace App.Migrations
                 name: "QuizSubscriptions");
 
             migrationBuilder.DropTable(
+                name: "QuizzesTags");
+
+            migrationBuilder.DropTable(
                 name: "QuizzesUsers");
 
             migrationBuilder.DropTable(
@@ -677,9 +717,6 @@ namespace App.Migrations
 
             migrationBuilder.DropTable(
                 name: "Scores");
-
-            migrationBuilder.DropTable(
-                name: "Tags");
 
             migrationBuilder.DropTable(
                 name: "UsersGroups");
@@ -692,6 +729,9 @@ namespace App.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Tags");
 
             migrationBuilder.DropTable(
                 name: "Quizzes");

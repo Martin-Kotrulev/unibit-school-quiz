@@ -20,10 +20,23 @@ namespace App.Persistence.Repositories
     public async Task<IEnumerable<QuizGroup>> SearchQuizGroupByTagsAsync(ICollection<string> tags)
     {
       return await AppDbContext.QuizGroups
+        .Include(qg => qg.Tags)
         .Where(qg => qg.Tags
-          .Select(t => t.Name)
+          .Select(t => t.Tag.Name)
           .Any(t => tags.Contains(t))
         )
+        .ToListAsync();
+    }
+
+    public async Task<IEnumerable<QuizGroup>> GetUserGroupsPagedAsync(string userId, int page = 1, int pageSize = 10)
+    {
+      return await AppDbContext.QuizGroups
+        .Include(qg => qg.Tags)
+          .ThenInclude(t => t.Tag)
+        .Where(qg => qg.OwnerId == userId)
+        .OrderByDescending(qg => qg.CreatedOn)
+        .Skip((page - 1) * pageSize)
+        .Take(pageSize)
         .ToListAsync();
     }
   }

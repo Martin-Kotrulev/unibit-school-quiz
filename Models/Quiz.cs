@@ -34,7 +34,7 @@ namespace App.Models
     
     public ApplicationUser Creator { get; set; }
 
-    public ICollection<Tag> Tags { get; set; }
+    public ICollection<QuizzesTags> Tags { get; set; }
 
     public ICollection<Question> Questions { get; set; }
 
@@ -44,7 +44,7 @@ namespace App.Models
 
     public Quiz()
     {
-      Tags = new HashSet<Tag>();
+      Tags = new HashSet<QuizzesTags>();
       Questions = new HashSet<Question>();
       Scores = new HashSet<Score>();
       Participants = new HashSet<ApplicationUser>();

@@ -22,13 +22,13 @@ namespace App.Models
 
     public ICollection<UsersGroups> Members { get; set; }
 
-    public ICollection<Tag> Tags { get; set; }
+    public ICollection<GroupsTags> Tags { get; set; }
 
     public QuizGroup()
     {
       Quizzes = new HashSet<Quiz>();
       Members = new HashSet<UsersGroups>();
-      Tags = new HashSet<Tag>();
+      Tags = new HashSet<GroupsTags>();
     }
   }
 }

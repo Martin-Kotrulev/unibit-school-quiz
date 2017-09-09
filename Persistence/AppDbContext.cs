@@ -32,6 +32,10 @@ namespace App.Persistence
 
 		public DbSet<QuizzesUsers> QuizzesUsers { get; set; }
 
+		public DbSet<GroupsTags> GroupsTags { get; set; }
+
+		public DbSet<QuizzesTags> QuizzesTags { get; set; }
+
 		public AppDbContext(DbContextOptions options) 
 			: base(options)
 		{
@@ -63,6 +67,12 @@ namespace App.Persistence
 
 				modelBuilder.Entity<QuizzesUsers>()
 					.HasKey(qu => new { qu.QuizId, qu.UserId });
+
+				modelBuilder.Entity<QuizzesTags>()
+					.HasKey(qu => new { qu.QuizId, qu.TagId });
+
+				modelBuilder.Entity<GroupsTags>()
+					.HasKey(qu => new { qu.GroupId, qu.TagId });
 
 				modelBuilder.Entity<ApplicationUser>()
 					.HasMany(u => u.OwnQuizzes)

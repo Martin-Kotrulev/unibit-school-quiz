@@ -14,18 +14,18 @@ using Newtonsoft.Json;
 namespace App.Controllers
 {
   [Route("api/[controller]")]
-  public class AccountController : Controller
+  public class UsersController : Controller
   {
     private readonly IAuthenticationService _authService;
-    public AccountController(IAuthenticationService authService)
+
+    public UsersController(IAuthenticationService authService)
     {
       _authService = authService;
     }
 
-    [HttpPost]
+    [HttpPost("[action]")]
     [AllowAnonymous]
-    [Route("[action]")]
-    public async Task<IActionResult> Register([FromBody] CredentialsResource credentials)
+    public async Task<IActionResult> SignUp([FromBody] CredentialsResource credentials)
     {
       if (ModelState.IsValid)
       {
@@ -36,7 +36,8 @@ namespace App.Controllers
         {
           var token = await _authService.SignInUserAsync(credentials);
 
-          return Ok(new ApiResponse(
+          return Ok(new ApiResponse
+          (
               token,
               $"User '{token.User}' registered successfully."
           ));
@@ -48,7 +49,7 @@ namespace App.Controllers
       return BadRequest(new ApiResponse(ModelState));
     }
 
-    [HttpPost("login")]
+    [HttpPost("[action]")]
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] CredentialsResource credentials)
     {
@@ -68,14 +69,6 @@ namespace App.Controllers
       }
 
       return BadRequest(new ApiResponse(ModelState));
-    }
-
-    [HttpGet("hello")]
-    [Authorize]
-    public async Task<IActionResult> Hello() {
-      var user = await _authService.GetAuthenticatedUser(User);
-
-      return Ok(user.Email);
     }
   }
 }
