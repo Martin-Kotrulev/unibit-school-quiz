@@ -36,6 +36,8 @@ namespace App.Persistence
 
 		public DbSet<QuizzesTags> QuizzesTags { get; set; }
 
+		public DbSet<ProgressesAnswers> ProgressesAnswers { get; set; }
+
 		public AppDbContext(DbContextOptions options) 
 			: base(options)
 		{
@@ -50,7 +52,16 @@ namespace App.Persistence
 					.IsUnique();
 
 				modelBuilder.Entity<QuizGroup>()
+					.HasMany(qg => qg.Quizzes)
+					.WithOne(q => q.QuizGroup)
+					.OnDelete(DeleteBehavior.Cascade);
+				
+				modelBuilder.Entity<QuizGroup>()
 					.HasIndex(qg => qg.Name)
+					.IsUnique();
+				
+				modelBuilder.Entity<Quiz>()
+					.HasIndex(qg => qg.Title)
 					.IsUnique();
 
 				modelBuilder.Entity<UsersGroups>()
@@ -73,6 +84,14 @@ namespace App.Persistence
 
 				modelBuilder.Entity<GroupsTags>()
 					.HasKey(qu => new { qu.GroupId, qu.TagId });
+
+				modelBuilder.Entity<ProgressesAnswers>()
+					.HasKey(qu => new { qu.ProgressId, qu.AnswerId });
+
+				modelBuilder.Entity<QuizProgress>()
+					.HasMany(qp => qp.GivenAnswers)
+					.WithOne(ga => ga.Progress)
+					.OnDelete(DeleteBehavior.Cascade);
 
 				modelBuilder.Entity<ApplicationUser>()
 					.HasMany(u => u.OwnQuizzes)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using App.Controllers;
 using App.Controllers.Resources;
@@ -35,12 +36,11 @@ namespace App.Controllers
 
     [HttpPost("[action]")]
     [Authorize]
-    public async Task<IActionResult> Create([FromBody] QuizGroupResource quizGroupResource)
+    public async Task<IActionResult> Add([FromBody] QuizGroupResource quizGroupResource)
     {
       if (ModelState.IsValid)
       {
         var user = await _authenticationService.GetAuthenticatedUser(User);
-
         var quizGroup = _mapper.Map<QuizGroupResource, QuizGroup>(quizGroupResource);
 
         if (await _quizService.GroupExistsAsync(quizGroup))
@@ -88,16 +88,64 @@ namespace App.Controllers
       return BadRequest(new ApiResponse(ModelState));
     }
 
-    [HttpGet("[action]")]
-    public IActionResult All([FromQuery] int page, [FromQuery] string search)
+    [HttpPost("{id}/[action]")]
+    public IActionResult Delete(int id)
     {
-      System.Console.WriteLine(page);
-      return Ok();
+      bool deleted = _quizService.DeleteQuizGroup(id);
+
+      if (deleted)
+      {
+        return Ok(new ApiResponse("You successfully deleteted the quiz group."));
+      }
+      else
+      {
+        return BadRequest(new ApiResponse("The quiz group does not exists.", deleted));
+      }
+    }
+
+    [HttpGet("[action]")]
+    public async Task<IActionResult> All([FromQuery] string search, [FromQuery] int page = 1)
+    {
+      search = search ?? "";
+      ICollection<QuizGroupResource> quizGroups;
+      if (search.Contains("*"))
+      {
+        var searchTags = Regex
+          .Matches(search, @"\*(\w+)")
+          .Select(m => m.Groups[1].Value)
+          .ToList();
+
+        if (searchTags.Count() != 0)
+        {
+          quizGroups = _mapper
+            .Map<IEnumerable<QuizGroup>, ICollection<QuizGroupResource>>(
+              await _quizService.SearchQuizGroupsByTagsAsync(searchTags, page)
+            );
+
+          return Ok(new ApiResponse(quizGroups));
+        }
+      }
+
+      quizGroups = _mapper
+        .Map<IEnumerable<QuizGroup>, ICollection<QuizGroupResource>>(
+          await _quizService.GetGroupsAsync(page, search: search));
+
+      return Ok(new ApiResponse(quizGroups));
+    }
+
+    [HttpGet("{id}/quizzes/all")]
+    public async Task<IActionResult> ListGroupQuizzesAsync(int id, [FromQuery] int page = 1)
+    {
+      var groupQuizzes = _mapper
+        .Map<IEnumerable<Quiz>, ICollection<QuizResource>>(
+          await _quizService.GetGroupQuizzesAsync(id, page));
+
+      return Ok(new ApiResponse(groupQuizzes));
     }
 
     [Authorize]
     [HttpGet("[action]")]
-    public async Task<IActionResult> Mine([FromQuery] int page)
+    public async Task<IActionResult> Mine([FromQuery] int page = 1)
     {
       var user = await _authenticationService.GetAuthenticatedUser(User);
 
@@ -107,7 +155,5 @@ namespace App.Controllers
 
       return Ok(new ApiResponse(userGroups));
     }
-
-    
   }
 }

@@ -11,9 +11,10 @@ using System;
 namespace App.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170910063755_UniqueQuizTitles")]
+    partial class UniqueQuizTitles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,6 +34,12 @@ namespace App.Migrations
 
                     b.Property<int>("QuizId");
 
+                    b.Property<int?>("QuizProgressQuestionId");
+
+                    b.Property<int?>("QuizProgressQuizId");
+
+                    b.Property<string>("QuizProgressUserId");
+
                     b.Property<string>("Value")
                         .IsRequired();
 
@@ -43,6 +50,8 @@ namespace App.Migrations
                     b.HasIndex("QuestionId");
 
                     b.HasIndex("QuizId");
+
+                    b.HasIndex("QuizProgressQuizId", "QuizProgressQuestionId", "QuizProgressUserId");
 
                     b.ToTable("Answers");
                 });
@@ -151,27 +160,6 @@ namespace App.Migrations
                     b.HasIndex("QuizId");
 
                     b.ToTable("Notifications");
-                });
-
-            modelBuilder.Entity("App.Models.ProgressesAnswers", b =>
-                {
-                    b.Property<int>("ProgressId");
-
-                    b.Property<int>("AnswerId");
-
-                    b.Property<int?>("ProgressQuestionId");
-
-                    b.Property<int?>("ProgressQuizId");
-
-                    b.Property<string>("ProgressUserId");
-
-                    b.HasKey("ProgressId", "AnswerId");
-
-                    b.HasIndex("AnswerId");
-
-                    b.HasIndex("ProgressQuizId", "ProgressQuestionId", "ProgressUserId");
-
-                    b.ToTable("ProgressesAnswers");
                 });
 
             modelBuilder.Entity("App.Models.Question", b =>
@@ -492,6 +480,10 @@ namespace App.Migrations
                         .WithMany()
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("App.Models.QuizProgress")
+                        .WithMany("GivenAnswers")
+                        .HasForeignKey("QuizProgressQuizId", "QuizProgressQuestionId", "QuizProgressUserId");
                 });
 
             modelBuilder.Entity("App.Models.ApplicationUser", b =>
@@ -529,19 +521,6 @@ namespace App.Migrations
                         .HasForeignKey("QuizId");
                 });
 
-            modelBuilder.Entity("App.Models.ProgressesAnswers", b =>
-                {
-                    b.HasOne("App.Models.Answer", "Answer")
-                        .WithMany()
-                        .HasForeignKey("AnswerId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("App.Models.QuizProgress", "Progress")
-                        .WithMany("GivenAnswers")
-                        .HasForeignKey("ProgressQuizId", "ProgressQuestionId", "ProgressUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("App.Models.Question", b =>
                 {
                     b.HasOne("App.Models.Quiz", "Quiz")
@@ -558,8 +537,7 @@ namespace App.Migrations
 
                     b.HasOne("App.Models.QuizGroup", "QuizGroup")
                         .WithMany("Quizzes")
-                        .HasForeignKey("QuizGroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("QuizGroupId");
                 });
 
             modelBuilder.Entity("App.Models.QuizGroup", b =>

@@ -28,13 +28,13 @@ namespace App.Services
 
     IEnumerable<Answer> GetAnswersForIds(ICollection<int> ids);
 
-    IEnumerable<QuizGroup> GetQuizGroups(int page = 1, int pageSize = 10);
+    Task<IEnumerable<QuizGroup>> GetGroupsAsync(int page = 1, int pageSize = 10, string search = "");
 
-    Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(ICollection<string> tags);
+    Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(ICollection<string> tags, int page = 1, int pageSize = 10);
 
-    IEnumerable<Quiz> GetQuizzes(int page = 1, int pageSize = 10);
+    Task<IEnumerable<Quiz>> GetQuizzesAsync(int page = 1, int pageSize = 10, string search = "");
 
-    Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags);
+    Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags, int page = 1, int pageSize = 10);
 
     Task<IEnumerable<Quiz>> GetGroupQuizzesAsync(int quizGroupId, int page = 1, int pageSize = 10);
 
@@ -55,5 +55,11 @@ namespace App.Services
     Task<Quiz> GetQuizWithPasswordAsync(int quizId, string password);
 
     Task<bool> EnterQuizAsync(int quizId, ApplicationUser user);
+
+    Task<bool> QuizExistsAsync(Quiz quiz);
+
+    bool DeleteQuiz(int id);
+    
+    bool DeleteQuizGroup(int id);
   }
 }

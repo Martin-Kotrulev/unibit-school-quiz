@@ -6,10 +6,18 @@ namespace App.Persistence.Repositories.Interfaces
 {
   public interface IQuizRepository : IRepository<Quiz> 
   {
-    Task<IEnumerable<Quiz>> GetGroupQuizzesPagedAsync(int quizId, int page, int pageSize);
     void MarkQuizAsTaken(int quizId, string userId);
+
     Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags);
+
     Task<int> GetQuizTotalScoreAsync(int quizId);
+
     Task<Quiz> GetQuizWithPasswordAsync(int quizId, string password);
+
+    Task<IEnumerable<Quiz>> GetGroupQuizzesPagedAsync(int quizGroupId, int page = 1, int pageSize = 10);
+
+    Task<IEnumerable<Quiz>> GetQuizzesPagedBySearchAsync(int page = 1, int pageSize = 10, string search = "");
+
+    Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags, int page = 1, int pageSize = 10);
   }
 }

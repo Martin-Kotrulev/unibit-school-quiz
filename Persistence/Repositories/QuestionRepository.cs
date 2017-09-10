@@ -24,7 +24,7 @@ namespace App.Persistence.Repositories
 
       question.Answers = question.Answers
         .Select(a => {
-          if (progress.GivenAnswers.Contains(a))
+          if (progress.GivenAnswers.Select(ga => ga.Answer.Id).Contains(a.Id))
             a.IsSelected = true; 
           return a;
         })

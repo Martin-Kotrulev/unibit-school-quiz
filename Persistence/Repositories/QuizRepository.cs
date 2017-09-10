@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using App.Controllers.Resources;
 using App.Models;
 using App.Persistence.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -16,16 +18,6 @@ namespace App.Persistence.Repositories
       : base(context)
     {
         
-    }
-
-    public async Task<IEnumerable<Quiz>> GetGroupQuizzesPagedAsync(int quizId, int page = 1, int pageSize = 10)
-    {
-      return await AppDbContext.Quizzes
-        .Where(q => q.QuizGroupId != null && q.QuizGroupId == quizId)
-        .OrderBy(q => q.CreatedOn)
-        .Skip((page - 1) * pageSize)
-        .Take(pageSize)
-        .ToListAsync();
     }
 
     public void MarkQuizAsTaken(int quizId, string userId)
@@ -59,6 +51,37 @@ namespace App.Persistence.Repositories
     {
       return await AppDbContext.Quizzes
         .FirstOrDefaultAsync(q => q.Id == quizId && q.Password == password);
+    }
+
+    public async Task<IEnumerable<Quiz>> GetGroupQuizzesPagedAsync(int quizGroupId, int page = 1, int pageSize = 10)
+    {
+      return await ApplyPaging(q => q.QuizGroupId == quizGroupId, page, pageSize);
+    }
+
+    public async Task<IEnumerable<Quiz>> GetQuizzesPagedBySearchAsync(int page, int pageSize, string search = "")
+    {
+       return await ApplyPaging(qg =>
+        qg.Title.ToLowerInvariant().Contains(search.ToLowerInvariant()),
+        page, pageSize);
+    }
+
+    public async Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags, int page = 1, int pageSize = 10)
+    {
+      return await ApplyPaging(qg =>
+        qg.Tags.Select(t => t.Tag.Name).Any(t => tags.Contains(t)),
+        page, pageSize);
+    }
+
+    private async Task<IEnumerable<Quiz>> ApplyPaging(Expression<Func<Quiz, bool>> predicate, int page, int pageSize)
+    {
+      return await AppDbContext.Quizzes
+        .Include(qg => qg.Tags)
+          .ThenInclude(t => t.Tag)
+        .Where(predicate)
+        .OrderByDescending(qg => qg.CreatedOn)
+        .Skip((page - 1) * pageSize)
+        .Take(pageSize)
+        .ToListAsync();
     }
   }
 }

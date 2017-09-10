@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace App.Models
+namespace App.Controllers.Resources
 {
-  public class QuizProgress
+  public class ProgressResource
   {
     [Required]
     public string UserId { get; set; }
@@ -15,14 +15,14 @@ namespace App.Models
     [Required]
     public int QuestionId { get; set; }
 
-    public ICollection<ProgressesAnswers> GivenAnswers { get; set; }
+    public ICollection<int> GivenAnswers { get; set; }
 
     [Required]
     public DateTime ValidTo { get; set; }
 
-    public QuizProgress()
+    public ProgressResource()
     {
-        this.GivenAnswers = new HashSet<ProgressesAnswers>();
+      this.GivenAnswers = new HashSet<int>();
     }
   }
 }

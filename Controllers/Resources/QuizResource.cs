@@ -23,7 +23,11 @@ namespace App.Controllers.Resources
 
     public bool Locked { get; set; } = false;
 
+    public string Password { get; set; }
+
     public string CreatorId { get; set; }
+
+    public int? QuizGroupId { get; set; }
 
     public ICollection<string> Tags { get; set; }
 

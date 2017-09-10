@@ -21,7 +21,6 @@ namespace App.Models
 
     public bool IsOneTime { get; set; } = false;
 
-    [JsonIgnore]
     public string Password { get; set; }
 
     public bool Locked { get; set; } = false;

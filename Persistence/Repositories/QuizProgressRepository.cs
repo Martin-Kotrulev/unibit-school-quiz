@@ -31,9 +31,10 @@ namespace App.Persistence.Repositories
       return await AppDbContext.QuizProgresses
         .Where(qp => qp.UserId == userId && qp.QuizId == quizId)
         .Include(qp => qp.GivenAnswers)
-        .SelectMany(qp => qp.GivenAnswers)
-        .Where(ga => ga.IsRight)
-        .SumAsync(ga => ga.Weight);
+          .ThenInclude(ga => ga.Answer)
+        .SelectMany(qp => qp.GivenAnswers
+          .Where(ga => ga.Answer.IsRight))
+        .SumAsync(ga => ga.Answer.Weight);
     }
 
     public async Task AddProgressAsync(QuizProgress progress, IEnumerable<int> answersIds)
@@ -50,11 +51,29 @@ namespace App.Persistence.Repositories
 
       if (existingProgress != null)
       {
-        existingProgress.GivenAnswers = answers;
+        foreach (var a in answers)
+        {
+          existingProgress.GivenAnswers.Add(
+            new ProgressesAnswers()
+            {
+              Answer = a,
+              Progress = existingProgress
+            }
+          );
+        }
       }
       else
       {
-        progress.GivenAnswers = answers;
+        foreach (var a in answers)
+        {
+          progress.GivenAnswers.Add(
+            new ProgressesAnswers()
+            {
+              Answer = a,
+              Progress = existingProgress
+            }
+          );
+        }
       }
     }
   }

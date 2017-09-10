@@ -15,7 +15,8 @@ namespace App.Services
 
     private readonly GradesSettings _gradesSettings;
 
-    public QuizService(IUnitOfWork unitOfWork, IOptions<GradesSettings> optionsAccessor)
+    public QuizService(IUnitOfWork unitOfWork, 
+      IOptions<GradesSettings> optionsAccessor)
     {
       _unitOfWork = unitOfWork;
       _gradesSettings = optionsAccessor.Value;
@@ -45,9 +46,11 @@ namespace App.Services
       _unitOfWork.Complete();
     }
 
-    public async void CreateProgressAsync(QuizProgress progress, IEnumerable<int> answersIds)
+    public async void CreateProgressAsync(
+        QuizProgress progress, IEnumerable<int> answersIds)
     {
-      await _unitOfWork.QuizProgresses.AddProgressAsync(progress, answersIds);
+      await _unitOfWork.QuizProgresses
+        .AddProgressAsync(progress, answersIds);
       _unitOfWork.Complete();
     }
 
@@ -57,9 +60,11 @@ namespace App.Services
       _unitOfWork.Complete();
     }
 
-    public async void ScoreUserAsync(ApplicationUser user, int quizId, ICollection<int> answersIds)
+    public async void ScoreUserAsync(
+        ApplicationUser user, int quizId, ICollection<int> answersIds)
     {
-      var totalScore = await _unitOfWork.Quizzes.GetQuizTotalScoreAsync(quizId);
+      var totalScore = await _unitOfWork.Quizzes
+        .GetQuizTotalScoreAsync(quizId);
 
       var userScore = await _unitOfWork.QuizProgresses
         .GetProgressAnswersWeightSumAsync(user.Id, quizId);
@@ -81,9 +86,11 @@ namespace App.Services
       return _unitOfWork.Answers.Find(a => ids.Contains(a.Id));
     }
 
-    public async Task<IEnumerable<Quiz>> GetGroupQuizzesAsync(int quizGroupId, int page = 1, int pageSize = 10)
+    public async Task<IEnumerable<Quiz>> GetGroupQuizzesAsync(
+      int quizGroupId, int page = 1, int pageSize = 10)
     {
-      return await _unitOfWork.Quizzes.GetGroupQuizzesPagedAsync(quizGroupId, page, pageSize);
+      return await _unitOfWork.Quizzes
+        .GetGroupQuizzesPagedAsync(quizGroupId, page, pageSize);
     }
 
     /// <summary>
@@ -93,7 +100,8 @@ namespace App.Services
     /// <param name="quizId"></param>
     /// <param name="userId"></param>
     /// <returns>Question by Id or Question with added progress.</returns>
-    public async Task<Question> GetQuestionWithAnswersAsync(int questionId, int quizId, string userId)
+    public async Task<Question> GetQuestionWithAnswersAsync(
+      int questionId, int quizId, string userId)
     {
       var progress = await _unitOfWork.QuizProgresses
         .FindQuizProgressAsync(quizId, questionId, userId);
@@ -116,42 +124,56 @@ namespace App.Services
     /// <returns></returns>
     public async Task<IEnumerable<Question>> GetQuestionsAsync(int quizId)
     {
-      return await _unitOfWork.Questions.GetQuestionsForQuizAsync(quizId);
+      return await _unitOfWork.Questions
+        .GetQuestionsForQuizAsync(quizId);
     }
 
-    public IEnumerable<QuizGroup> GetQuizGroups(int page = 1, int pageSize = 10)
+    public async Task<IEnumerable<QuizGroup>> GetGroupsAsync(
+      int page = 1, int pageSize = 10, string search = "")
     {
-      return _unitOfWork.QuizGroups.Paged(page, pageSize);
+      return await _unitOfWork.QuizGroups
+        .GetGroupsPagedBySearchAsync(page, pageSize, search);
     }
 
-    public IEnumerable<Quiz> GetQuizzes(int page = 1, int pageSize = 10)
+    public async Task<IEnumerable<Quiz>> GetQuizzesAsync(
+      int page = 1, int pageSize = 10, string search = "")
     {
-      return _unitOfWork.Quizzes.Paged(page, pageSize);
+      return await _unitOfWork.Quizzes
+        .GetQuizzesPagedBySearchAsync(page, pageSize, search);
     }
 
     public async Task<Quiz> GetQuizWithPasswordAsync(int quizId, string password)
     {
-      return await _unitOfWork.Quizzes.GetQuizWithPasswordAsync(quizId, password);
+      return await _unitOfWork.Quizzes
+        .GetQuizWithPasswordAsync(quizId, password);
     }
 
-    public IEnumerable<Quiz> GetUserOwnQuizzes(ApplicationUser user, int page = 1, int pageSize = 10)
+    public IEnumerable<Quiz> GetUserOwnQuizzes(
+      ApplicationUser user, int page = 1, int pageSize = 10)
     {
-      return _unitOfWork.Quizzes.Paged(page, pageSize, q => q.CreatorId == user.Id);
+      return _unitOfWork.Quizzes
+        .Paged(page, pageSize, q => q.CreatorId == user.Id);
     }
 
-    public async Task<IEnumerable<QuizGroup>> GetUserOwnGroupsAsync(ApplicationUser user, int page = 1, int pageSize = 10)
+    public async Task<IEnumerable<QuizGroup>> GetUserOwnGroupsAsync(
+      ApplicationUser user, int page = 1, int pageSize = 10)
     {
-      return await _unitOfWork.QuizGroups.GetUserGroupsPagedAsync(user.Id, page, pageSize);
+      return await _unitOfWork.QuizGroups
+        .GetUserGroupsPagedAsync(user.Id, page, pageSize);
     }
 
-    public async Task<IEnumerable<Quiz>> GetUserTakenQuizzesAsync(ApplicationUser user, int page = 1, int pageSize = 10)
+    public async Task<IEnumerable<Quiz>> GetUserTakenQuizzesAsync(
+      ApplicationUser user, int page = 1, int pageSize = 10)
     {
-      return await _unitOfWork.Users.GetUserTakenQuizzesPaged(user.Id, page, pageSize);
+      return await _unitOfWork.Users
+        .GetUserTakenQuizzesPaged(user.Id, page, pageSize);
     }
 
-    public async Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(ICollection<string> tags)
+    public async Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(
+      ICollection<string> tags, int page = 1, int pageSize = 10)
     {
-      return await _unitOfWork.QuizGroups.SearchQuizGroupByTagsAsync(tags);
+      return await _unitOfWork.QuizGroups
+        .SearchQuizGroupByTagsAsync(tags, page, pageSize);
     }
 
     public IEnumerable<QuizGroup> SearchQuizGroupByName(string name)
@@ -162,9 +184,11 @@ namespace App.Services
         );
     }
 
-    public async Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags)
+    public async Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(
+      ICollection<string> tags, int page = 1, int pageSize = 10)
     {
-      return await _unitOfWork.Quizzes.SearchQuizzesByTagsAsync(tags);
+      return await _unitOfWork.Quizzes
+        .SearchQuizzesByTagsAsync(tags);
     }
 
     public IEnumerable<Quiz> SearchQuizzesByName(string title)
@@ -176,7 +200,8 @@ namespace App.Services
 
     public async Task<IEnumerable<int>> GetRandomQuestionsOrderAsync(int quizId)
     {
-      return await _unitOfWork.Answers.GetRandomOrderForAnswerIdsAsync(quizId);
+      return await _unitOfWork.Answers
+        .GetRandomOrderForAnswerIdsAsync(quizId);
     }
 
     /// <summary>
@@ -208,11 +233,45 @@ namespace App.Services
         .FirstOrDefaultAsync(g => g.Name == quizGroup.Name) != null;
     }
 
+    public async Task<bool> QuizExistsAsync(Quiz quiz)
+    {
+      return await _unitOfWork.Quizzes
+        .FirstOrDefaultAsync(q => q.Title == quiz.Title) != null;
+    }
+
     public IEnumerable<Tag> CheckForExistingTags(ICollection<string> tags)
     {
       return _unitOfWork.Tags
         .Find(t => tags.Contains(t.Name))
         .ToList();
+    }
+
+    public bool DeleteQuiz(int id)
+    {
+      var quiz = _unitOfWork.Quizzes.Get(id);
+
+      if (quiz != null)
+      {
+        _unitOfWork.Quizzes.Remove(quiz);
+        _unitOfWork.Complete();
+        return true;
+      }
+      
+      return false;
+    }
+
+    public bool DeleteQuizGroup(int id)
+    {
+      var quizGroup = _unitOfWork.QuizGroups.Get(id);
+
+      if (quizGroup != null)
+      {
+        _unitOfWork.QuizGroups.Remove(quizGroup);
+        _unitOfWork.Complete();
+        return true;
+      }
+      
+      return false;
     }
 
     public void Subscribe(QuizSubscription subscription)
