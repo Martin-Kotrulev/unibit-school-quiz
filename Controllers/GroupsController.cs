@@ -89,17 +89,18 @@ namespace App.Controllers
     }
 
     [HttpPost("{id}/[action]")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> DeleteAsync(int id)
     {
-      bool deleted = _quizService.DeleteQuizGroup(id);
+      var user = await _authenticationService.GetAuthenticatedUser(User);
 
-      if (deleted)
+      if (_quizService.DeleteQuizGroup(id, user.Id))
       {
         return Ok(new ApiResponse("You successfully deleteted the quiz group."));
       }
       else
       {
-        return BadRequest(new ApiResponse("The quiz group does not exists.", deleted));
+        return BadRequest(
+          new ApiResponse("Quiz group does not exist, or you are not the owner.", false));
       }
     }
 

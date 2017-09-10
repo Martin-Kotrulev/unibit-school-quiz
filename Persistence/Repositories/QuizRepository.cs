@@ -72,5 +72,12 @@ namespace App.Persistence.Repositories
         .Take(pageSize)
         .ToListAsync();
     }
+
+    public Task<Quiz> GetQuizWithParticipantsAsync(int quizId)
+    {
+      return AppDbContext.Quizzes
+        .Include(q => q.Password)
+        .FirstOrDefaultAsync(q => q.Id == quizId);
+    }
   }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Api.Controllers;
 using App.Controllers;
 using App.Controllers.Resources;
 using App.Models;
@@ -74,7 +75,7 @@ namespace App.Controllers
 
         _quizService.CreateQuiz(quiz);
 
-        return Ok(new ApiResponse("You successfully added a new quiz."));
+        return Ok(new ApiResponse("You have successfully added a new quiz."));
       }
       else
       {
@@ -93,7 +94,7 @@ namespace App.Controllers
 
         _quizService.CreateQuestion(question);
 
-        return Ok(new ApiResponse("You successfully created a new question."));
+        return Ok(new ApiResponse("You have successfully created a new question."));
       }
       else
       {
@@ -103,16 +104,48 @@ namespace App.Controllers
 
     [HttpPost("{id}/delete")]
     [Authorize]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> DeleteAsync(int id)
     {
-      return Ok();
+      var user = await _authenticationService.GetAuthenticatedUser(User);
+      if (_quizService.DeleteQuiz(id, user.Id))
+      {
+        return Ok(new ApiResponse("You have successfully deleted the quiz."));
+      }
+      else
+      {
+        return BadRequest(new ApiResponse("Quiz does not exist, or you are not the owner.", false));
+      }
     }
 
     [HttpPost("{id}/enter")]
     [Authorize]
-    public IActionResult Enter(int id)
+    public async Task<IActionResult> EnterAsync(int id)
     {
-      return Ok();
+      var user = await _authenticationService.GetAuthenticatedUser(User);
+      var state = await _quizService.EnterQuizAsync(id, user);
+      
+      ApiResponse res = new ApiResponse() { Success = false };
+      switch (state)
+      {
+        case QuizEnum.Ended:
+          res.Message = "Quiz is already over.";
+          break;
+        case QuizEnum.NotStarted:
+          res.Message = "Quiz has not started yet.";
+          break;
+        case QuizEnum.NotExistent:
+          res.Message = "Quiz does not exist.";
+          break;
+        case QuizEnum.StillTaking:
+          res.Message = "You are already taking this quiz.";
+          break;
+        case QuizEnum.Enter:
+          res.Message = "You successfully entered the quiz.";
+          res.Success = true;
+          return Ok(res);
+      }
+
+      return BadRequest(res);
     }
 
     [HttpGet("[action]")]

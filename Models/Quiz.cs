@@ -39,14 +39,14 @@ namespace App.Models
 
     public ICollection<Score> Scores { get; set; }
 
-    public ICollection<ApplicationUser> Participants { get; set; }
+    public ICollection<QuizzesUsers> Participants { get; set; }
 
     public Quiz()
     {
       Tags = new HashSet<QuizzesTags>();
       Questions = new HashSet<Question>();
       Scores = new HashSet<Score>();
-      Participants = new HashSet<ApplicationUser>();
+      Participants = new HashSet<QuizzesUsers>();
     }
   }
 }

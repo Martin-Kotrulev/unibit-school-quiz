@@ -17,5 +17,7 @@ namespace App.Persistence.Repositories.Interfaces
     Task<IEnumerable<Quiz>> GetQuizzesPagedBySearchAsync(int page = 1, int pageSize = 10, string search = "");
 
     Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags, int page = 1, int pageSize = 10);
+
+    Task<Quiz> GetQuizWithParticipantsAsync(int quizId);
   }
 }

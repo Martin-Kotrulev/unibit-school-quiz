@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Api.Controllers;
 using App.Config;
 using App.Models;
 using App.Persistence.Repositories.Interfaces;
@@ -183,6 +184,7 @@ namespace App.Services
         .SearchQuizzesByTagsAsync(tags, page, pageSize);
     }
 
+
     public async Task<IEnumerable<int>> GetRandomQuestionsOrderAsync(int quizId)
     {
       return await _unitOfWork.Answers
@@ -195,21 +197,23 @@ namespace App.Services
     /// <param name="quizId"></param>
     /// <param name="user"></param>
     /// <returns>True if success, false otherwise.</returns>
-    public async Task<bool> EnterQuizAsync(int quizId, ApplicationUser user)
+    public async Task<QuizEnum> EnterQuizAsync(int quizId, ApplicationUser user)
     {
-      var quiz = await _unitOfWork.Quizzes.GetAsync(quizId);
+      var quiz = await _unitOfWork.Quizzes.GetQuizWithParticipantsAsync(quizId);
 
       if (quiz == null)
-        return false;
-      else if (DateTime.UtcNow < quiz.StartDateTime && DateTime.UtcNow > quiz.EndDateTime)
-        return false;
+        return QuizEnum.NotExistent;
+      else if (DateTime.UtcNow < quiz.StartDateTime)
+        return QuizEnum.NotStarted;
+      else if (DateTime.UtcNow > quiz.EndDateTime)
+        return QuizEnum.Ended;
       else if (quiz.IsOneTime && quiz.Participants.Any(p => p.Id == user.Id))
         // Checks if the user is already in this quiz
-        return false;
+        return QuizEnum.StillTaking;
 
       quiz.Participants.Add(user);
       _unitOfWork.Complete();
-      return true;
+      return QuizEnum.Enter;
     }
 
     public async Task<bool> GroupExistsAsync(QuizGroup quizGroup)
@@ -231,9 +235,12 @@ namespace App.Services
         .ToList();
     }
 
-    public bool DeleteQuiz(int id)
+    public bool DeleteQuiz(int id, string userId)
     {
       var quiz = _unitOfWork.Quizzes.Get(id);
+
+      if (quiz.CreatorId != userId)
+        return false;
 
       if (quiz != null)
       {
@@ -245,9 +252,12 @@ namespace App.Services
       return false;
     }
 
-    public bool DeleteQuizGroup(int id)
+    public bool DeleteQuizGroup(int id, string userId)
     {
       var quizGroup = _unitOfWork.QuizGroups.Get(id);
+
+      if (quizGroup.OwnerId != userId)
+        return false;
 
       if (quizGroup != null)
       {

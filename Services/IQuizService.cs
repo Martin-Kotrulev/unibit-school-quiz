@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Api.Controllers;
 using App.Models;
 
 namespace App.Services
@@ -54,13 +55,13 @@ namespace App.Services
 
     Task<Quiz> GetQuizWithPasswordAsync(int quizId, string password);
 
-    Task<bool> EnterQuizAsync(int quizId, ApplicationUser user);
+    Task<QuizEnum> EnterQuizAsync(int quizId, ApplicationUser user);
 
     Task<bool> QuizExistsAsync(Quiz quiz);
 
-    bool DeleteQuiz(int id);
+    bool DeleteQuiz(int id, string userId);
     
-    bool DeleteQuizGroup(int id);
+    bool DeleteQuizGroup(int id, string userId);
 
   }
 }
