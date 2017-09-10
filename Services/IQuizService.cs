@@ -61,5 +61,6 @@ namespace App.Services
     bool DeleteQuiz(int id);
     
     bool DeleteQuizGroup(int id);
+
   }
 }

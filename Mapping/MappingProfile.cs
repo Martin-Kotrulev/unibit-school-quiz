@@ -20,7 +20,8 @@ namespace Api.Mapping
         .ForMember(q => q.Scores, opt => opt.Ignore())
         .ForMember(q => q.Participants, opt => opt.Ignore())
         .ForMember(q => q.Tags, opt =>
-          opt.MapFrom(q => q.Tags.Select(t => t.Tag.Name)));
+          opt.MapFrom(q => 
+            q.Tags.Select(t => t.Tag.Name ?? "")));
 
       CreateMap<Question, QuestionResource>()
         .ForMember(q => q.Answers, opt =>

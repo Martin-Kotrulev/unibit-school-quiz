@@ -8,8 +8,6 @@ namespace App.Persistence.Repositories.Interfaces
   {
     void MarkQuizAsTaken(int quizId, string userId);
 
-    Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags);
-
     Task<int> GetQuizTotalScoreAsync(int quizId);
 
     Task<Quiz> GetQuizWithPasswordAsync(int quizId, string password);

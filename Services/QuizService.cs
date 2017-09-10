@@ -176,26 +176,11 @@ namespace App.Services
         .SearchQuizGroupByTagsAsync(tags, page, pageSize);
     }
 
-    public IEnumerable<QuizGroup> SearchQuizGroupByName(string name)
-    {
-      return _unitOfWork.QuizGroups
-        .Find(qg => qg.Name.ToLowerInvariant()
-          .Contains(name.ToLowerInvariant())
-        );
-    }
-
     public async Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(
       ICollection<string> tags, int page = 1, int pageSize = 10)
     {
       return await _unitOfWork.Quizzes
-        .SearchQuizzesByTagsAsync(tags);
-    }
-
-    public IEnumerable<Quiz> SearchQuizzesByName(string title)
-    {
-      return _unitOfWork.Quizzes.Find(q => q.Title.ToLowerInvariant()
-        .Contains(title.ToLowerInvariant())
-      );
+        .SearchQuizzesByTagsAsync(tags, page, pageSize);
     }
 
     public async Task<IEnumerable<int>> GetRandomQuestionsOrderAsync(int quizId)

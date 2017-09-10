@@ -120,6 +120,7 @@ namespace App.Controllers
     {
       search = search ?? "";
       ICollection<QuizResource> quizzes;
+      System.Console.WriteLine(search);
       if (search.Contains("*"))
       {
         var searchTags = Regex

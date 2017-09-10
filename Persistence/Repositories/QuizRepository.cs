@@ -29,17 +29,6 @@ namespace App.Persistence.Repositories
       });
     }
 
-    public async Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags)
-    {
-      return await AppDbContext.Quizzes
-        .Include(q => q.Tags)
-        .Where(q => q.Tags
-          .Select(t => t.Tag.Name)
-          .Any(t => tags.Contains(t))
-        )
-        .ToListAsync();
-    }
-
     public async Task<int> GetQuizTotalScoreAsync(int quizId)
     {
       return await AppDbContext.Answers
@@ -58,7 +47,7 @@ namespace App.Persistence.Repositories
       return await ApplyPaging(q => q.QuizGroupId == quizGroupId, page, pageSize);
     }
 
-    public async Task<IEnumerable<Quiz>> GetQuizzesPagedBySearchAsync(int page, int pageSize, string search = "")
+    public async Task<IEnumerable<Quiz>> GetQuizzesPagedBySearchAsync(int page = 1, int pageSize = 10, string search = "")
     {
        return await ApplyPaging(qg =>
         qg.Title.ToLowerInvariant().Contains(search.ToLowerInvariant()),
@@ -68,7 +57,7 @@ namespace App.Persistence.Repositories
     public async Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags, int page = 1, int pageSize = 10)
     {
       return await ApplyPaging(qg =>
-        qg.Tags.Select(t => t.Tag.Name).Any(t => tags.Contains(t)),
+        qg.Tags.Select(t => t.Tag.Name).Any(n => tags.Contains(n)),
         page, pageSize);
     }
 
