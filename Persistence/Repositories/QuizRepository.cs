@@ -45,7 +45,7 @@ namespace App.Persistence.Repositories
     public async Task<IEnumerable<Quiz>> GetGroupQuizzesPagedAsync(
       int quizGroupId, int page = 1, int pageSize = 10)
     {
-      return await ApplyPaging(q => q.QuizGroupId == quizGroupId, page, pageSize);
+      return await ApplyPaging(q => q.GroupId == quizGroupId, page, pageSize);
     }
 
     public async Task<IEnumerable<Quiz>> GetQuizzesPagedBySearchAsync(

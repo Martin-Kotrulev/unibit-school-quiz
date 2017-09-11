@@ -6,7 +6,6 @@ namespace App.Controllers.Resources
 {
   public class ProgressResource
   {
-    [Required]
     public string UserId { get; set; }
 
     [Required]

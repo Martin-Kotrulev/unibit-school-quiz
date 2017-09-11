@@ -12,7 +12,7 @@ namespace App.Persistence.Repositories.Interfaces
     Task<IEnumerable<Question>> GetQuestionsForQuizAsync(int quizId);
 
     Task<IEnumerable<Question>> GetUserQuizQuestionsAsync(int quizId);
-    
-    Task<Question> GetQuestionWithAnswersAsync(int questionId);
+
+    Task<bool> UserOwnQuestionAsync(int questionId, string userId);
   }
 }

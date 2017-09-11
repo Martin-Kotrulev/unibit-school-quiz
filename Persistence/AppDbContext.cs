@@ -53,7 +53,7 @@ namespace App.Persistence
 
 				modelBuilder.Entity<QuizGroup>()
 					.HasMany(qg => qg.Quizzes)
-					.WithOne(q => q.QuizGroup)
+					.WithOne(q => q.Group)
 					.OnDelete(DeleteBehavior.Cascade);
 				
 				modelBuilder.Entity<QuizGroup>()

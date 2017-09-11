@@ -19,7 +19,7 @@ namespace App.Controllers.Resources
 
     public DateTime Ends { get; set; }
 
-    public bool IsOneTime { get; set; } = false;
+    public bool Once { get; set; } = false;
 
     public bool Locked { get; set; } = false;
 
@@ -27,7 +27,7 @@ namespace App.Controllers.Resources
 
     public string CreatorId { get; set; }
 
-    public int? QuizGroupId { get; set; }
+    public int? GroupId { get; set; }
 
     public ICollection<string> Tags { get; set; }
 

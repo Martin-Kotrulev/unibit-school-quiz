@@ -15,8 +15,6 @@ namespace App.Services
 
     void CreateAnswer(Answer answer);
 
-    void CreateProgressAsync(QuizProgress progress, IEnumerable<int> answersIds);
-
     void ScoreUserAsync(ApplicationUser user, int quizId, ICollection<int> answersIds);
 
     void MarkQuizAsTaken(int quizId, string userId);
@@ -25,31 +23,42 @@ namespace App.Services
 
     void Subscribe(GroupSubscription subscription);
 
+    Task CreateProgressAsync(QuizProgress progress, IEnumerable<int> answersIds);
+
     Task<IEnumerable<Question>> GetQuestionsAsync(int quizId, string userId);
 
     IEnumerable<Answer> GetAnswersForIds(ICollection<int> ids);
 
-    Task<IEnumerable<QuizGroup>> GetGroupsAsync(int page = 1, int pageSize = 10, string search = "");
+    Task<IEnumerable<QuizGroup>> GetGroupsAsync(
+      int page = 1, int pageSize = 10, string search = "");
 
-    Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(ICollection<string> tags, int page = 1, int pageSize = 10);
+    Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(
+      ICollection<string> tags, int page = 1, int pageSize = 10);
 
-    Task<IEnumerable<Quiz>> GetQuizzesAsync(int page = 1, int pageSize = 10, string search = "");
+    Task<IEnumerable<Quiz>> GetQuizzesAsync(
+      int page = 1, int pageSize = 10, string search = "");
 
-    Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags, int page = 1, int pageSize = 10);
+    Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(
+      ICollection<string> tags, int page = 1, int pageSize = 10);
 
-    Task<IEnumerable<Quiz>> GetGroupQuizzesAsync(int quizGroupId, int page = 1, int pageSize = 10);
+    Task<IEnumerable<Quiz>> GetGroupQuizzesAsync(
+      int quizGroupId, int page = 1, int pageSize = 10);
 
     IEnumerable<Quiz> GetUserOwnQuizzes(ApplicationUser user, int page = 1, int pageSize = 10);
 
-    Task<IEnumerable<QuizGroup>> GetUserOwnGroupsAsync(string userId, int page = 1, int pageSize = 10);
+    Task<IEnumerable<QuizGroup>> GetUserOwnGroupsAsync(
+      string userId, int page = 1, int pageSize = 10);
 
     Task<bool> GroupExistsAsync(QuizGroup quizGroup);
 
-    Task<IEnumerable<Quiz>> GetUserTakenQuizzesAsync(ApplicationUser user, int page = 1, int pageSize = 10);
+    Task<IEnumerable<Quiz>> GetUserTakenQuizzesAsync(
+      ApplicationUser user, int page = 1, int pageSize = 10);
 
     IEnumerable<Tag> CheckForExistingTags(ICollection<string> tags);
 
     Task<IEnumerable<int>> GetRandomQuestionsOrderAsync(int quizId);
+
+    Task<bool> UserOwnQuestionAsync(int questionId, string userId);
 
     Task<Quiz> GetQuizWithPasswordAsync(int quizId, string password);
 
@@ -60,6 +69,11 @@ namespace App.Services
     bool DeleteQuiz(int id, string userId);
     
     bool DeleteQuizGroup(int id, string userId);
+
     bool UserCanAddQuestion(int quizId, string userId);
+
+    Task<bool> DeleteAnswerAsync(int answerId);
+
+    bool DeleteQuestion(int id);
   }
 }

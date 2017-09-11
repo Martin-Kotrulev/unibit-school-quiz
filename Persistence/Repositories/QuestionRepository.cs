@@ -75,19 +75,11 @@ namespace App.Persistence.Repositories
       return questions;
     }
 
-    public async Task<Question> GetQuestionWithAnswersAsync(int questionId)
+    public async Task<bool> UserOwnQuestionAsync(int questionId, string userId)
     {
-      var rnd = new Random();
-      var question = await AppDbContext.Questions
-        .Include(q => q.Answers)
-        .OrderBy(q => rnd.Next())
-        .FirstOrDefaultAsync(q => q.Id == questionId);
-
-      question.Answers = question.Answers
-        .OrderBy(a => rnd.Next())
-        .ToList();
-
-      return question;
+      return await AppDbContext.Questions
+        .Include(q => q.Quiz)
+        .FirstOrDefaultAsync(q => q.Id == questionId && q.Quiz.CreatorId == userId) != null;
     }
   }
 }

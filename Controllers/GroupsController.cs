@@ -81,7 +81,7 @@ namespace App.Controllers
         _quizService.CreateGroup(quizGroup);
 
         return Ok(new ApiResponse(
-          $"You successfully created a new group with name { quizGroup.Name }"
+          $"You successfully created a new group with name '{ quizGroup.Name }'"
         ));
       }
 

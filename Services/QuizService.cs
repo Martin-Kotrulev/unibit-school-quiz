@@ -43,18 +43,18 @@ namespace App.Services
 
     public void CreateAnswer(Answer answer)
     {
-      _unitOfWork.Answers.AddAnswer(answer);
+      _unitOfWork.Answers.AddAnswerAsync(answer);
       _unitOfWork.Complete();
     }
 
-    public bool DeleteAnswer(int answerId)
+    public async Task<bool> DeleteAnswerAsync(int answerId)
     {
-      _unitOfWork.Answers.DeleteAnswer(answerId);
+      var deleted = await _unitOfWork.Answers.DeleteAnswerAsync(answerId);
       _unitOfWork.Complete();
-      return true;
+      return deleted;
     }
 
-    public async void CreateProgressAsync(
+    public async Task CreateProgressAsync(
         QuizProgress progress, IEnumerable<int> answersIds)
     {
       await _unitOfWork.QuizProgresses
@@ -207,7 +207,7 @@ namespace App.Services
         return QuizEnum.NotStarted;
       else if (DateTime.UtcNow > quiz.Ends)
         return QuizEnum.Ended;
-      else if (quiz.IsOneTime && inQuiz)
+      else if (quiz.Once && inQuiz)
         return QuizEnum.StillTaking;
       else if (inQuiz)
         return QuizEnum.Enter;
@@ -257,22 +257,34 @@ namespace App.Services
     {
       var quizGroup = _unitOfWork.QuizGroups.Get(id);
 
-      if (quizGroup.OwnerId != userId)
+      if (quizGroup == null || quizGroup.OwnerId != userId)
         return false;
 
-      if (quizGroup != null)
-      {
-        _unitOfWork.QuizGroups.Remove(quizGroup);
-        _unitOfWork.Complete();
-        return true;
-      }
-      
-      return false;
+      _unitOfWork.QuizGroups.Remove(quizGroup);
+      _unitOfWork.Complete();
+      return true;
+    }
+
+    public bool DeleteQuestion(int id)
+    {
+      var question = _unitOfWork.Questions.Get(id);
+
+      if (question == null)
+        return false;
+
+      _unitOfWork.Questions.Remove(question);
+      _unitOfWork.Complete();
+      return true;
     }
 
     public bool UserCanAddQuestion(int quizId, string userId)
     {
       return _unitOfWork.Quizzes.UserIsQuizCreator(quizId, userId);
+    }
+
+    public Task<bool> UserOwnQuestionAsync(int questionId, string userId)
+    {
+      return _unitOfWork.Questions.UserOwnQuestionAsync(questionId, userId);
     }
 
     public void Subscribe(QuizSubscription subscription)

@@ -21,7 +21,7 @@ namespace Api.Mapping
         .ForMember(q => q.Participants, opt => opt.Ignore())
         .ForMember(q => q.Tags, opt =>
           opt.MapFrom(q => 
-            q.Tags.Select(t => t.Tag.Name ?? "")));
+            q.Tags.Select(t => t.Tag.Name)));
 
       CreateMap<Question, QuestionResource>()
         .ForMember(q => q.Answers, opt =>
@@ -41,6 +41,7 @@ namespace Api.Mapping
         .ForMember(qr => qr.Participants, opt => opt.Ignore());
 
       CreateMap<ProgressResource, QuizProgress>()
+        .ForMember(pr => pr.UserId, opt => opt.Ignore())
         .ForMember(pr => pr.GivenAnswers, opt => opt.Ignore());
 
       CreateMap<QuestionResource, Question>()

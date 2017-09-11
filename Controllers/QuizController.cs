@@ -77,10 +77,8 @@ namespace App.Controllers
 
         return Ok(new ApiResponse("You have successfully added a new quiz."));
       }
-      else
-      {
-        return BadRequest(new ApiResponse(ModelState));
-      }
+      
+      return BadRequest(new ApiResponse(ModelState));
     }
 
     [HttpPost("{id}/questions/add")]
@@ -107,10 +105,8 @@ namespace App.Controllers
         
         return Ok(new ApiResponse("You have successfully created a new question."));
       }
-      else
-      {
-        return BadRequest(new ApiResponse(ModelState));
-      }
+
+      return BadRequest(new ApiResponse(ModelState));
     }
 
     [HttpPost("{id}/[action]")]
@@ -122,10 +118,8 @@ namespace App.Controllers
       {
         return Ok(new ApiResponse("You have successfully deleted the quiz."));
       }
-      else
-      {
-        return BadRequest(new ApiResponse("Quiz does not exist, or you are not the owner.", false));
-      }
+
+      return BadRequest(new ApiResponse("Quiz does not exist, or you are not the owner.", false));
     }
 
     [HttpPost("{id}/enter")]
@@ -158,6 +152,20 @@ namespace App.Controllers
       }
 
       return BadRequest(res);
+    }
+
+    [HttpPost("progress")]
+    public async Task<IActionResult> AddProgressAsync([FromBody] ProgressResource progressResource)
+    {
+      if (ModelState.IsValid)
+      {
+        var userId = _authenticationService.GetAuthenticatedUserId(User);
+        var progress = _mapper.Map<ProgressResource, QuizProgress>(progressResource);
+        await _quizService.CreateProgressAsync(progress, progressResource.GivenAnswers);
+        return Ok();
+      }
+      
+      return BadRequest(new ApiResponse(ModelState));
     }
 
     [HttpGet("[action]")]

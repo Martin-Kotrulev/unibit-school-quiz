@@ -27,16 +27,16 @@ namespace App.Persistence.Repositories
         .ToListAsync();
     }
 
-    public void AddAnswer(Answer answer)
+    public async Task AddAnswerAsync(Answer answer)
     {
-      var question = AppDbContext.Questions
-        .FirstOrDefault(q => q.Id == answer.QuestionId);
+      var question = await AppDbContext.Questions
+        .FirstOrDefaultAsync(q => q.Id == answer.QuestionId);
 
       var entry = AppDbContext.Entry(question);
-      entry.Collection(e => e.Answers)
+      await entry.Collection(e => e.Answers)
         .Query()
         .OrderBy(a => a.Letter)
-        .Load();
+        .LoadAsync();
 
       char letter = 'a';
       question.Answers = question.Answers
@@ -49,9 +49,33 @@ namespace App.Persistence.Repositories
       question.Answers.Add(answer);
     }
 
-    public void DeleteAnswer(int answerId)
+    public async Task<bool> DeleteAnswerAsync(int answerId)
     {
-      throw new NotImplementedException();
+      var answer = await AppDbContext.Answers
+        .FirstOrDefaultAsync(a => a.Id == answerId);
+
+      if (answer != null)
+      {
+        var question = await AppDbContext.Questions
+          .FirstOrDefaultAsync(q => q.Id == answer.QuestionId);
+
+        var entry = AppDbContext.Entry(question);
+        await entry.Collection(e => e.Answers)
+          .Query()
+          .OrderBy(a => a.Letter)
+          .LoadAsync();
+
+        char letter = 'a';
+        question.Answers = question.Answers
+          .Select(a => {a.Letter = letter++; return a;})
+          .ToList();
+        
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     }
   }
 }

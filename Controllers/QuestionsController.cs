@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using App.Controllers.Resources;
 using App.Models;
 using App.Services;
@@ -22,39 +23,65 @@ namespace App.Controllers
       this._quizService = quizService;
     }
 
-		[HttpPost("{id}/delete")]
-		public IActionResult Delete(int id)
-		{
-			return Ok();
-		}
+    [HttpPost("{id}/delete")]
+    public async Task<IActionResult> DeleteAsync(int id)
+    {
+      var userId = _authenticationService.GetAuthenticatedUserId(User);
+			var ownQuestion = await _quizService.UserOwnQuestionAsync(id, userId);
 
-		[HttpPost("{id}/answers/add")]
-		public IActionResult AddAnswerForQuestion(int id, [FromBody] AnswerResource answerResource)
-		{
-			var answer = _mapper.Map<AnswerResource, Answer>(answerResource);
-			var userId = _authenticationService.GetAuthenticatedUserId(User);
-			if (_quizService.UserCanAddQuestion(id, userId))
+			if (ownQuestion)
 			{
-				answer.QuizId = id;
-				_quizService.CreateAnswer(answer);
-				return Ok();
+				var deleted = _quizService.DeleteQuestion(id);
+
+				if (!deleted)
+					return BadRequest(new ApiResponse("Question does not exist.", false));
+				
+				return Ok("You successfully deleted the question.");
 			}
+
+			return BadRequest(new ApiResponse("You can't delete other users questions.", false));
+    }
+
+    [HttpPost("{id}/answers/add")]
+    public IActionResult AddAnswerForQuestion(int id, [FromBody] AnswerResource answerResource)
+    {
+      var answer = _mapper.Map<AnswerResource, Answer>(answerResource);
+      var userId = _authenticationService.GetAuthenticatedUserId(User);
+
+      if (ModelState.IsValid)
+      {
+        if (_quizService.UserCanAddQuestion(id, userId))
+        {
+          answer.QuizId = id;
+          _quizService.CreateAnswer(answer);
+          return Ok(new ApiResponse("You successfully added a new answer."));
+        }
+        else
+          return BadRequest(new ApiResponse(
+						"You can't add answers to other users questions.", false));
+      }
 			else
-			{
-				return BadRequest(new ApiResponse("You can't add answers to other users questions."));
-			}
-		}
+				return BadRequest(new ApiResponse(ModelState));
 
-		[HttpPost("progress")]
-		public IActionResult AddProgress([FromBody] ProgressResource progress)
-		{
-			return Ok();
-		}
+    }
 
-		[HttpGet("{id}/answers/all")]
-		public IActionResult AllQuestionAnswers(int id)
-		{
-			return Ok();
-		}
+    [HttpPost("{questionId}/answers/{answerId}/delete")]
+    public async Task<IActionResult> DeleteAnswerFromQuestionAsync(int questionId, int answerId)
+    {
+      var userId = _authenticationService.GetAuthenticatedUserId(User);
+			var ownQuestion = await _quizService.UserOwnQuestionAsync(questionId, userId);
+
+      if (ownQuestion)
+      {
+        var deleted = await _quizService.DeleteAnswerAsync(answerId);
+        if (deleted)
+          return Ok(new ApiResponse("You successfully deleted an answer."));
+        else
+          return BadRequest(new ApiResponse("You successfully deleted an answer.", deleted));
+      }
+      else
+        return BadRequest(new ApiResponse(
+					"You can't delete answers from other users questions.", false));
+    }
   }
 }

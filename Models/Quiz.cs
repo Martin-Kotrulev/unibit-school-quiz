@@ -19,15 +19,15 @@ namespace App.Models
 
     public DateTime Ends { get; set; }
 
-    public bool IsOneTime { get; set; } = false;
+    public bool Once { get; set; } = false;
 
     public string Password { get; set; }
 
     public bool Locked { get; set; } = false;
 
-    public int? QuizGroupId { get; set; }
+    public int? GroupId { get; set; }
 
-    public QuizGroup QuizGroup { get; set; }
+    public QuizGroup Group { get; set; }
 
     public string CreatorId { get; set; }
     
