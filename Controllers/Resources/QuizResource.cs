@@ -15,9 +15,9 @@ namespace App.Controllers.Resources
 
     public DateTime CreatedOn { get; set; }
 
-    public DateTime StartDateTime { get; set; }
+    public DateTime Starts { get; set; }
 
-    public DateTime EndDateTime { get; set; }
+    public DateTime Ends { get; set; }
 
     public bool IsOneTime { get; set; } = false;
 

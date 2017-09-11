@@ -38,6 +38,11 @@ namespace App.Services.Security
       return await _userManager.GetUserAsync(principal);
     }
 
+    public string GetAuthenticatedUserId(ClaimsPrincipal principal)
+    {
+      return _userManager.GetUserId(principal);
+    }
+
     public async Task<IdentityResult> RegisterUserAsync(ApplicationUser user, string password)
     {
       return await _userManager.CreateAsync(user, password);

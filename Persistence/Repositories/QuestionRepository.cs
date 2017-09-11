@@ -52,15 +52,34 @@ namespace App.Persistence.Repositories
       return questions;
     }
 
+    public async Task<IEnumerable<Question>> GetUserQuizQuestionsAsync(int quizId)
+    {
+      var questions = await AppDbContext.Questions
+        .Include(q => q.Answers)
+        .Where(q => q.QuizId == quizId)
+        .OrderBy(q => q.Id)
+        .ToListAsync();
+
+      foreach (var q in questions) 
+      {
+        q.Answers = q.Answers
+          .OrderBy(a => a.Id)
+          .ToList();
+      }
+
+      return questions;
+    }
+
     public async Task<Question> GetQuestionWithAnswersAsync(int questionId)
     {
       var rnd = new Random();
       var question = await AppDbContext.Questions
         .Include(q => q.Answers)
+        .OrderBy(q => rnd.Next())
         .FirstOrDefaultAsync(q => q.Id == questionId);
 
       question.Answers = question.Answers
-        .OrderBy(x => rnd.Next())
+        .OrderBy(a => rnd.Next())
         .ToList();
 
       return question;

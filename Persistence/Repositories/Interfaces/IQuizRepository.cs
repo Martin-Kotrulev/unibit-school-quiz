@@ -19,5 +19,6 @@ namespace App.Persistence.Repositories.Interfaces
     Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags, int page = 1, int pageSize = 10);
 
     Task<Quiz> GetQuizWithParticipantsAsync(int quizId);
+    bool UserIsQuizCreator(int quizId, string userId);
   }
 }

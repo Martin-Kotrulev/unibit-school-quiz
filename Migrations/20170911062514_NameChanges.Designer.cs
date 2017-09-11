@@ -11,8 +11,8 @@ using System;
 namespace App.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20170910075125_CascadeQuizDeletion")]
-    partial class CascadeQuizDeletion
+    [Migration("20170911062514_NameChanges")]
+    partial class NameChanges
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -34,12 +34,6 @@ namespace App.Migrations
 
                     b.Property<int>("QuizId");
 
-                    b.Property<int?>("QuizProgressQuestionId");
-
-                    b.Property<int?>("QuizProgressQuizId");
-
-                    b.Property<string>("QuizProgressUserId");
-
                     b.Property<string>("Value")
                         .IsRequired();
 
@@ -50,8 +44,6 @@ namespace App.Migrations
                     b.HasIndex("QuestionId");
 
                     b.HasIndex("QuizId");
-
-                    b.HasIndex("QuizProgressQuizId", "QuizProgressQuestionId", "QuizProgressUserId");
 
                     b.ToTable("Answers");
                 });
@@ -87,8 +79,6 @@ namespace App.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed");
 
-                    b.Property<int?>("QuizId");
-
                     b.Property<string>("SecurityStamp");
 
                     b.Property<bool>("TwoFactorEnabled");
@@ -104,8 +94,6 @@ namespace App.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasName("UserNameIndex");
-
-                    b.HasIndex("QuizId");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -162,6 +150,27 @@ namespace App.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("App.Models.ProgressesAnswers", b =>
+                {
+                    b.Property<int>("ProgressId");
+
+                    b.Property<int>("AnswerId");
+
+                    b.Property<int?>("ProgressQuestionId");
+
+                    b.Property<int?>("ProgressQuizId");
+
+                    b.Property<string>("ProgressUserId");
+
+                    b.HasKey("ProgressId", "AnswerId");
+
+                    b.HasIndex("AnswerId");
+
+                    b.HasIndex("ProgressQuizId", "ProgressQuestionId", "ProgressUserId");
+
+                    b.ToTable("ProgressesAnswers");
+                });
+
             modelBuilder.Entity("App.Models.Question", b =>
                 {
                     b.Property<int>("Id")
@@ -192,7 +201,7 @@ namespace App.Migrations
 
                     b.Property<string>("CreatorId");
 
-                    b.Property<DateTime>("EndDateTime");
+                    b.Property<DateTime>("Ends");
 
                     b.Property<bool>("IsOneTime");
 
@@ -202,7 +211,7 @@ namespace App.Migrations
 
                     b.Property<int?>("QuizGroupId");
 
-                    b.Property<DateTime>("StartDateTime");
+                    b.Property<DateTime>("Starts");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -312,22 +321,17 @@ namespace App.Migrations
 
             modelBuilder.Entity("App.Models.Score", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<string>("UserId");
 
                     b.Property<int>("QuizId");
 
                     b.Property<DateTime>("ScoredAt");
 
-                    b.Property<string>("UserId");
-
                     b.Property<double>("Value");
 
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "QuizId");
 
                     b.HasIndex("QuizId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Scores");
                 });
@@ -480,17 +484,6 @@ namespace App.Migrations
                         .WithMany()
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("App.Models.QuizProgress")
-                        .WithMany("GivenAnswers")
-                        .HasForeignKey("QuizProgressQuizId", "QuizProgressQuestionId", "QuizProgressUserId");
-                });
-
-            modelBuilder.Entity("App.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("App.Models.Quiz")
-                        .WithMany("Participants")
-                        .HasForeignKey("QuizId");
                 });
 
             modelBuilder.Entity("App.Models.GroupsTags", b =>
@@ -519,6 +512,19 @@ namespace App.Migrations
                     b.HasOne("App.Models.Quiz", "Quiz")
                         .WithMany()
                         .HasForeignKey("QuizId");
+                });
+
+            modelBuilder.Entity("App.Models.ProgressesAnswers", b =>
+                {
+                    b.HasOne("App.Models.Answer", "Answer")
+                        .WithMany()
+                        .HasForeignKey("AnswerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("App.Models.QuizProgress", "Progress")
+                        .WithMany("GivenAnswers")
+                        .HasForeignKey("ProgressQuizId", "ProgressQuestionId", "ProgressUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("App.Models.Question", b =>
@@ -564,7 +570,7 @@ namespace App.Migrations
             modelBuilder.Entity("App.Models.QuizzesUsers", b =>
                 {
                     b.HasOne("App.Models.Quiz", "Quiz")
-                        .WithMany()
+                        .WithMany("Participants")
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -596,7 +602,8 @@ namespace App.Migrations
 
                     b.HasOne("App.Models.ApplicationUser", "User")
                         .WithMany("Scores")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("App.Models.UsersGroups", b =>

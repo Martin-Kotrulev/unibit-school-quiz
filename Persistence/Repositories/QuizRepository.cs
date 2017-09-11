@@ -42,26 +42,30 @@ namespace App.Persistence.Repositories
         .FirstOrDefaultAsync(q => q.Id == quizId && q.Password == password);
     }
 
-    public async Task<IEnumerable<Quiz>> GetGroupQuizzesPagedAsync(int quizGroupId, int page = 1, int pageSize = 10)
+    public async Task<IEnumerable<Quiz>> GetGroupQuizzesPagedAsync(
+      int quizGroupId, int page = 1, int pageSize = 10)
     {
       return await ApplyPaging(q => q.QuizGroupId == quizGroupId, page, pageSize);
     }
 
-    public async Task<IEnumerable<Quiz>> GetQuizzesPagedBySearchAsync(int page = 1, int pageSize = 10, string search = "")
+    public async Task<IEnumerable<Quiz>> GetQuizzesPagedBySearchAsync(
+      int page = 1, int pageSize = 10, string search = "")
     {
-       return await ApplyPaging(qg =>
-        qg.Title.ToLowerInvariant().Contains(search.ToLowerInvariant()),
-        page, pageSize);
+      return await ApplyPaging(qg =>
+          qg.Title.ToLowerInvariant().Contains(search.ToLowerInvariant()),
+      page, pageSize);
     }
 
-    public async Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(ICollection<string> tags, int page = 1, int pageSize = 10)
+    public async Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(
+      ICollection<string> tags, int page = 1, int pageSize = 10)
     {
       return await ApplyPaging(qg =>
         qg.Tags.Select(t => t.Tag.Name).Any(n => tags.Contains(n)),
-        page, pageSize);
+      page, pageSize);
     }
 
-    private async Task<IEnumerable<Quiz>> ApplyPaging(Expression<Func<Quiz, bool>> predicate, int page, int pageSize)
+    private async Task<IEnumerable<Quiz>> ApplyPaging(
+      Expression<Func<Quiz, bool>> predicate, int page, int pageSize)
     {
       return await AppDbContext.Quizzes
         .Include(qg => qg.Tags)
@@ -76,8 +80,14 @@ namespace App.Persistence.Repositories
     public Task<Quiz> GetQuizWithParticipantsAsync(int quizId)
     {
       return AppDbContext.Quizzes
-        .Include(q => q.Password)
+        .Include(q => q.Participants)
         .FirstOrDefaultAsync(q => q.Id == quizId);
+    }
+
+    public bool UserIsQuizCreator(int quizId, string userId)
+    {
+      return AppDbContext.Quizzes
+        .FirstOrDefault(q => q.Id == quizId && q.CreatorId == userId) != null;
     }
   }
 }

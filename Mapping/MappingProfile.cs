@@ -45,6 +45,7 @@ namespace Api.Mapping
 
       CreateMap<QuestionResource, Question>()
         .ForMember(qr => qr.Id, opt => opt.Ignore())
+        .ForMember(qr => qr.QuizId, opt => opt.Ignore())
         .ForMember(qr => qr.Answers, opt => opt.Ignore());
 
       CreateMap<AnswerResource, Answer>()

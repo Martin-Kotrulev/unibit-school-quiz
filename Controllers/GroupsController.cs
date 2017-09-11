@@ -40,7 +40,7 @@ namespace App.Controllers
     {
       if (ModelState.IsValid)
       {
-        var user = await _authenticationService.GetAuthenticatedUser(User);
+        var userId = _authenticationService.GetAuthenticatedUserId(User);
         var quizGroup = _mapper.Map<QuizGroupResource, QuizGroup>(quizGroupResource);
 
         if (await _quizService.GroupExistsAsync(quizGroup))
@@ -76,7 +76,7 @@ namespace App.Controllers
         }
         
         quizGroup.CreatedOn = DateTime.Now;
-        quizGroup.OwnerId = user.Id;
+        quizGroup.OwnerId = userId;
 
         _quizService.CreateGroup(quizGroup);
 
@@ -89,11 +89,11 @@ namespace App.Controllers
     }
 
     [HttpPost("{id}/[action]")]
-    public async Task<IActionResult> DeleteAsync(int id)
+    public IActionResult Delete(int id)
     {
-      var user = await _authenticationService.GetAuthenticatedUser(User);
+      var userId = _authenticationService.GetAuthenticatedUserId(User);
 
-      if (_quizService.DeleteQuizGroup(id, user.Id))
+      if (_quizService.DeleteQuizGroup(id, userId))
       {
         return Ok(new ApiResponse("You successfully deleteted the quiz group."));
       }
@@ -148,11 +148,11 @@ namespace App.Controllers
     [HttpGet("[action]")]
     public async Task<IActionResult> Mine([FromQuery] int page = 1)
     {
-      var user = await _authenticationService.GetAuthenticatedUser(User);
+      var userId = _authenticationService.GetAuthenticatedUserId(User);
 
       var userGroups = _mapper
         .Map<IEnumerable<QuizGroup>, ICollection<QuizGroupResource>>(
-          await _quizService.GetUserOwnGroupsAsync(user, page));
+          await _quizService.GetUserOwnGroupsAsync(userId, page));
 
       return Ok(new ApiResponse(userGroups));
     }

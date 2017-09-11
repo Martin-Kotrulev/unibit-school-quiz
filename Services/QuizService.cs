@@ -123,7 +123,7 @@ namespace App.Services
     /// </summary>
     /// <param name="quizId"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<Question>> GetQuestionsAsync(int quizId)
+    public async Task<IEnumerable<Question>> GetQuestionsAsync(int quizId, string userId)
     {
       return await _unitOfWork.Questions
         .GetQuestionsForQuizAsync(quizId);
@@ -157,10 +157,10 @@ namespace App.Services
     }
 
     public async Task<IEnumerable<QuizGroup>> GetUserOwnGroupsAsync(
-      ApplicationUser user, int page = 1, int pageSize = 10)
+      string userId, int page = 1, int pageSize = 10)
     {
       return await _unitOfWork.QuizGroups
-        .GetUserGroupsPagedAsync(user.Id, page, pageSize);
+        .GetUserGroupsPagedAsync(userId, page, pageSize);
     }
 
     public async Task<IEnumerable<Quiz>> GetUserTakenQuizzesAsync(
@@ -197,21 +197,23 @@ namespace App.Services
     /// <param name="quizId"></param>
     /// <param name="user"></param>
     /// <returns>True if success, false otherwise.</returns>
-    public async Task<QuizEnum> EnterQuizAsync(int quizId, ApplicationUser user)
+    public async Task<QuizEnum> EnterQuizAsync(int quizId, string userId)
     {
       var quiz = await _unitOfWork.Quizzes.GetQuizWithParticipantsAsync(quizId);
+      var inQuiz = quiz.Participants.Any(p => p.User.Id == userId);
 
       if (quiz == null)
         return QuizEnum.NotExistent;
-      else if (DateTime.UtcNow < quiz.StartDateTime)
+      else if (DateTime.UtcNow < quiz.Starts)
         return QuizEnum.NotStarted;
-      else if (DateTime.UtcNow > quiz.EndDateTime)
+      else if (DateTime.UtcNow > quiz.Ends)
         return QuizEnum.Ended;
-      else if (quiz.IsOneTime && quiz.Participants.Any(p => p.Id == user.Id))
-        // Checks if the user is already in this quiz
+      else if (quiz.IsOneTime && inQuiz)
         return QuizEnum.StillTaking;
+      else if (inQuiz)
+        return QuizEnum.Enter;
 
-      quiz.Participants.Add(user);
+      quiz.Participants.Add(new QuizzesUsers() { Quiz = quiz, UserId = userId });
       _unitOfWork.Complete();
       return QuizEnum.Enter;
     }
@@ -267,6 +269,11 @@ namespace App.Services
       }
       
       return false;
+    }
+
+    public bool UserCanAddQuestion(int quizId, string userId)
+    {
+      return _unitOfWork.Quizzes.UserIsQuizCreator(quizId, userId);
     }
 
     public void Subscribe(QuizSubscription subscription)

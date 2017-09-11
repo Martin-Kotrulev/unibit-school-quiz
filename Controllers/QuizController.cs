@@ -36,7 +36,7 @@ namespace App.Controllers
     {
       if (ModelState.IsValid)
       {
-        var user = await _authenticationService.GetAuthenticatedUser(User);
+        var userId = _authenticationService.GetAuthenticatedUserId(User);
         var quiz = _mapper.Map<QuizResource, Quiz>(quizResource);
 
         if (await _quizService.QuizExistsAsync(quiz))
@@ -71,7 +71,7 @@ namespace App.Controllers
         }
         
         quiz.CreatedOn = DateTime.Now;
-        quiz.CreatorId = user.Id;
+        quiz.CreatorId = userId;
 
         _quizService.CreateQuiz(quiz);
 
@@ -83,17 +83,28 @@ namespace App.Controllers
       }
     }
 
-    [HttpPost("question/add")]
+    [HttpPost("{id}/questions/add")]
     [Authorize]
-    public async Task<IActionResult> AddQuestionToQuizAsync([FromBody] QuestionResource questionResource)
+    public IActionResult AddQuestionToQuiz(int id, [FromBody] QuestionResource questionResource)
     {
       if (ModelState.IsValid)
       {
-        var user = await _authenticationService.GetAuthenticatedUser(User);
+        var userId = _authenticationService.GetAuthenticatedUserId(User);
         var question = _mapper.Map<QuestionResource, Question>(questionResource);
 
-        _quizService.CreateQuestion(question);
-
+        if (_quizService.UserCanAddQuestion(id, userId))
+        {
+          question.QuizId = id;
+          _quizService.CreateQuestion(question);
+        }
+        else
+        {
+          return BadRequest(new ApiResponse(
+            "You can't add questions to other users quizzes.", 
+            false
+          ));
+        }
+        
         return Ok(new ApiResponse("You have successfully created a new question."));
       }
       else
@@ -102,12 +113,12 @@ namespace App.Controllers
       }
     }
 
-    [HttpPost("{id}/delete")]
+    [HttpPost("{id}/[action]")]
     [Authorize]
-    public async Task<IActionResult> DeleteAsync(int id)
+    public IActionResult Delete(int id)
     {
-      var user = await _authenticationService.GetAuthenticatedUser(User);
-      if (_quizService.DeleteQuiz(id, user.Id))
+      var userId = _authenticationService.GetAuthenticatedUserId(User);
+      if (_quizService.DeleteQuiz(id, userId))
       {
         return Ok(new ApiResponse("You have successfully deleted the quiz."));
       }
@@ -121,8 +132,8 @@ namespace App.Controllers
     [Authorize]
     public async Task<IActionResult> EnterAsync(int id)
     {
-      var user = await _authenticationService.GetAuthenticatedUser(User);
-      var state = await _quizService.EnterQuizAsync(id, user);
+      var userId = _authenticationService.GetAuthenticatedUserId(User);
+      var state = await _quizService.EnterQuizAsync(id, userId);
       
       ApiResponse res = new ApiResponse() { Success = false };
       switch (state)
@@ -138,7 +149,8 @@ namespace App.Controllers
           break;
         case QuizEnum.StillTaking:
           res.Message = "You are already taking this quiz.";
-          break;
+          res.Success = true;
+          return Ok(res);
         case QuizEnum.Enter:
           res.Message = "You successfully entered the quiz.";
           res.Success = true;
@@ -153,7 +165,6 @@ namespace App.Controllers
     {
       search = search ?? "";
       ICollection<QuizResource> quizzes;
-      System.Console.WriteLine(search);
       if (search.Contains("*"))
       {
         var searchTags = Regex
@@ -181,8 +192,10 @@ namespace App.Controllers
 
     [HttpGet("{id}/questions/all")]
     [Authorize]
-    public IActionResult AllQuestionsForQuiz(int id, [FromQuery] int page)
+    public IActionResult AllQuestionsForQuiz(int id)
     {
+      var userId = _authenticationService.GetAuthenticatedUserId(User);
+      var questions = _quizService.GetQuestionsAsync(id, userId);
       return Ok();
     }
   }

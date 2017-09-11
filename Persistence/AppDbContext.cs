@@ -70,6 +70,9 @@ namespace App.Persistence
 				modelBuilder.Entity<Rating>()
 					.HasKey(r => new {r.UserId, r.QuizId});
 
+				modelBuilder.Entity<Score>()
+					.HasKey(s => new {s.UserId, s.QuizId});
+
 				modelBuilder.Entity<GroupSubscription>()
 					.HasKey(gs => new {gs.UserId, gs.QuizGroupId});
 

@@ -53,9 +53,9 @@ namespace App
       });
 
       // Hangfire scheduler
-      services.AddHangfire(config => {
-        config.UsePostgreSqlStorage(Configuration.GetConnectionString("Default"));
-      });
+      // services.AddHangfire(config => {
+      //   config.UsePostgreSqlStorage(Configuration.GetConnectionString("Default"));
+      // });
 
       // Identity
       services.AddIdentityService();
@@ -103,7 +103,7 @@ namespace App
         app.UseExceptionHandler("/Home/Error");
       }
 
-      app.UseHangfireServer();
+      //app.UseHangfireServer();
 
       app.UseStatusCodePages();
 

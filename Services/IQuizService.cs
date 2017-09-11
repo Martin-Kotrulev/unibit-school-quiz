@@ -25,7 +25,7 @@ namespace App.Services
 
     void Subscribe(GroupSubscription subscription);
 
-    Task<IEnumerable<Question>> GetQuestionsAsync(int quizId);
+    Task<IEnumerable<Question>> GetQuestionsAsync(int quizId, string userId);
 
     IEnumerable<Answer> GetAnswersForIds(ICollection<int> ids);
 
@@ -41,7 +41,7 @@ namespace App.Services
 
     IEnumerable<Quiz> GetUserOwnQuizzes(ApplicationUser user, int page = 1, int pageSize = 10);
 
-    Task<IEnumerable<QuizGroup>> GetUserOwnGroupsAsync(ApplicationUser user, int page = 1, int pageSize = 10);
+    Task<IEnumerable<QuizGroup>> GetUserOwnGroupsAsync(string userId, int page = 1, int pageSize = 10);
 
     Task<bool> GroupExistsAsync(QuizGroup quizGroup);
 
@@ -55,13 +55,13 @@ namespace App.Services
 
     Task<Quiz> GetQuizWithPasswordAsync(int quizId, string password);
 
-    Task<QuizEnum> EnterQuizAsync(int quizId, ApplicationUser user);
+    Task<QuizEnum> EnterQuizAsync(int quizId, string userId);
 
     Task<bool> QuizExistsAsync(Quiz quiz);
 
     bool DeleteQuiz(int id, string userId);
     
     bool DeleteQuizGroup(int id, string userId);
-
+    bool UserCanAddQuestion(int quizId, string userId);
   }
 }
