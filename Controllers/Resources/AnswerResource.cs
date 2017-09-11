@@ -6,13 +6,14 @@ namespace App.Controllers.Resources
   {
     public int Id { get; set; }
 
+    [Required]
     public char Letter { get; set; }
 
     [Required]
     public string Value { get; set; }
 
     [Range(1, 10)]
-    public int Weight { get; set; }
+    public int Weight { get; set; } = 1;
 
     public bool IsRight { get; set; } = false;
     

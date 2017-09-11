@@ -26,6 +26,19 @@ namespace App.Persistence.Repositories
           && qp.UserId == userId);
     }
 
+    public async Task<IEnumerable<int>> FindUserQuizProgressAnswersIds(
+      int quizId, string userId)
+    {
+      return await AppDbContext.QuizProgresses
+        .Include(qp => qp.GivenAnswers)
+          .ThenInclude(ga => ga.Answer)
+        .Where(qp => 
+          qp.QuizId == quizId && qp.UserId == userId)
+        .SelectMany(qp => qp.GivenAnswers)
+        .Select(ga => ga.Answer.Id)
+        .ToListAsync();
+    }
+
     public async Task<int> GetProgressAnswersWeightSumAsync(string userId, int quizId)
     {
       return await AppDbContext.QuizProgresses

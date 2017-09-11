@@ -16,21 +16,26 @@ namespace App.Persistence.Repositories
     {
     }
 
-    public async Task<Question> GetQuestionWithProgressAsync(int questionId, QuizProgress progress)
+    public async Task<IEnumerable<Question>> GetQuestionsWithProgressAsync(int quizId,
+      IEnumerable<int> progressAnswersIds)
     {
-      var question = await AppDbContext.Questions
+      var questions = await AppDbContext.Questions
         .Include(q => q.Answers)
-        .FirstOrDefaultAsync(q => q.Id == questionId);
+        .Where(q => q.QuizId == quizId)
+        .ToListAsync();
 
-      question.Answers = question.Answers
+      foreach (var q in questions)
+      {
+        q.Answers = q.Answers
         .Select(a => {
-          if (progress.GivenAnswers.Select(ga => ga.Answer.Id).Contains(a.Id))
+          if (progressAnswersIds.Contains(a.Id))
             a.IsSelected = true; 
           return a;
         })
         .ToList();
+      }
 
-      return question;
+      return questions;
     }
 
     public async Task<IEnumerable<Question>> GetQuestionsForQuizAsync(int quizId)

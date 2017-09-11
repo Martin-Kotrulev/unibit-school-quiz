@@ -43,8 +43,15 @@ namespace App.Services
 
     public void CreateAnswer(Answer answer)
     {
-      _unitOfWork.Answers.Add(answer);
+      _unitOfWork.Answers.AddAnswer(answer);
       _unitOfWork.Complete();
+    }
+
+    public bool DeleteAnswer(int answerId)
+    {
+      _unitOfWork.Answers.DeleteAnswer(answerId);
+      _unitOfWork.Complete();
+      return true;
     }
 
     public async void CreateProgressAsync(
@@ -95,38 +102,30 @@ namespace App.Services
     }
 
     /// <summary>
-    /// Checks if there is a progress made by the current user on this question.
-    /// </summary>
-    /// <param name="questionId"></param>
-    /// <param name="quizId"></param>
-    /// <param name="userId"></param>
-    /// <returns>Question by Id or Question with added progress.</returns>
-    public async Task<Question> GetQuestionWithAnswersAsync(
-      int questionId, int quizId, string userId)
-    {
-      var progress = await _unitOfWork.QuizProgresses
-        .FindQuizProgressAsync(quizId, questionId, userId);
-
-      if (progress != null) 
-      {
-        return await _unitOfWork.Questions
-          .GetQuestionWithProgressAsync(questionId, progress);
-      }
-      else {
-        return await _unitOfWork.Questions
-          .GetQuestionWithAnswersAsync(questionId);
-      }
-    }
-
-    /// <summary>
     /// Used to get a quiz with all questions and answers
     /// </summary>
     /// <param name="quizId"></param>
     /// <returns></returns>
     public async Task<IEnumerable<Question>> GetQuestionsAsync(int quizId, string userId)
     {
-      return await _unitOfWork.Questions
-        .GetQuestionsForQuizAsync(quizId);
+      bool userIsCreator = _unitOfWork.Quizzes.UserIsQuizCreator(quizId, userId);
+
+      if (userIsCreator)
+      {
+        return await _unitOfWork.Questions.GetUserQuizQuestionsAsync(quizId);
+      }
+      else
+      {
+        var progresAnswersIds = await _unitOfWork.QuizProgresses
+          .FindUserQuizProgressAnswersIds(quizId, userId);
+
+        if (progresAnswersIds.Count() > 0)
+          return await _unitOfWork.Questions
+            .GetQuestionsWithProgressAsync(quizId, progresAnswersIds);
+
+        return await _unitOfWork.Questions
+          .GetQuestionsForQuizAsync(quizId);
+      }
     }
 
     public async Task<IEnumerable<QuizGroup>> GetGroupsAsync(

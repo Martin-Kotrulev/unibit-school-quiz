@@ -64,6 +64,11 @@ namespace App.Persistence
 					.HasIndex(qg => qg.Title)
 					.IsUnique();
 
+				modelBuilder.Entity<Quiz>()
+					.HasMany(q => q.Questions)
+					.WithOne(a => a.Quiz)
+					.OnDelete(DeleteBehavior.Cascade);
+
 				modelBuilder.Entity<UsersGroups>()
 					.HasKey(ug => new {ug.UserId, ug.QuizGroupId});
 
@@ -102,6 +107,11 @@ namespace App.Persistence
 
 				modelBuilder.Entity<QuizProgress>()
 					.HasKey(qp => new {qp.QuizId, qp.QuestionId, qp.UserId});
+
+				modelBuilder.Entity<Question>()
+					.HasMany(q => q.Answers)
+					.WithOne(a => a.Question)
+					.OnDelete(DeleteBehavior.Cascade);
 		}
 	}
 }

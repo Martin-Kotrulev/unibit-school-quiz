@@ -26,5 +26,32 @@ namespace App.Persistence.Repositories
         .OrderBy(a => rnd.Next())
         .ToListAsync();
     }
+
+    public void AddAnswer(Answer answer)
+    {
+      var question = AppDbContext.Questions
+        .FirstOrDefault(q => q.Id == answer.QuestionId);
+
+      var entry = AppDbContext.Entry(question);
+      entry.Collection(e => e.Answers)
+        .Query()
+        .OrderBy(a => a.Letter)
+        .Load();
+
+      char letter = 'a';
+      question.Answers = question.Answers
+        .Select(a => {a.Letter = letter++; return a;})
+        .ToList();
+
+      answer.QuizId = question.QuizId;
+      answer.Letter = letter;
+
+      question.Answers.Add(answer);
+    }
+
+    public void DeleteAnswer(int answerId)
+    {
+      throw new NotImplementedException();
+    }
   }
 }

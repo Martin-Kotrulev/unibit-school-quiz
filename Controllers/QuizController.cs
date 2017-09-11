@@ -192,11 +192,14 @@ namespace App.Controllers
 
     [HttpGet("{id}/questions/all")]
     [Authorize]
-    public IActionResult AllQuestionsForQuiz(int id)
+    public async Task<IActionResult> AllQuestionsForQuizAsync(int id)
     {
       var userId = _authenticationService.GetAuthenticatedUserId(User);
-      var questions = _quizService.GetQuestionsAsync(id, userId);
-      return Ok();
+      var questions = _mapper.Map<IEnumerable<Question>, ICollection<QuestionResource>>(
+        await _quizService.GetQuestionsAsync(id, userId)
+      );
+
+      return Ok(new ApiResponse(questions));
     }
   }
 }

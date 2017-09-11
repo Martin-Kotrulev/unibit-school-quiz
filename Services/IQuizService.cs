@@ -47,8 +47,6 @@ namespace App.Services
 
     Task<IEnumerable<Quiz>> GetUserTakenQuizzesAsync(ApplicationUser user, int page = 1, int pageSize = 10);
 
-    Task<Question> GetQuestionWithAnswersAsync(int questionId, int quizId, string userId);
-
     IEnumerable<Tag> CheckForExistingTags(ICollection<string> tags);
 
     Task<IEnumerable<int>> GetRandomQuestionsOrderAsync(int quizId);

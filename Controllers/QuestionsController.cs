@@ -1,4 +1,5 @@
 using App.Controllers.Resources;
+using App.Models;
 using App.Services;
 using App.Services.Security;
 using AutoMapper;
@@ -28,9 +29,20 @@ namespace App.Controllers
 		}
 
 		[HttpPost("{id}/answers/add")]
-		public IActionResult AddAnswerForQuestion(int id)
+		public IActionResult AddAnswerForQuestion(int id, [FromBody] AnswerResource answerResource)
 		{
-			return Ok();
+			var answer = _mapper.Map<AnswerResource, Answer>(answerResource);
+			var userId = _authenticationService.GetAuthenticatedUserId(User);
+			if (_quizService.UserCanAddQuestion(id, userId))
+			{
+				answer.QuizId = id;
+				_quizService.CreateAnswer(answer);
+				return Ok();
+			}
+			else
+			{
+				return BadRequest(new ApiResponse("You can't add answers to other users questions."));
+			}
 		}
 
 		[HttpPost("progress")]

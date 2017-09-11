@@ -7,5 +7,7 @@ namespace App.Persistence.Repositories.Interfaces
   public interface IAnswerRepository : IRepository<Answer>
   {
     Task<IEnumerable<int>> GetRandomOrderForAnswerIdsAsync(int quizId);
+    void AddAnswer(Answer answer);
+    void DeleteAnswer(int answerId);
   }
 }
