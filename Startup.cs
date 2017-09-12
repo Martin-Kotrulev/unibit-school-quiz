@@ -46,6 +46,8 @@ namespace App
       services.Configure<JWTSettings>(Configuration.GetSection("JWTSettings"));
       services.Configure<GradesSettings>(Configuration.GetSection("GradesSettings"));
 
+      services.AddCors();
+
       // DbContext
       services.AddDbContext<AppDbContext>(opt =>
       {
@@ -95,7 +97,8 @@ namespace App
         //app.UseDeveloperExceptionPage();
         app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
         {
-          HotModuleReplacement = true
+          HotModuleReplacement = true,
+          ReactHotModuleReplacement = true
         });
       }
       else
@@ -121,10 +124,15 @@ namespace App
         }
       });
 
+      // Configure cross origin resource sharing
+      app.UseCors(
+        options => options.WithOrigins("http://localhost:3000")
+          .WithHeaders("accept", "content-type", "origin", "x-custom-header")
+          .AllowAnyMethod()
+      );
+
       app.UseStaticFiles();
-
       app.UseAuthentication();
-
       app.UseMvcWithDefaultRoute();
     }
   }

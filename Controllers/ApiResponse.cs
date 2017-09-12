@@ -28,6 +28,7 @@ namespace App.Controllers
     {
       Result = result;
       Success = true;
+      Message = message;
     }
 
     public ApiResponse(string message, bool success = true)

@@ -8,12 +8,11 @@ module.exports = (env) => {
   const isDevBuild = !(env && env.prod)
   return [{
     stats: { modules: false },
-    entry: {
-      'main': [
-        'react-hot-loader/patch',
-        './ClientApp/boot.tsx'
-      ]
-    },
+    entry: { main: [
+      'webpack/hot/dev-server',
+      'webpack-hot-middleware/client',
+      './ClientApp/boot.tsx'
+    ]},
     resolve: { extensions: ['.js', '.jsx', '.ts', '.tsx'] },
     output: {
       path: path.join(__dirname, bundleOutputDir),
@@ -28,7 +27,7 @@ module.exports = (env) => {
       ]
     },
     plugins: [
-      new CheckerPlugin(),
+      new webpack.HotModuleReplacementPlugin(),
       new webpack.DllReferencePlugin({
         context: __dirname,
         manifest: require('./wwwroot/dist/vendor-manifest.json')

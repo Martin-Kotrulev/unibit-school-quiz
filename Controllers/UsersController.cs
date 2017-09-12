@@ -39,7 +39,7 @@ namespace App.Controllers
           return Ok(new ApiResponse
           (
               token,
-              $"User '{token.User}' registered successfully."
+              "You have successfully registered and logged in."
           ));
         }
 
@@ -59,7 +59,7 @@ namespace App.Controllers
 
         if ((token.AccessToken ?? token.IdToken ?? token.Token) != null)
         {
-          return Ok(new ApiResponse(token, $"User '{token.User}' logged successfully."));
+          return Ok(new ApiResponse(token, "You have successfully logged in."));
         }
 
         return BadRequest(new ApiResponse(
