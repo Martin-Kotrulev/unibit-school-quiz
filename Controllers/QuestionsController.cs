@@ -36,14 +36,14 @@ namespace App.Controllers
 				if (!deleted)
 					return BadRequest(new ApiResponse("Question does not exist.", false));
 				
-				return Ok("You successfully deleted the question.");
+				return Ok(new ApiResponse("You successfully deleted the question."));
 			}
 
 			return BadRequest(new ApiResponse("You can't delete other users questions.", false));
     }
 
     [HttpPost("{id}/answers/add")]
-    public IActionResult AddAnswerForQuestion(int id, [FromBody] AnswerResource answerResource)
+    public async Task<IActionResult> AddAnswerForQuestionAsync(int id, [FromBody] AnswerResource answerResource)
     {
       var answer = _mapper.Map<AnswerResource, Answer>(answerResource);
       var userId = _authenticationService.GetAuthenticatedUserId(User);
@@ -52,8 +52,8 @@ namespace App.Controllers
       {
         if (_quizService.UserCanAddQuestion(id, userId))
         {
-          answer.QuizId = id;
-          _quizService.CreateAnswer(answer);
+					answer.QuestionId = id;
+          await _quizService.CreateAnswerAsync(answer);
           return Ok(new ApiResponse("You successfully added a new answer."));
         }
         else

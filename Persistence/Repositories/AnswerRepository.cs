@@ -40,11 +40,11 @@ namespace App.Persistence.Repositories
 
       char letter = 'a';
       question.Answers = question.Answers
-        .Select(a => {a.Letter = letter++; return a;})
+        .Select(a => {a.Letter = (letter++).ToString(); return a;})
         .ToList();
 
       answer.QuizId = question.QuizId;
-      answer.Letter = letter;
+      answer.Letter = letter.ToString();
 
       question.Answers.Add(answer);
     }
@@ -56,6 +56,9 @@ namespace App.Persistence.Repositories
 
       if (answer != null)
       {
+        AppDbContext.Answers.Remove(answer);
+        AppDbContext.SaveChanges();
+        
         var question = await AppDbContext.Questions
           .FirstOrDefaultAsync(q => q.Id == answer.QuestionId);
 
@@ -67,15 +70,13 @@ namespace App.Persistence.Repositories
 
         char letter = 'a';
         question.Answers = question.Answers
-          .Select(a => {a.Letter = letter++; return a;})
+          .Select(a => {a.Letter = (letter++).ToString(); return a;})
           .ToList();
-        
+
         return true;
       }
       else
-      {
         return false;
-      }
     }
   }
 }

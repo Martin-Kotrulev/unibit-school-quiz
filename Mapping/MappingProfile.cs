@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using App.Controllers.Resources;
 using App.Models;
@@ -10,6 +11,11 @@ namespace Api.Mapping
     public MappingProfile()
     {
       // Domain to resource
+      CreateMap<Answer, AnswerResource>()
+        .ForMember(a => a.IsRight, opt => opt.Ignore());
+
+      
+
       CreateMap<QuizGroup, QuizGroupResource>()
         .ForMember(qg => qg.Tags, opt =>
           opt.MapFrom(qg =>
@@ -23,9 +29,7 @@ namespace Api.Mapping
           opt.MapFrom(q => 
             q.Tags.Select(t => t.Tag.Name)));
 
-      CreateMap<Question, QuestionResource>()
-        .ForMember(q => q.Answers, opt =>
-          opt.MapFrom(q => q.Answers.Select(a => a.Id)));
+      CreateMap<Question, QuestionResource>();
 
       // Resource to domain
       CreateMap<QuizGroupResource, QuizGroup>()

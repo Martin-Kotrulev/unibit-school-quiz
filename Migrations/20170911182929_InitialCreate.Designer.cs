@@ -11,9 +11,10 @@ using System;
 namespace App.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170911182929_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,9 +28,8 @@ namespace App.Migrations
 
                     b.Property<bool>("IsRight");
 
-                    b.Property<string>("Letter")
-                        .IsRequired()
-                        .HasMaxLength(1);
+                    b.Property<char>("Letter")
+                        .HasColumnType("char");
 
                     b.Property<int>("QuestionId");
 

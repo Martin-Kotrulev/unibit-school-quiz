@@ -41,9 +41,9 @@ namespace App.Services
       _unitOfWork.Complete();
     }
 
-    public void CreateAnswer(Answer answer)
+    public async Task CreateAnswerAsync(Answer answer)
     {
-      _unitOfWork.Answers.AddAnswerAsync(answer);
+      await _unitOfWork.Answers.AddAnswerAsync(answer);
       _unitOfWork.Complete();
     }
 

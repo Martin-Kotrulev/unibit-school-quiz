@@ -16,11 +16,11 @@ namespace App.Controllers.Resources
 
     public int QuizId { get; set; }
 
-    public ICollection<int> Answers { get; set; }
+    public ICollection<AnswerResource> Answers { get; set; }
 
     public QuestionResource()
     {
-      this.Answers = new HashSet<int>();
+      this.Answers = new HashSet<AnswerResource>();
     }
   }
 }

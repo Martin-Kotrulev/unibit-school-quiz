@@ -13,7 +13,7 @@ namespace App.Services
 
     void CreateQuestion(Question question);
 
-    void CreateAnswer(Answer answer);
+    Task CreateAnswerAsync(Answer answer);
 
     void ScoreUserAsync(ApplicationUser user, int quizId, ICollection<int> answersIds);
 

@@ -9,7 +9,8 @@ namespace App.Models
     public int Id { get; set; }
 
     [Required]
-    public char Letter { get; set; }
+    [StringLength(1)]
+    public string Letter { get; set; }
 
     [Required]
     public string Value { get; set; }
