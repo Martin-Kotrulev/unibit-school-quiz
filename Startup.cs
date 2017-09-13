@@ -127,7 +127,7 @@ namespace App
       // Configure cross origin resource sharing
       app.UseCors(
         options => options.WithOrigins("http://localhost:3000")
-          .WithHeaders("accept", "content-type", "origin", "x-custom-header")
+          .WithHeaders("authorization", "accept", "content-type", "origin", "x-custom-header")
           .AllowAnyMethod()
       );
 
