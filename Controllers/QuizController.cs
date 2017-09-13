@@ -187,7 +187,7 @@ namespace App.Controllers
               await _quizService.SearchQuizzesByTagsAsync(searchTags, page)
             );
 
-          return Ok(new ApiResponse(quizzes));
+          return Ok(quizzes);
         }
       }
 
@@ -207,7 +207,7 @@ namespace App.Controllers
         await _quizService.GetQuestionsAsync(id, userId)
       );
 
-      return Ok(new ApiResponse(questions));
+      return Ok(questions);
     }
   }
 }

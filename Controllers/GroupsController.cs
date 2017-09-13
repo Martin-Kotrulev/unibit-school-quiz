@@ -123,7 +123,7 @@ namespace App.Controllers
               await _quizService.SearchQuizGroupsByTagsAsync(searchTags, page)
             );
 
-          return Ok(new ApiResponse(quizGroups));
+          return Ok(quizGroups);
         }
       }
 
@@ -131,7 +131,7 @@ namespace App.Controllers
         .Map<IEnumerable<QuizGroup>, ICollection<QuizGroupResource>>(
           await _quizService.GetGroupsAsync(page, search: search));
 
-      return Ok(new ApiResponse(quizGroups));
+      return Ok(quizGroups);
     }
 
     [HttpGet("{id}/quizzes/all")]
@@ -141,7 +141,7 @@ namespace App.Controllers
         .Map<IEnumerable<Quiz>, ICollection<QuizResource>>(
           await _quizService.GetGroupQuizzesAsync(id, page));
 
-      return Ok(new ApiResponse(groupQuizzes));
+      return Ok(groupQuizzes);
     }
 
     [Authorize]
@@ -154,7 +154,7 @@ namespace App.Controllers
         .Map<IEnumerable<QuizGroup>, ICollection<QuizGroupResource>>(
           await _quizService.GetUserOwnGroupsAsync(userId, page));
 
-      return Ok(new ApiResponse(userGroups));
+      return Ok(userGroups);
     }
   }
 }
