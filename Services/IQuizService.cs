@@ -25,7 +25,7 @@ namespace App.Services
 
     Task CreateProgressAsync(QuizProgress progress, IEnumerable<int> answersIds);
 
-    Task<IEnumerable<Question>> GetQuestionsAsync(int quizId, string userId, bool owner);
+    Task<IEnumerable<Question>> GetQuestionsAsync(int quizId, string userId);
 
     IEnumerable<Answer> GetAnswersForIds(ICollection<int> ids);
 
@@ -77,6 +77,9 @@ namespace App.Services
     bool DeleteQuestion(int id);
 
     bool UserCanAddQuizzes(int id, string userId);
-    string GetGroupCreator(int id);
+
+    QuizGroup GetGroup(int id);
+
+    Quiz GetQuiz(int id);
   }
 }

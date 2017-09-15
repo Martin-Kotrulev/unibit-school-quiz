@@ -61,7 +61,7 @@ namespace App.Persistence
 					.IsUnique();
 				
 				modelBuilder.Entity<Quiz>()
-					.HasIndex(qg => qg.Title)
+					.HasIndex(qg => qg.Name)
 					.IsUnique();
 
 				modelBuilder.Entity<Quiz>()

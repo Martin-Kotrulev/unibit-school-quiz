@@ -19,6 +19,8 @@ namespace Api.Mapping
           opt.MapFrom(qg =>
             qg.Tags.Select(t => t.Tag.Name)));
 
+      CreateMap<QuizGroup, IdNamePairResource>();
+
       CreateMap<Quiz, QuizResource>()
         .ForMember(q => q.Password, opt => opt.Ignore())
         .ForMember(q => q.Scores, opt => opt.Ignore())
@@ -26,6 +28,8 @@ namespace Api.Mapping
         .ForMember(q => q.Tags, opt =>
           opt.MapFrom(q => 
             q.Tags.Select(t => t.Tag.Name)));
+
+      CreateMap<Quiz, IdNamePairResource>();
 
       CreateMap<Question, QuestionResource>();
 

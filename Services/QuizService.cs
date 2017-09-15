@@ -106,9 +106,12 @@ namespace App.Services
     /// </summary>
     /// <param name="quizId"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<Question>> GetQuestionsAsync(int quizId, string userId, bool owner)
+    public async Task<IEnumerable<Question>> GetQuestionsAsync(int quizId, string userId)
     {
-      if (owner)
+
+      var owner = _unitOfWork.Quizzes.UserIsQuizCreator(quizId, userId);
+
+      if (owner)  
       {
         return await _unitOfWork.Questions.GetUserQuizQuestionsAsync(quizId);
       }
@@ -224,7 +227,7 @@ namespace App.Services
     public async Task<bool> QuizExistsAsync(Quiz quiz)
     {
       return await _unitOfWork.Quizzes
-        .FirstOrDefaultAsync(q => q.Title == quiz.Title) != null;
+        .FirstOrDefaultAsync(q => q.Name == quiz.Name) != null;
     }
 
     public IEnumerable<Tag> CheckForExistingTags(ICollection<string> tags)
@@ -291,9 +294,14 @@ namespace App.Services
       return group != null && group.CreatorId == userId;
     }
 
-    public string GetGroupCreator(int id)
+    public QuizGroup GetGroup(int id)
     {
-      return _unitOfWork.QuizGroups.Get(id)?.CreatorId;
+      return _unitOfWork.QuizGroups.Get(id);
+    }
+
+    public Quiz GetQuiz(int id)
+    {
+      return _unitOfWork.Quizzes.Get(id);
     }
 
     public void Subscribe(QuizSubscription subscription)

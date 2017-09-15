@@ -11,7 +11,7 @@ namespace App.Controllers.Resources
 
     [Required]
     [MaxLength(255)]
-    public string Title { get; set; }
+    public string Name { get; set; }
 
     public DateTime CreatedOn { get; set; }
 

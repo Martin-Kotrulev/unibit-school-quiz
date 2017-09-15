@@ -42,7 +42,7 @@ namespace App.Controllers
         if (await _quizService.QuizExistsAsync(quiz))
         {
           return BadRequest(new ApiResponse(
-            $"Quiz group with title '{quiz.Title}' already exists.", false
+            $"Quiz group with title '{quiz.Name}' already exists.", false
           ));
         }
 
@@ -105,7 +105,10 @@ namespace App.Controllers
           ));
         }
         
-        return Ok(new ApiResponse("You have successfully created a new question."));
+        return Ok(new ApiResponse(
+          _mapper.Map<Question, QuestionResource>(question),
+          "You have successfully created a new question.")
+        );
       }
 
       return BadRequest(new ApiResponse(ModelState));
@@ -205,13 +208,17 @@ namespace App.Controllers
     public async Task<IActionResult> AllQuestionsForQuizAsync(int id)
     {
       var userId = _authenticationService.GetAuthenticatedUserId(User);
-      bool userIsCreator = _quizService.UserCanAddQuestion(id, userId);
+      var quiz = _quizService.GetQuiz(id);
 
       var questions = _mapper.Map<IEnumerable<Question>, ICollection<QuestionResource>>(
-        await _quizService.GetQuestionsAsync(id, userId, userIsCreator)
+        await _quizService.GetQuestionsAsync(id, userId)
       );
 
-      return Ok(questions);
+      return Ok(new 
+      {
+        Quiz = _mapper.Map<Quiz, IdNamePairResource>(quiz),
+        Questions = questions
+      });
     }
 
     [Authorize]
@@ -220,11 +227,11 @@ namespace App.Controllers
     {
       var userId = _authenticationService.GetAuthenticatedUserId(User);
 
-      var userGroups = _mapper
+      var userQuizzes = _mapper
         .Map<IEnumerable<Quiz>, ICollection<QuizResource>>(
           await _quizService.GetUserOwnQuizzesAsync(userId, page));
 
-      return Ok(userGroups);
+      return Ok(userQuizzes);
     }
   }
 }

@@ -140,14 +140,14 @@ namespace App.Controllers
     [HttpGet("{id}/quizzes/all")]
     public async Task<IActionResult> ListGroupQuizzesAsync(int id, [FromQuery] int page = 1)
     {
-      string creatorId = _quizService.GetGroupCreator(id);
+      var group = _mapper.Map<QuizGroup, IdNamePairResource>(_quizService.GetGroup(id));
       var groupQuizzes = _mapper
         .Map<IEnumerable<Quiz>, ICollection<QuizResource>>(
           await _quizService.GetGroupQuizzesAsync(id, page));
 
       return Ok(new 
       {
-        CreatorId = creatorId,
+        Group = group,
         Quizzes = groupQuizzes
       });
     }

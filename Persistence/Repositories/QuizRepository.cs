@@ -52,7 +52,7 @@ namespace App.Persistence.Repositories
       int page = 1, int pageSize = 10, string search = "")
     {
       return await ApplyPaging(qg =>
-          qg.Title.ToLowerInvariant().Contains(search.ToLowerInvariant()),
+          qg.Name.ToLowerInvariant().Contains(search.ToLowerInvariant()),
       page, pageSize);
     }
 
