@@ -12,9 +12,7 @@ namespace Api.Mapping
     {
       // Domain to resource
       CreateMap<Answer, AnswerResource>()
-        .ForMember(a => a.IsRight, opt => opt.Ignore());
-
-      
+        .ForMember(a => a.IsRight, opt => opt.Ignore());      
 
       CreateMap<QuizGroup, QuizGroupResource>()
         .ForMember(qg => qg.Tags, opt =>

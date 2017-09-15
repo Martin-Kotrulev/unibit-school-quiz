@@ -27,6 +27,8 @@ namespace App.Controllers.Resources
 
     public string CreatorId { get; set; }
 
+    public string CreatorName { get; set; }
+
     public int? GroupId { get; set; }
 
     public ICollection<string> Tags { get; set; }

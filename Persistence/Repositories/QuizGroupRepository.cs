@@ -29,7 +29,7 @@ namespace App.Persistence.Repositories
     public async Task<IEnumerable<QuizGroup>> GetUserGroupsPagedAsync(string userId, int page = 1, int pageSize = 10)
     {
       return await ApplyPaging(qg =>
-        qg.OwnerId == userId,
+        qg.CreatorId == userId,
         page, pageSize);
     }
 

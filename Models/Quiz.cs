@@ -30,6 +30,8 @@ namespace App.Models
     public QuizGroup Group { get; set; }
 
     public string CreatorId { get; set; }
+
+    public string CreatorName { get; set; }
     
     public ApplicationUser Creator { get; set; }
 

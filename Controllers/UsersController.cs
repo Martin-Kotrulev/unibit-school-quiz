@@ -25,11 +25,11 @@ namespace App.Controllers
 
     [HttpPost("[action]")]
     [AllowAnonymous]
-    public async Task<IActionResult> SignUp([FromBody] CredentialsResource credentials)
+    public async Task<IActionResult> SignUp([FromBody] RegisterResource credentials)
     {
       if (ModelState.IsValid)
       {
-        var user = new ApplicationUser() { UserName = credentials.Email, Email = credentials.Email };
+        var user = new ApplicationUser() { UserName = credentials.Username, Email = credentials.Email };
         var result = await _authService.RegisterUserAsync(user, credentials.Password);
 
         if (result.Succeeded)
@@ -62,10 +62,7 @@ namespace App.Controllers
           return Ok(new ApiResponse(token, "You have successfully logged in."));
         }
 
-        return BadRequest(new ApiResponse(
-            (int) HttpStatusCode.Unauthorized,
-            "Wrong username or password.")
-        );
+        return BadRequest(new ApiResponse("Wrong user name or password.", false));
       }
 
       return BadRequest(new ApiResponse(ModelState));

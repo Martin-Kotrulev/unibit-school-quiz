@@ -8,6 +8,8 @@ namespace App.Controllers.Resources
   {
     public string User { get; set; }
 
+    public string UserId { get; set; }
+
     [JsonProperty(PropertyName = "email", NullValueHandling = NullValueHandling.Ignore)]
     public string Email { get; set; }
 

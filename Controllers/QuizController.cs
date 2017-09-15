@@ -36,7 +36,7 @@ namespace App.Controllers
     {
       if (ModelState.IsValid)
       {
-        var userId = _authenticationService.GetAuthenticatedUserId(User);
+        var user = await _authenticationService.GetAuthenticatedUser(User);
         var quiz = _mapper.Map<QuizResource, Quiz>(quizResource);
 
         if (await _quizService.QuizExistsAsync(quiz))
@@ -71,11 +71,13 @@ namespace App.Controllers
         }
         
         quiz.CreatedOn = DateTime.Now;
-        quiz.CreatorId = userId;
+        quiz.CreatorId = user.Id;
+        quiz.CreatorName = user.UserName;
 
         _quizService.CreateQuiz(quiz);
 
-        return Ok(new ApiResponse("You have successfully added a new quiz."));
+        return Ok(new ApiResponse(_mapper.Map<Quiz, QuizResource>(quiz), 
+          "You have successfully added a new quiz."));
       }
       
       return BadRequest(new ApiResponse(ModelState));
@@ -195,7 +197,7 @@ namespace App.Controllers
         .Map<IEnumerable<Quiz>, ICollection<QuizResource>>(
           await _quizService.GetQuizzesAsync(page, search: search));
 
-      return Ok(new ApiResponse(quizzes));
+      return Ok(quizzes);
     }
 
     [HttpGet("{id}/questions/all")]
@@ -203,11 +205,26 @@ namespace App.Controllers
     public async Task<IActionResult> AllQuestionsForQuizAsync(int id)
     {
       var userId = _authenticationService.GetAuthenticatedUserId(User);
+      bool userIsCreator = _quizService.UserCanAddQuestion(id, userId);
+
       var questions = _mapper.Map<IEnumerable<Question>, ICollection<QuestionResource>>(
-        await _quizService.GetQuestionsAsync(id, userId)
+        await _quizService.GetQuestionsAsync(id, userId, userIsCreator)
       );
 
       return Ok(questions);
+    }
+
+    [Authorize]
+    [HttpGet("[action]")]
+    public async Task<IActionResult> Mine([FromQuery] int page = 1)
+    {
+      var userId = _authenticationService.GetAuthenticatedUserId(User);
+
+      var userGroups = _mapper
+        .Map<IEnumerable<Quiz>, ICollection<QuizResource>>(
+          await _quizService.GetUserOwnQuizzesAsync(userId, page));
+
+      return Ok(userGroups);
     }
   }
 }

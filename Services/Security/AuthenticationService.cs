@@ -51,15 +51,16 @@ namespace App.Services.Security
     public async Task<TokenResource> SignInUserAsync(CredentialsResource credentials)
     {
       var result = await _signInManager
-          .PasswordSignInAsync(credentials.Email, credentials.Password, false, false);
+        .PasswordSignInAsync(credentials.Username, credentials.Password, false, false);
 
       if (result.Succeeded)
       {
-        var user = await _userManager.FindByEmailAsync(credentials.Email);
+        var user = await _userManager.FindByNameAsync(credentials.Username);
 
         return new TokenResource()
         {
-          User = user.UserName ?? user.Email,
+          User = user.UserName,
+          UserId = user.Id,
           Token = GetToken(user),
           Expires = DateTime.UtcNow.AddDays(_options.ExpirationDays)
         };
@@ -74,6 +75,7 @@ namespace App.Services.Security
 
       var claimsIdentity = new ClaimsIdentity(new List<Claim>()
       {
+          new Claim(ClaimTypes.Name, user.UserName),
           new Claim(ClaimTypes.Email, user.Email),
           new Claim(ClaimTypes.NameIdentifier, user.Id)
       });

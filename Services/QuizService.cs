@@ -106,11 +106,9 @@ namespace App.Services
     /// </summary>
     /// <param name="quizId"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<Question>> GetQuestionsAsync(int quizId, string userId)
+    public async Task<IEnumerable<Question>> GetQuestionsAsync(int quizId, string userId, bool owner)
     {
-      bool userIsCreator = _unitOfWork.Quizzes.UserIsQuizCreator(quizId, userId);
-
-      if (userIsCreator)
+      if (owner)
       {
         return await _unitOfWork.Questions.GetUserQuizQuestionsAsync(quizId);
       }
@@ -148,11 +146,11 @@ namespace App.Services
         .GetQuizWithPasswordAsync(quizId, password);
     }
 
-    public IEnumerable<Quiz> GetUserOwnQuizzes(
-      ApplicationUser user, int page = 1, int pageSize = 10)
+    public async Task<IEnumerable<Quiz>> GetUserOwnQuizzesAsync(
+      string userId, int page = 1, int pageSize = 10)
     {
-      return _unitOfWork.Quizzes
-        .Paged(page, pageSize, q => q.CreatorId == user.Id);
+      return await _unitOfWork.Quizzes
+        .PagedAsync(page, pageSize, q => q.CreatorId == userId);
     }
 
     public async Task<IEnumerable<QuizGroup>> GetUserOwnGroupsAsync(
@@ -257,7 +255,7 @@ namespace App.Services
     {
       var quizGroup = _unitOfWork.QuizGroups.Get(id);
 
-      if (quizGroup == null || quizGroup.OwnerId != userId)
+      if (quizGroup == null || quizGroup.CreatorId != userId)
         return false;
 
       _unitOfWork.QuizGroups.Remove(quizGroup);
@@ -285,6 +283,17 @@ namespace App.Services
     public Task<bool> UserOwnQuestionAsync(int questionId, string userId)
     {
       return _unitOfWork.Questions.UserOwnQuestionAsync(questionId, userId);
+    }
+
+    public bool UserCanAddQuizzes(int id, string userId)
+    {
+      var group = _unitOfWork.QuizGroups.Get(id);
+      return group != null && group.CreatorId == userId;
+    }
+
+    public string GetGroupCreator(int id)
+    {
+      return _unitOfWork.QuizGroups.Get(id)?.CreatorId;
     }
 
     public void Subscribe(QuizSubscription subscription)

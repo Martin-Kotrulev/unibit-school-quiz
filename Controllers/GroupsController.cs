@@ -40,7 +40,7 @@ namespace App.Controllers
     {
       if (ModelState.IsValid)
       {
-        var userId = _authenticationService.GetAuthenticatedUserId(User);
+        var user = await _authenticationService.GetAuthenticatedUser(User);
         var quizGroup = _mapper.Map<QuizGroupResource, QuizGroup>(quizGroupResource);
 
         if (await _quizService.GroupExistsAsync(quizGroup))
@@ -76,11 +76,13 @@ namespace App.Controllers
         }
         
         quizGroup.CreatedOn = DateTime.Now;
-        quizGroup.OwnerId = userId;
+        quizGroup.CreatorId = user.Id;
+        quizGroup.CreatorName = user.UserName;
 
         _quizService.CreateGroup(quizGroup);
 
         return Ok(new ApiResponse(
+          _mapper.Map<QuizGroup, QuizGroupResource>(quizGroup),
           $"You successfully created a new group with name '{ quizGroup.Name }'"
         ));
       }
@@ -107,6 +109,7 @@ namespace App.Controllers
     [HttpGet("[action]")]
     public async Task<IActionResult> All([FromQuery] string search, [FromQuery] int page = 1)
     {
+      System.Console.WriteLine(search);
       search = search ?? "";
       ICollection<QuizGroupResource> quizGroups;
       if (search.Contains("*"))
@@ -137,11 +140,16 @@ namespace App.Controllers
     [HttpGet("{id}/quizzes/all")]
     public async Task<IActionResult> ListGroupQuizzesAsync(int id, [FromQuery] int page = 1)
     {
+      string creatorId = _quizService.GetGroupCreator(id);
       var groupQuizzes = _mapper
         .Map<IEnumerable<Quiz>, ICollection<QuizResource>>(
           await _quizService.GetGroupQuizzesAsync(id, page));
 
-      return Ok(groupQuizzes);
+      return Ok(new 
+      {
+        CreatorId = creatorId,
+        Quizzes = groupQuizzes
+      });
     }
 
     [Authorize]

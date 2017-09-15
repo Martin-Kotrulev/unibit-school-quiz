@@ -14,9 +14,11 @@ namespace App.Models
 
     public DateTime CreatedOn { get; set; }
 
-    public string OwnerId { get; set; }
+    public string CreatorId { get; set; }
+
+    public string CreatorName { get; set; }
     
-    public ApplicationUser Owner { get; set; }
+    public ApplicationUser Creator { get; set; }
 
     public ICollection<Quiz> Quizzes { get; set; }
 
