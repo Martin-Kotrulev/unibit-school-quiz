@@ -200,13 +200,15 @@ namespace App.Services
     public async Task<QuizEnum> EnterQuizAsync(int quizId, string userId)
     {
       var quiz = await _unitOfWork.Quizzes.GetQuizWithParticipantsAsync(quizId);
-      var inQuiz = quiz.Participants.Any(p => p.User.Id == userId);
 
       if (quiz == null)
         return QuizEnum.NotExistent;
-      else if (DateTime.UtcNow < quiz.Starts)
+
+      var inQuiz = quiz.Participants.Any(p => p.UserId == userId);
+
+      if (quiz.Starts != null && DateTime.UtcNow < quiz.Starts)
         return QuizEnum.NotStarted;
-      else if (DateTime.UtcNow > quiz.Ends)
+      else if (quiz.Ends != null && DateTime.UtcNow > quiz.Ends)
         return QuizEnum.Ended;
       else if (quiz.Once && inQuiz)
         return QuizEnum.StillTaking;

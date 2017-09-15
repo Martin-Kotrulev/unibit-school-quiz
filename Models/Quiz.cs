@@ -15,9 +15,9 @@ namespace App.Models
 
     public DateTime CreatedOn { get; set; }
 
-    public DateTime Starts { get; set; }
+    public DateTime? Starts { get; set; }
 
-    public DateTime Ends { get; set; }
+    public DateTime? Ends { get; set; }
 
     public bool Once { get; set; } = false;
 

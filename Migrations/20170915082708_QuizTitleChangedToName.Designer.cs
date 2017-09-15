@@ -11,9 +11,10 @@ using System;
 namespace App.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170915082708_QuizTitleChangedToName")]
+    partial class QuizTitleChangedToName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -204,7 +205,7 @@ namespace App.Migrations
 
                     b.Property<string>("CreatorName");
 
-                    b.Property<DateTime?>("Ends");
+                    b.Property<DateTime>("Ends");
 
                     b.Property<int?>("GroupId");
 
@@ -218,7 +219,7 @@ namespace App.Migrations
 
                     b.Property<string>("Password");
 
-                    b.Property<DateTime?>("Starts");
+                    b.Property<DateTime>("Starts");
 
                     b.HasKey("Id");
 
