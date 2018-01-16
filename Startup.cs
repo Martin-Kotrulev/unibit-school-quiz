@@ -70,19 +70,6 @@ namespace App
 
       services.AddSecurity(config: Configuration);
 
-      // Redirection configuration
-      services.ConfigureApplicationCookie(opt =>
-      {
-        opt.Events = new CookieAuthenticationEvents()
-        {
-          OnRedirectToLogin = ctx =>
-                {
-                ctx.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                return Task.FromResult(0);
-              }
-        };
-      });
-
       services.AddAutoMapper();
 
       services.AddMvc();
@@ -91,38 +78,16 @@ namespace App
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
-      //app.UseCustomExceptionHandler();
       if (env.IsDevelopment())
       {
-        //app.UseDeveloperExceptionPage();
-        app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
-        {
-          HotModuleReplacement = true,
-          ReactHotModuleReplacement = true
-        });
-      }
-      else
-      {
-        app.UseExceptionHandler("/Home/Error");
+        app.UseDeveloperExceptionPage();
       }
 
       //app.UseHangfireServer();
 
       app.UseStatusCodePages();
 
-      //Redirects not found status back to root if it's not an api call
-      app.Use(async (context, next) =>
-      {
-        await next();
-        
-        if (context.Response.StatusCode == 404 &&
-          !Path.HasExtension(context.Request.Path.Value) &&
-          !context.Request.Path.Value.StartsWith("/api/"))
-        {
-          context.Request.Path = "/";
-          await next();
-        }
-      });
+      app.UseStaticFiles();
 
       // Configure cross origin resource sharing
       app.UseCors(
@@ -131,9 +96,9 @@ namespace App
           .AllowAnyMethod()
       );
 
-      app.UseStaticFiles();
       app.UseAuthentication();
-      app.UseMvcWithDefaultRoute();
+
+      app.UseMvc();
     }
   }
 }
