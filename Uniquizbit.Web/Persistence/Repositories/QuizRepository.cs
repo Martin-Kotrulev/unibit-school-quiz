@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Uniquizbit.Controllers.Resources;
+using Uniquizbit.Web.Models;
 using Uniquizbit.Models;
 using Uniquizbit.Persistence.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;

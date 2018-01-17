@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Uniquizbit.Controllers.Resources;
+using Uniquizbit.Web.Models;
 using Uniquizbit.Models;
 using Uniquizbit.Services;
 using AutoMapper;

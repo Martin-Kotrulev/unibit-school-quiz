@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Uniquizbit.Controllers.Resources;
+using Uniquizbit.Web.Models;
 using Uniquizbit.Models;
 using Uniquizbit.Services;
 using Microsoft.AspNetCore.Authorization;

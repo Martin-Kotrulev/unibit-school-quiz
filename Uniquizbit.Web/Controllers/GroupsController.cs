@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Uniquizbit.Controllers;
-using Uniquizbit.Controllers.Resources;
+using Uniquizbit.Web.Models;
 using Uniquizbit.Models;
 using Uniquizbit.Services;
 using AutoMapper;
