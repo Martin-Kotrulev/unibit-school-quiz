@@ -5,7 +5,6 @@ namespace Uniquizbit.Extensions
   using Microsoft.Extensions.DependencyInjection;
   using Microsoft.IdentityModel.Tokens;
   using System.Text;
-  using Config;
 
   public static class SecurityExtensions
   {
@@ -37,15 +36,16 @@ namespace Uniquizbit.Extensions
         ValidateLifetime = true
       };
 
-      services.AddAuthentication(opt =>
-      {
-        opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-      })
-      .AddJwtBearer(opt =>
-      {
-        opt.TokenValidationParameters = tokenValidationParameters;
-      });
+      services
+        .AddAuthentication(opt =>
+        {
+          opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+          opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(opt =>
+        {
+          opt.TokenValidationParameters = tokenValidationParameters;
+        });
 
       return services;
     }

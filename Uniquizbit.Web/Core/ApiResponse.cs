@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json;
-
-namespace Uniquizbit.Controllers
+namespace Uniquizbit.Web
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using Microsoft.AspNetCore.Identity;
+  using Microsoft.AspNetCore.Mvc.ModelBinding;
+  using Newtonsoft.Json;
+
   public class ApiResponse
   {
     public bool Success { get; set; }

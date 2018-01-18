@@ -1,8 +1,9 @@
 namespace Uniquizbit.Services
 {
+  using Common.Config;
+  using Data.Models;
   using System.Collections.Generic;
   using System.Threading.Tasks;
-  using Data.Models;
 
   public interface IQuizService
   {

@@ -3,6 +3,7 @@ namespace Uniquizbit.Services
   using Data;
   using Data.Models;
   using Common.Config;
+  using Common.Enums;
   using System;
   using System.Collections.Generic;
   using System.Linq;

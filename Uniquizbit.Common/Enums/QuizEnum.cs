@@ -1,4 +1,4 @@
-namespace Uniquizbit.Controllers
+namespace Uniquizbit.Common.Enums
 {
     public enum QuizEnum
     {
