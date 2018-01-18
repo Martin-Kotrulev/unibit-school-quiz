@@ -1,4 +1,4 @@
-namespace Uniquizbit.Controllers
+namespace Uniquizbit.Web.Controllers
 {
   using AutoMapper;
   using Data.Models;

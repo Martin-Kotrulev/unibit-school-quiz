@@ -1,4 +1,4 @@
-namespace Uniquizbit.Controllers
+namespace Uniquizbit.Web.Controllers
 {
   using Common.Config;
   using Data.Models;
@@ -18,14 +18,14 @@ namespace Uniquizbit.Controllers
   using System.Text;
   using Web.Models;
 
-  public class UsersController : Controller
+  public class AccountController : Controller
   {
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly JWTSettings _options;
 
-    public UsersController(UserManager<User> userManager,
+    public AccountController(UserManager<User> userManager,
         SignInManager<User> signInManager,
         RoleManager<IdentityRole> roleManager,
         IOptions<JWTSettings> optionsAccessor)
