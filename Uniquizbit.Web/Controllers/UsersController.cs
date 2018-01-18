@@ -2,17 +2,20 @@ namespace Uniquizbit.Controllers
 {
   using Common.Config;
   using Data.Models;
-  using System;
-  using System.Collections.Generic;
-  using System.Net;
-  using System.Security.Claims;
-  using System.Threading.Tasks;
   using Microsoft.AspNetCore.Authorization;
   using Microsoft.AspNetCore.Identity;
   using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
   using Microsoft.AspNetCore.Mvc;
   using Microsoft.Extensions.Options;
+  using Microsoft.IdentityModel.Tokens;
   using Newtonsoft.Json;
+  using System;
+  using System.Collections.Generic;
+  using System.Net;
+  using System.Security.Claims;
+  using System.Threading.Tasks;
+  using System.IdentityModel.Tokens.Jwt;
+  using System.Text;
   using Web.Models;
 
   public class UsersController : Controller
@@ -48,16 +51,7 @@ namespace Uniquizbit.Controllers
 
         if (result.Succeeded)
         {
-          var regUser = await _userManager
-            .FindByNameAsync(credentials.Username);
-
-          return Ok(new ApiResponse(new TokenResource()
-          {
-            User = user.UserName,
-            UserId = user.Id,
-            Token = GetToken(user),
-            Expires = DateTime.UtcNow.AddDays(_options.ExpirationDays)
-          }, "You have successfully registered and logged in."));
+          return Ok(GetTokenResponse(user.UserName, true));
         }
 
         return BadRequest(new ApiResponse(result));
@@ -72,11 +66,12 @@ namespace Uniquizbit.Controllers
     {
       if (ModelState.IsValid)
       {
-        var token = await _authService.SignInUserAsync(credentials);
+        var result = await _signInManager
+          .PasswordSignInAsync(credentials.Username, credentials.Password, false, false);
 
-        if ((token.AccessToken ?? token.IdToken ?? token.Token) != null)
+        if (result.Succeeded)
         {
-          return Ok(new ApiResponse(token, "You have successfully logged in."));
+          return Ok(GetTokenResponse(credentials.Username, false));
         }
 
         return BadRequest(new ApiResponse("Wrong user name or password.", false));
@@ -85,14 +80,19 @@ namespace Uniquizbit.Controllers
       return BadRequest(new ApiResponse(ModelState));
     }
 
-    public async Task<TokenResource> SignInUserAsync(CredentialsResource credentials)
+    private async Task<ApiResponse> GetTokenResponse(string username, bool onRegister)
     {
-      var result = await _signInManager
-        .PasswordSignInAsync(credentials.Username, credentials.Password, false, false);
+      var user = await _userManager
+            .FindByNameAsync(username);
 
-      
-
-      return new TokenResource();
+      var registered = onRegister ? "registered and " : "";
+      return new ApiResponse(new TokenResource()
+      {
+        User = user.UserName,
+        UserId = user.Id,
+        Token = GetToken(user),
+        Expires = DateTime.UtcNow.AddDays(_options.ExpirationDays)
+      }, $"You have successfully { registered }logged in.");
     }
 
     private string GetToken(ApplicationUser user)
