@@ -1,31 +1,32 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Uniquizbit.Controllers;
-using Uniquizbit.Web.Models;
-using Uniquizbit.Models;
-using Uniquizbit.Services;
-using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
 namespace Uniquizbit.Controllers
 {
+  using AutoMapper;
+  using Data.Models;
+  using Services;
+  using System.Threading.Tasks;
+  using Microsoft.AspNetCore.Authorization;
+  using Microsoft.AspNetCore.Mvc;
+  using Microsoft.AspNetCore.Identity;
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Text.RegularExpressions;
+  using Web.Models;
+
   [Route("api/[controller]")]
   public class QuizzesController : Controller
   {
     private readonly IQuizService _quizService;
     private readonly IMapper _mapper;
-    private readonly IAuthenticationService _authenticationService;
+    private readonly UserManager<User> _userManager;
 
-    public QuizzesController(IQuizService quizService, IMapper mapper, 
-      IAuthenticationService authenticationService)
+    public QuizzesController(IQuizService quizService,
+      IMapper mapper,
+      UserManager<User> userManager)
     {
-      this._authenticationService = authenticationService;
-      this._mapper = mapper;
-      this._quizService = quizService;
+      _userManager = userManager;
+      _mapper = mapper;
+      _quizService = quizService;
     }
 
     [Authorize]
@@ -34,7 +35,7 @@ namespace Uniquizbit.Controllers
     {
       if (ModelState.IsValid)
       {
-        var user = await _authenticationService.GetAuthenticatedUser(User);
+        var user = await _userManager.GetUserAsync(User);
         var quiz = _mapper.Map<QuizResource, Quiz>(quizResource);
 
         if (await _quizService.QuizExistsAsync(quiz))
@@ -51,33 +52,33 @@ namespace Uniquizbit.Controllers
         foreach (var tag in quizResource.Tags)
         {
           if (!tagNames.Contains(tag))
-            quiz.Tags.Add(new QuizzesTags() 
+            quiz.Tags.Add(new QuizzesTags()
             {
-              Quiz = quiz, 
+              Quiz = quiz,
               Tag = new Tag() { Name = tag }
-            }); 
+            });
         }
 
         // Add the existing tags
         foreach (var tag in existingTags)
         {
-          quiz.Tags.Add(new QuizzesTags() 
+          quiz.Tags.Add(new QuizzesTags()
           {
-            Quiz = quiz, 
+            Quiz = quiz,
             Tag = tag
-          }); 
+          });
         }
-        
+
         quiz.CreatedOn = DateTime.Now;
         quiz.CreatorId = user.Id;
         quiz.CreatorName = user.UserName;
 
         _quizService.CreateQuiz(quiz);
 
-        return Ok(new ApiResponse(_mapper.Map<Quiz, QuizResource>(quiz), 
+        return Ok(new ApiResponse(_mapper.Map<Quiz, QuizResource>(quiz),
           "You have successfully added a new quiz."));
       }
-      
+
       return BadRequest(new ApiResponse(ModelState));
     }
 
@@ -98,11 +99,11 @@ namespace Uniquizbit.Controllers
         else
         {
           return BadRequest(new ApiResponse(
-            "You can't add questions to other users quizzes.", 
+            "You can't add questions to other users quizzes.",
             false
           ));
         }
-        
+
         return Ok(new ApiResponse(
           _mapper.Map<Question, QuestionResource>(question),
           "You have successfully created a new question.")
@@ -116,7 +117,7 @@ namespace Uniquizbit.Controllers
     [Authorize]
     public IActionResult Delete(int id)
     {
-      var userId = _authenticationService.GetAuthenticatedUserId(User);
+      var userId = _userManager.GetUserId(User);
       if (_quizService.DeleteQuiz(id, userId))
       {
         return Ok(new ApiResponse("You have successfully deleted the quiz."));
@@ -129,9 +130,9 @@ namespace Uniquizbit.Controllers
     [Authorize]
     public async Task<IActionResult> EnterAsync(int id)
     {
-      var userId = _authenticationService.GetAuthenticatedUserId(User);
+      var userId = _userManager.GetUserId(User);
       var state = await _quizService.EnterQuizAsync(id, userId);
-      
+
       ApiResponse res = new ApiResponse() { Success = false };
       switch (state)
       {
@@ -162,12 +163,12 @@ namespace Uniquizbit.Controllers
     {
       if (ModelState.IsValid)
       {
-        var userId = _authenticationService.GetAuthenticatedUserId(User);
+        var userId = _userManager.GetUserId(User);
         var progress = _mapper.Map<ProgressResource, QuizProgress>(progressResource);
         await _quizService.CreateProgressAsync(progress, progressResource.GivenAnswers);
         return Ok();
       }
-      
+
       return BadRequest(new ApiResponse(ModelState));
     }
 
@@ -205,14 +206,14 @@ namespace Uniquizbit.Controllers
     [Authorize]
     public async Task<IActionResult> AllQuestionsForQuizAsync(int id)
     {
-      var userId = _authenticationService.GetAuthenticatedUserId(User);
+      var userId = _userManager.GetUserId(User);
       var quiz = _quizService.GetQuiz(id);
 
       var questions = _mapper.Map<IEnumerable<Question>, ICollection<QuestionResource>>(
         await _quizService.GetQuestionsAsync(id, userId)
       );
 
-      return Ok(new 
+      return Ok(new
       {
         Quiz = _mapper.Map<Quiz, IdNamePairResource>(quiz),
         Questions = questions
@@ -223,7 +224,7 @@ namespace Uniquizbit.Controllers
     [HttpGet("[action]")]
     public async Task<IActionResult> Mine([FromQuery] int page = 1)
     {
-      var userId = _authenticationService.GetAuthenticatedUserId(User);
+      var userId = _userManager.GetUserId(User);
 
       var userQuizzes = _mapper
         .Map<IEnumerable<Quiz>, ICollection<QuizResource>>(

@@ -1,23 +1,25 @@
-using System.Threading.Tasks;
-using Uniquizbit.Web.Models;
-using Uniquizbit.Models;
-using Uniquizbit.Services;
-using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-
 namespace Uniquizbit.Controllers
 {
+  using AutoMapper;
+  using Data.Models;
+  using Microsoft.AspNetCore.Mvc;
+  using System.Threading.Tasks;
+  using Uniquizbit.Services;
+  using Web.Models;
+  using Microsoft.AspNetCore.Identity;
+
   [Route("api/[controller]")]
   public class QuestionsController : Controller
   {
     private readonly IQuizService _quizService;
     private readonly IMapper _mapper;
-    private readonly IAuthenticationService _authenticationService;
+    private readonly UserManager<User> _userManager;
 
-    public QuestionsController(IQuizService quizService, IMapper mapper,
-      IAuthenticationService authenticationService)
+    public QuestionsController(IQuizService quizService,
+      IMapper mapper,
+      UserManager<User> userManager)
     {
-      this._authenticationService = authenticationService;
+      this._userManager = userManager;
       this._mapper = mapper;
       this._quizService = quizService;
     }
@@ -25,7 +27,7 @@ namespace Uniquizbit.Controllers
     [HttpPost("{id}/delete")]
     public async Task<IActionResult> DeleteAsync(int id)
     {
-      var userId = _authenticationService.GetAuthenticatedUserId(User);
+      var userId = _userManager.GetUserId(User);
 			var ownQuestion = await _quizService.UserOwnQuestionAsync(id, userId);
 
 			if (ownQuestion)
@@ -45,7 +47,7 @@ namespace Uniquizbit.Controllers
     public async Task<IActionResult> AddAnswerForQuestionAsync(int id, [FromBody] AnswerResource answerResource)
     {
       var answer = _mapper.Map<AnswerResource, Answer>(answerResource);
-      var userId = _authenticationService.GetAuthenticatedUserId(User);
+      var userId = _userManager.GetUserId(User);
 
       if (ModelState.IsValid)
       {
@@ -67,7 +69,7 @@ namespace Uniquizbit.Controllers
     [HttpPost("{questionId}/answers/{answerId}/delete")]
     public async Task<IActionResult> DeleteAnswerFromQuestionAsync(int questionId, int answerId)
     {
-      var userId = _authenticationService.GetAuthenticatedUserId(User);
+      var userId = _userManager.GetUserId(User);
 			var ownQuestion = await _quizService.UserOwnQuestionAsync(questionId, userId);
 
       if (ownQuestion)

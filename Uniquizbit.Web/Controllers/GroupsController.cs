@@ -1,9 +1,12 @@
 namespace Uniquizbit.Web.Controllers
 {
   using AutoMapper;
+  using Data.Models;
   using Microsoft.AspNetCore.Authorization;
   using Microsoft.AspNetCore.Mvc;
   using Microsoft.EntityFrameworkCore;
+  using Models;
+  using Microsoft.AspNetCore.Identity;
   using Newtonsoft.Json;
   using Npgsql;
   using System;
@@ -13,19 +16,19 @@ namespace Uniquizbit.Web.Controllers
   using System.Linq;
   using System.Text.RegularExpressions;
   using System.Threading.Tasks;
-  using Models;
   using Uniquizbit.Services;
 
   public class GroupsController : BaseApiController
   {
     private readonly IQuizService _quizService;
     private readonly IMapper _mapper;
-    private readonly IAuthenticationService _authenticationService;
+    private readonly UserManager<User> _userManager;
 
-    public GroupsController(IQuizService quizService, IMapper mapper, 
-      IAuthenticationService authenticationService)
+    public GroupsController(IQuizService quizService,
+      IMapper mapper,
+      UserManager<User> userManager)
     {
-      this._authenticationService = authenticationService;
+      this._userManager = userManager;
       this._mapper = mapper;
       this._quizService = quizService;
     }
@@ -36,7 +39,7 @@ namespace Uniquizbit.Web.Controllers
     {
       if (ModelState.IsValid)
       {
-        var user = await _authenticationService.GetAuthenticatedUser(User);
+        var user = await _userManager.GetUserAsync(this.User);
         var quizGroup = _mapper.Map<QuizGroupResource, QuizGroup>(quizGroupResource);
 
         if (await _quizService.GroupExistsAsync(quizGroup))
@@ -87,9 +90,10 @@ namespace Uniquizbit.Web.Controllers
     }
 
     [HttpPost("{id}/[action]")]
+    [Authorize]
     public IActionResult Delete(int id)
     {
-      var userId = _authenticationService.GetAuthenticatedUserId(User);
+      var userId = _userManager.GetUserId(this.User);
 
       if (_quizService.DeleteQuizGroup(id, userId))
       {
@@ -152,7 +156,7 @@ namespace Uniquizbit.Web.Controllers
     [HttpGet("[action]")]
     public async Task<IActionResult> Mine([FromQuery] int page = 1)
     {
-      var userId = _authenticationService.GetAuthenticatedUserId(User);
+      var userId = _userManager.GetUserId(this.User);
 
       var userGroups = _mapper
         .Map<IEnumerable<QuizGroup>, ICollection<QuizGroupResource>>(

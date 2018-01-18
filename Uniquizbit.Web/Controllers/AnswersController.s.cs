@@ -1,4 +1,4 @@
-namespace Uniquizbit.Controllers
+namespace Uniquizbit.Web.Controllers
 {
     public class AnswersController : BaseApiController
     {
