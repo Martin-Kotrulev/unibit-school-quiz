@@ -5,7 +5,7 @@ namespace Uniquizbit.Persistence.Repositories
 {
   internal class RatingRepository : Repository<Rating>, IRatingRepository
   {
-    public RatingRepository(AppDbContext context)
+    public RatingRepository(UniquizbitDbContext context)
       : base(context)
     {
     }

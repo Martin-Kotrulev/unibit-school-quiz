@@ -1,20 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Uniquizbit.Extensions;
-using Uniquizbit.Persistence;
-using Hangfire;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-
-namespace Uniquizbit
+namespace Uniquizbit.Web
 {
+  using Data;
+  using Hangfire;
+  using System;
+  using System.Collections.Generic;
+  using System.IO;
+  using System.Linq;
+  using System.Threading.Tasks;
+  using Microsoft.AspNetCore;
+  using Microsoft.AspNetCore.Hosting;
+  using Microsoft.EntityFrameworkCore;
+  using Microsoft.Extensions.Configuration;
+  using Microsoft.Extensions.DependencyInjection;
+  using Microsoft.Extensions.Logging;
+
   public class Program
   {
     public static void Main(string[] args)
@@ -38,7 +37,7 @@ namespace Uniquizbit
         using (var scope = webHost.Services.CreateScope())
         {
             var services = scope.ServiceProvider;
-            var dbContext = services.GetRequiredService<AppDbContext>();
+            var dbContext = services.GetRequiredService<UniquizbitDbContext>();
 
             //dbContext.Database.Migrate();
         }

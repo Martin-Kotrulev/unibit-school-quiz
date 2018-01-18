@@ -10,8 +10,8 @@ using System;
 
 namespace Uniquizbit.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(UniquizbitDbContext))]
+    partial class UniquizbitDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

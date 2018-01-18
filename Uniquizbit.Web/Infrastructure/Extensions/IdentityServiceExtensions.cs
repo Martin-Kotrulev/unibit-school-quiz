@@ -34,7 +34,7 @@ namespace Uniquizbit.Extensions
       });
 
       return services.AddIdentity<ApplicationUser, IdentityRole>()
-          .AddEntityFrameworkStores<AppDbContext>()
+          .AddEntityFrameworkStores<UniquizbitDbContext>()
           .AddDefaultTokenProviders();
     }
   }

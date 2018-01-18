@@ -10,8 +10,8 @@ namespace Uniquizbit.Persistence.Repositories
 {
   internal class AnswerRepository : Repository<Answer>, IAnswerRepository
   {
-    public AppDbContext AppDbContext { get { return Context as AppDbContext; } }
-    public AnswerRepository(AppDbContext context) 
+    public UniquizbitDbContext UniquizbitDbContext { get { return Context as UniquizbitDbContext; } }
+    public AnswerRepository(UniquizbitDbContext context) 
       : base(context)
     {
     }
@@ -20,7 +20,7 @@ namespace Uniquizbit.Persistence.Repositories
     {
       var rnd = new Random();
 
-      return await AppDbContext.Answers
+      return await UniquizbitDbContext.Answers
         .Where(a => a.QuestionId == quizId)
         .Select(a => a.Id)
         .OrderBy(a => rnd.Next())
@@ -29,10 +29,10 @@ namespace Uniquizbit.Persistence.Repositories
 
     public async Task AddAnswerAsync(Answer answer)
     {
-      var question = await AppDbContext.Questions
+      var question = await UniquizbitDbContext.Questions
         .FirstOrDefaultAsync(q => q.Id == answer.QuestionId);
 
-      var entry = AppDbContext.Entry(question);
+      var entry = UniquizbitDbContext.Entry(question);
       await entry.Collection(e => e.Answers)
         .Query()
         .OrderBy(a => a.Letter)
@@ -51,18 +51,18 @@ namespace Uniquizbit.Persistence.Repositories
 
     public async Task<bool> DeleteAnswerAsync(int answerId)
     {
-      var answer = await AppDbContext.Answers
+      var answer = await UniquizbitDbContext.Answers
         .FirstOrDefaultAsync(a => a.Id == answerId);
 
       if (answer != null)
       {
-        AppDbContext.Answers.Remove(answer);
-        AppDbContext.SaveChanges();
+        UniquizbitDbContext.Answers.Remove(answer);
+        UniquizbitDbContext.SaveChanges();
         
-        var question = await AppDbContext.Questions
+        var question = await UniquizbitDbContext.Questions
           .FirstOrDefaultAsync(q => q.Id == answer.QuestionId);
 
-        var entry = AppDbContext.Entry(question);
+        var entry = UniquizbitDbContext.Entry(question);
         await entry.Collection(e => e.Answers)
           .Query()
           .OrderBy(a => a.Letter)

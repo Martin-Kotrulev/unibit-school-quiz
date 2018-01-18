@@ -9,8 +9,8 @@ namespace Uniquizbit.Persistence.Repositories
 {
   internal class UserRepository : Repository<ApplicationUser>, IUserRepository
   {
-    public AppDbContext AppDbContext { get { return Context as AppDbContext; } }
-    public UserRepository(AppDbContext context)
+    public UniquizbitDbContext UniquizbitDbContext { get { return Context as UniquizbitDbContext; } }
+    public UserRepository(UniquizbitDbContext context)
       : base(context)
     {
         
@@ -18,10 +18,10 @@ namespace Uniquizbit.Persistence.Repositories
 
     public async Task<IEnumerable<Quiz>> GetUserTakenQuizzesPaged(string userId, int page = 1, int pageSize = 10)
     {
-      var user = AppDbContext.Users
+      var user = UniquizbitDbContext.Users
         .FirstOrDefault(u => u.Id == userId);
       
-      var userEntry = AppDbContext.Entry(user);
+      var userEntry = UniquizbitDbContext.Entry(user);
 
       var takenQuizzes = userEntry.Collection(ue => ue.TakenQuizzes)
         .Query()

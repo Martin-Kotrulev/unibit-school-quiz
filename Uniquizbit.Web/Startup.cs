@@ -1,5 +1,12 @@
-namespace Uniquizbit
+namespace Uniquizbit.Web
 {
+  using AutoMapper;
+  using Common.Config;
+  using Controllers;
+  using Data;
+  using Extensions;
+  using Hangfire;
+  using Hangfire.PostgreSql;
   using System;
   using System.Collections.Generic;
   using System.IO;
@@ -7,16 +14,7 @@ namespace Uniquizbit
   using System.Net;
   using System.Text;
   using System.Threading.Tasks;
-  using Common.Config;
-  using Controllers;
-  using Data;
-  using Uniquizbit.Persistence;
-  using Uniquizbit.Persistence.Repositories;
-  using Uniquizbit.Persistence.Repositories.Interfaces;
-  using Uniquizbit.Services;
-  using Uniquizbit.Extensions;
-  using Hangfire;
-  using Hangfire.PostgreSql;
+  using Services;
   using Microsoft.AspNetCore.Authentication.Cookies;
   using Microsoft.AspNetCore.Authentication.JwtBearer;
   using Microsoft.AspNetCore.Builder;
@@ -27,7 +25,6 @@ namespace Uniquizbit
   using Microsoft.Extensions.Configuration;
   using Microsoft.Extensions.DependencyInjection;
   using Newtonsoft.Json;
-  using AutoMapper;
   
   public class Startup
   {
@@ -38,7 +35,6 @@ namespace Uniquizbit
       Configuration = configuration;
     }
 
-    // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
       // Custom configurations
@@ -48,7 +44,7 @@ namespace Uniquizbit
       services.AddCors();
 
       // DbContext
-      services.AddDbContext<AppDbContext>(opt =>
+      services.AddDbContext<UniquizbitDbContext>(opt =>
       {
         opt.UseNpgsql(connectionString: Configuration.GetConnectionString("Default"));
       });
@@ -58,14 +54,9 @@ namespace Uniquizbit
       //   config.UsePostgreSqlStorage(Configuration.GetConnectionString("Default"));
       // });
 
-      // Identity
       services.AddIdentityService();
 
-      // Applications services
-      services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-      services.AddTransient<IAuthenticationService, AuthenticationService>();
-      services.AddTransient<IQuizService, QuizService>();
+      services.AddScoped<IQuizService, QuizService>();
 
       services.AddSecurity(configuration: Configuration);
 
@@ -74,7 +65,6 @@ namespace Uniquizbit
       services.AddMvc();
     }
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
       if (env.IsDevelopment())

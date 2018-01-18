@@ -5,7 +5,7 @@ namespace Uniquizbit.Persistence.Repositories
 {
   internal class TagRepository : Repository<Tag>, ITagRepository
   {
-    public TagRepository(AppDbContext context)
+    public TagRepository(UniquizbitDbContext context)
       :base(context)
     {
         

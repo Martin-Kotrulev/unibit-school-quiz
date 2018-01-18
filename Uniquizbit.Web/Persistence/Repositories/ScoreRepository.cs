@@ -6,7 +6,7 @@ namespace Uniquizbit.Persistence.Repositories
 {
   internal class ScoreRepository : Repository<Score>, IScoreRepository
   {
-    public ScoreRepository(AppDbContext context) 
+    public ScoreRepository(UniquizbitDbContext context) 
       : base(context)
     {
     }

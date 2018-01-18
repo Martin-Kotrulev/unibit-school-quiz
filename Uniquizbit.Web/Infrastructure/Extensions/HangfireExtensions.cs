@@ -16,7 +16,7 @@ namespace Uniquizbit.Extensions
       using (var scope = webHost.Services.CreateScope())
       {
         var services = scope.ServiceProvider;
-        var dbContext = services.GetRequiredService<AppDbContext>();
+        var dbContext = services.GetRequiredService<UniquizbitDbContext>();
       }
 
       return webHost;

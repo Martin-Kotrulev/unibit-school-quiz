@@ -5,7 +5,7 @@ namespace Uniquizbit.Persistence.Repositories
 {
   public class UnitOfWork : IUnitOfWork
   {
-    private readonly AppDbContext _context;
+    private readonly UniquizbitDbContext _context;
 
     public IAnswerRepository Answers { get; private set; }
 
@@ -31,7 +31,7 @@ namespace Uniquizbit.Persistence.Repositories
 
     public IUserRepository Users { get; private set; }
 
-    public UnitOfWork(AppDbContext context)
+    public UnitOfWork(UniquizbitDbContext context)
     {
       this._context = context;
 

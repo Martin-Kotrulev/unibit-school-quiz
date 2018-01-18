@@ -11,9 +11,9 @@ namespace Uniquizbit.Persistence.Repositories
 {
   internal class QuizGroupRepository : Repository<QuizGroup>, IQuizGroupRepository
   {
-    public AppDbContext AppDbContext { get { return Context as AppDbContext; } }
+    public UniquizbitDbContext UniquizbitDbContext { get { return Context as UniquizbitDbContext; } }
 
-    public QuizGroupRepository(AppDbContext context)
+    public QuizGroupRepository(UniquizbitDbContext context)
       : base(context)
     {
 
@@ -42,7 +42,7 @@ namespace Uniquizbit.Persistence.Repositories
 
     private async Task<IEnumerable<QuizGroup>> ApplyPaging(Expression<Func<QuizGroup, bool>> predicate, int page, int pageSize)
     {
-      return await AppDbContext.QuizGroups
+      return await UniquizbitDbContext.QuizGroups
         .Include(qg => qg.Tags)
           .ThenInclude(t => t.Tag)
         .Where(predicate)

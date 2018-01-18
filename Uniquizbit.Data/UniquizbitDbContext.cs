@@ -5,7 +5,7 @@ namespace Uniquizbit.Data
 	using Microsoft.EntityFrameworkCore;
 	using Models;
 
-	public class AppDbContext : IdentityDbContext<ApplicationUser>
+	public class UniquizbitDbContext : IdentityDbContext<ApplicationUser>
 	{
 		public DbSet<Answer> Answers { get; set; }
 
@@ -37,7 +37,7 @@ namespace Uniquizbit.Data
 
 		public DbSet<ProgressesAnswers> ProgressesAnswers { get; set; }
 
-		public AppDbContext(DbContextOptions options) 
+		public UniquizbitDbContext(DbContextOptions options) 
 			: base(options)
 		{
 		}

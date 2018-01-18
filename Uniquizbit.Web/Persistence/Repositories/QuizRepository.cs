@@ -12,9 +12,9 @@ namespace Uniquizbit.Persistence.Repositories
 {
   internal class QuizRepository : Repository<Quiz>, IQuizRepository
   {
-    public AppDbContext AppDbContext { get { return this.Context as AppDbContext; } }
+    public UniquizbitDbContext UniquizbitDbContext { get { return this.Context as UniquizbitDbContext; } }
 
-    public QuizRepository(AppDbContext context)
+    public QuizRepository(UniquizbitDbContext context)
       : base(context)
     {
         
@@ -22,7 +22,7 @@ namespace Uniquizbit.Persistence.Repositories
 
     public void MarkQuizAsTaken(int quizId, string userId)
     {
-      AppDbContext.QuizzesUsers.Add(new QuizzesUsers() 
+      UniquizbitDbContext.QuizzesUsers.Add(new QuizzesUsers() 
       {
         QuizId = quizId,
         UserId = userId
@@ -31,14 +31,14 @@ namespace Uniquizbit.Persistence.Repositories
 
     public async Task<int> GetQuizTotalScoreAsync(int quizId)
     {
-      return await AppDbContext.Answers
+      return await UniquizbitDbContext.Answers
         .Where(a => a.QuizId == quizId && a.IsRight)
         .SumAsync(a => a.Weight);
     }
 
     public async Task<Quiz> GetQuizWithPasswordAsync(int quizId, string password)
     {
-      return await AppDbContext.Quizzes
+      return await UniquizbitDbContext.Quizzes
         .FirstOrDefaultAsync(q => q.Id == quizId && q.Password == password);
     }
 
@@ -67,7 +67,7 @@ namespace Uniquizbit.Persistence.Repositories
     private async Task<IEnumerable<Quiz>> ApplyPaging(
       Expression<Func<Quiz, bool>> predicate, int page, int pageSize)
     {
-      return await AppDbContext.Quizzes
+      return await UniquizbitDbContext.Quizzes
         .Include(qg => qg.Tags)
           .ThenInclude(t => t.Tag)
         .Where(predicate)
@@ -79,14 +79,14 @@ namespace Uniquizbit.Persistence.Repositories
 
     public Task<Quiz> GetQuizWithParticipantsAsync(int quizId)
     {
-      return AppDbContext.Quizzes
+      return UniquizbitDbContext.Quizzes
         .Include(q => q.Participants)
         .FirstOrDefaultAsync(q => q.Id == quizId);
     }
 
     public bool UserIsQuizCreator(int quizId, string userId)
     {
-      return AppDbContext.Quizzes
+      return UniquizbitDbContext.Quizzes
         .FirstOrDefault(q => q.Id == quizId && q.CreatorId == userId) != null;
     }
   }

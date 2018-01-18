@@ -5,7 +5,7 @@ namespace Uniquizbit.Persistence.Repositories
 {
   internal class QuizSubscriptionRepository : Repository<QuizSubscription>, IQuizSubscriptionRepository
   {
-    public QuizSubscriptionRepository(AppDbContext context)
+    public QuizSubscriptionRepository(UniquizbitDbContext context)
       : base(context)
     {
         

@@ -9,9 +9,9 @@ namespace Uniquizbit.Persistence.Repositories
 {
   internal class QuizProgressRepository : Repository<QuizProgress>, IQuizProgressRepository
   {
-    public AppDbContext AppDbContext { get {return Context as AppDbContext;} }
+    public UniquizbitDbContext UniquizbitDbContext { get {return Context as UniquizbitDbContext;} }
 
-    public QuizProgressRepository(AppDbContext context)
+    public QuizProgressRepository(UniquizbitDbContext context)
       : base(context)
     {
         
@@ -19,7 +19,7 @@ namespace Uniquizbit.Persistence.Repositories
 
     public async Task<QuizProgress> FindQuizProgressAsync(int quizId, int questionId, string userId)
     {
-      return await AppDbContext.QuizProgresses
+      return await UniquizbitDbContext.QuizProgresses
         .Include(qp => qp.GivenAnswers)
         .FirstOrDefaultAsync(qp => qp.QuizId == quizId 
           && qp.QuestionId == questionId
@@ -29,7 +29,7 @@ namespace Uniquizbit.Persistence.Repositories
     public async Task<IEnumerable<int>> FindUserQuizProgressAnswersIds(
       int quizId, string userId)
     {
-      return await AppDbContext.QuizProgresses
+      return await UniquizbitDbContext.QuizProgresses
         .Include(qp => qp.GivenAnswers)
           .ThenInclude(ga => ga.Answer)
         .Where(qp => 
@@ -41,7 +41,7 @@ namespace Uniquizbit.Persistence.Repositories
 
     public async Task<int> GetProgressAnswersWeightSumAsync(string userId, int quizId)
     {
-      return await AppDbContext.QuizProgresses
+      return await UniquizbitDbContext.QuizProgresses
         .Where(qp => qp.UserId == userId && qp.QuizId == quizId)
         .Include(qp => qp.GivenAnswers)
           .ThenInclude(ga => ga.Answer)
@@ -52,13 +52,13 @@ namespace Uniquizbit.Persistence.Repositories
 
     public async Task AddProgressAsync(QuizProgress progress, IEnumerable<int> answersIds)
     {
-      var existingProgress = await AppDbContext.QuizProgresses
+      var existingProgress = await UniquizbitDbContext.QuizProgresses
         .Include(qp => qp.GivenAnswers)
         .FirstOrDefaultAsync(qp => qp.QuizId == progress.QuizId
           && qp.QuestionId == progress.QuestionId
           && qp.UserId == progress.UserId);
 
-      var answers = await AppDbContext.Answers
+      var answers = await UniquizbitDbContext.Answers
           .Where(a => answersIds.Contains(a.Id))
           .ToListAsync();
 

@@ -10,8 +10,8 @@ namespace Uniquizbit.Persistence.Repositories
 {
   internal class QuestionRepository : Repository<Question>, IQuestionRepository
   {
-    public AppDbContext AppDbContext { get { return Context as AppDbContext; } }
-    public QuestionRepository(AppDbContext context) 
+    public UniquizbitDbContext UniquizbitDbContext { get { return Context as UniquizbitDbContext; } }
+    public QuestionRepository(UniquizbitDbContext context) 
       : base(context)
     {
     }
@@ -19,7 +19,7 @@ namespace Uniquizbit.Persistence.Repositories
     public async Task<IEnumerable<Question>> GetQuestionsWithProgressAsync(int quizId,
       IEnumerable<int> progressAnswersIds)
     {
-      var questions = await AppDbContext.Questions
+      var questions = await UniquizbitDbContext.Questions
         .Include(q => q.Answers)
         .Where(q => q.QuizId == quizId)
         .ToListAsync();
@@ -42,7 +42,7 @@ namespace Uniquizbit.Persistence.Repositories
     {
       var rnd = new Random();
 
-      var questions = await AppDbContext.Questions
+      var questions = await UniquizbitDbContext.Questions
         .Where(q => q.QuizId == quizId)
         .ToListAsync();
 
@@ -59,7 +59,7 @@ namespace Uniquizbit.Persistence.Repositories
 
     public async Task<IEnumerable<Question>> GetUserQuizQuestionsAsync(int quizId)
     {
-      var questions = await AppDbContext.Questions
+      var questions = await UniquizbitDbContext.Questions
         .Include(q => q.Answers)
         .Where(q => q.QuizId == quizId)
         .OrderBy(q => q.Id)
@@ -77,7 +77,7 @@ namespace Uniquizbit.Persistence.Repositories
 
     public async Task<bool> UserOwnQuestionAsync(int questionId, string userId)
     {
-      return await AppDbContext.Questions
+      return await UniquizbitDbContext.Questions
         .Include(q => q.Quiz)
         .FirstOrDefaultAsync(q => q.Id == questionId && q.Quiz.CreatorId == userId) != null;
     }

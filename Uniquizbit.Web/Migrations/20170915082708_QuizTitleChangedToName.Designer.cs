@@ -10,7 +10,7 @@ using System;
 
 namespace Uniquizbit.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
+    [DbContext(typeof(UniquizbitDbContext))]
     [Migration("20170915082708_QuizTitleChangedToName")]
     partial class QuizTitleChangedToName
     {

@@ -6,7 +6,7 @@ namespace Uniquizbit.Persistence.Repositories
 {
   internal class NotificationRepository : Repository<Notification>, INotificationRepository
   {
-    public NotificationRepository(AppDbContext context) 
+    public NotificationRepository(UniquizbitDbContext context) 
       : base(context)
     {
     }

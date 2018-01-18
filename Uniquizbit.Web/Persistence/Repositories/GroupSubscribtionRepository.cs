@@ -6,7 +6,7 @@ namespace Uniquizbit.Persistence.Repositories
 {
   internal class GroupSubscriptionRepository : Repository<GroupSubscription>, IGroupSubscriptionRepository
   {
-    public GroupSubscriptionRepository(AppDbContext context) 
+    public GroupSubscriptionRepository(UniquizbitDbContext context) 
       : base(context)
     {
     }
