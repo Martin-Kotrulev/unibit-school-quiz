@@ -20,7 +20,7 @@ namespace Uniquizbit.Migrations
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.0.0-rtm-26452");
 
-            modelBuilder.Entity("App.Models.Answer", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.Answer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -49,7 +49,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("Answers");
                 });
 
-            modelBuilder.Entity("App.Models.User", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.User", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
@@ -99,7 +99,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("App.Models.GroupsTags", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.GroupsTags", b =>
                 {
                     b.Property<int>("GroupId");
 
@@ -112,7 +112,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("GroupsTags");
                 });
 
-            modelBuilder.Entity("App.Models.GroupSubscription", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.GroupSubscription", b =>
                 {
                     b.Property<string>("UserId");
 
@@ -123,7 +123,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("GroupSubscriptions");
                 });
 
-            modelBuilder.Entity("App.Models.Notification", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.Notification", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -151,7 +151,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("Notifications");
                 });
 
-            modelBuilder.Entity("App.Models.ProgressesAnswers", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.ProgressesAnswers", b =>
                 {
                     b.Property<int>("ProgressId");
 
@@ -172,7 +172,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("ProgressesAnswers");
                 });
 
-            modelBuilder.Entity("App.Models.Question", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.Question", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -193,7 +193,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("Questions");
                 });
 
-            modelBuilder.Entity("App.Models.Quiz", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.Quiz", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -232,7 +232,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("Quizzes");
                 });
 
-            modelBuilder.Entity("App.Models.QuizGroup", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.QuizGroup", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -257,7 +257,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("QuizGroups");
                 });
 
-            modelBuilder.Entity("App.Models.QuizProgress", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.QuizProgress", b =>
                 {
                     b.Property<int>("QuizId");
 
@@ -272,7 +272,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("QuizProgresses");
                 });
 
-            modelBuilder.Entity("App.Models.QuizSubscription", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.QuizSubscription", b =>
                 {
                     b.Property<string>("UserId");
 
@@ -283,7 +283,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("QuizSubscriptions");
                 });
 
-            modelBuilder.Entity("App.Models.QuizzesTags", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.QuizzesTags", b =>
                 {
                     b.Property<int>("QuizId");
 
@@ -296,7 +296,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("QuizzesTags");
                 });
 
-            modelBuilder.Entity("App.Models.QuizzesUsers", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.QuizzesUsers", b =>
                 {
                     b.Property<int>("QuizId");
 
@@ -309,7 +309,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("QuizzesUsers");
                 });
 
-            modelBuilder.Entity("App.Models.Rating", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.Rating", b =>
                 {
                     b.Property<string>("UserId");
 
@@ -324,7 +324,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("Ratings");
                 });
 
-            modelBuilder.Entity("App.Models.Score", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.Score", b =>
                 {
                     b.Property<string>("UserId");
 
@@ -341,7 +341,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("Scores");
                 });
 
-            modelBuilder.Entity("App.Models.Tag", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.Tag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -358,7 +358,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("App.Models.UsersGroups", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.UsersGroups", b =>
                 {
                     b.Property<string>("UserId");
 
@@ -478,147 +478,147 @@ namespace Uniquizbit.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("App.Models.Answer", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.Answer", b =>
                 {
-                    b.HasOne("App.Models.Question", "Question")
+                    b.HasOne("Uniquizbit.Data.Models.Question", "Question")
                         .WithMany("Answers")
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("App.Models.Quiz", "Quiz")
+                    b.HasOne("Uniquizbit.Data.Models.Quiz", "Quiz")
                         .WithMany()
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("App.Models.GroupsTags", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.GroupsTags", b =>
                 {
-                    b.HasOne("App.Models.QuizGroup", "Group")
+                    b.HasOne("Uniquizbit.Data.Models.QuizGroup", "Group")
                         .WithMany("Tags")
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("App.Models.Tag", "Tag")
+                    b.HasOne("Uniquizbit.Data.Models.Tag", "Tag")
                         .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("App.Models.Notification", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.Notification", b =>
                 {
-                    b.HasOne("App.Models.User", "Issuer")
+                    b.HasOne("Uniquizbit.Data.Models.User", "Issuer")
                         .WithMany("Notifications")
                         .HasForeignKey("IssuerId");
 
-                    b.HasOne("App.Models.QuizGroup", "QuizGroup")
+                    b.HasOne("Uniquizbit.Data.Models.QuizGroup", "QuizGroup")
                         .WithMany()
                         .HasForeignKey("QuizGroupId");
 
-                    b.HasOne("App.Models.Quiz", "Quiz")
+                    b.HasOne("Uniquizbit.Data.Models.Quiz", "Quiz")
                         .WithMany()
                         .HasForeignKey("QuizId");
                 });
 
-            modelBuilder.Entity("App.Models.ProgressesAnswers", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.ProgressesAnswers", b =>
                 {
-                    b.HasOne("App.Models.Answer", "Answer")
+                    b.HasOne("Uniquizbit.Data.Models.Answer", "Answer")
                         .WithMany()
                         .HasForeignKey("AnswerId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("App.Models.QuizProgress", "Progress")
+                    b.HasOne("Uniquizbit.Data.Models.QuizProgress", "Progress")
                         .WithMany("GivenAnswers")
                         .HasForeignKey("ProgressQuizId", "ProgressQuestionId", "ProgressUserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("App.Models.Question", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.Question", b =>
                 {
-                    b.HasOne("App.Models.Quiz", "Quiz")
+                    b.HasOne("Uniquizbit.Data.Models.Quiz", "Quiz")
                         .WithMany("Questions")
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("App.Models.Quiz", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.Quiz", b =>
                 {
-                    b.HasOne("App.Models.User", "Creator")
+                    b.HasOne("Uniquizbit.Data.Models.User", "Creator")
                         .WithMany("OwnQuizzes")
                         .HasForeignKey("CreatorId");
 
-                    b.HasOne("App.Models.QuizGroup", "Group")
+                    b.HasOne("Uniquizbit.Data.Models.QuizGroup", "Group")
                         .WithMany("Quizzes")
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("App.Models.QuizGroup", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.QuizGroup", b =>
                 {
-                    b.HasOne("App.Models.User", "Creator")
+                    b.HasOne("Uniquizbit.Data.Models.User", "Creator")
                         .WithMany("OwnGroups")
                         .HasForeignKey("CreatorId");
                 });
 
-            modelBuilder.Entity("App.Models.QuizzesTags", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.QuizzesTags", b =>
                 {
-                    b.HasOne("App.Models.Quiz", "Quiz")
+                    b.HasOne("Uniquizbit.Data.Models.Quiz", "Quiz")
                         .WithMany("Tags")
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("App.Models.Tag", "Tag")
+                    b.HasOne("Uniquizbit.Data.Models.Tag", "Tag")
                         .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("App.Models.QuizzesUsers", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.QuizzesUsers", b =>
                 {
-                    b.HasOne("App.Models.Quiz", "Quiz")
+                    b.HasOne("Uniquizbit.Data.Models.Quiz", "Quiz")
                         .WithMany("Participants")
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("App.Models.User", "User")
+                    b.HasOne("Uniquizbit.Data.Models.User", "User")
                         .WithMany("TakenQuizzes")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("App.Models.Rating", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.Rating", b =>
                 {
-                    b.HasOne("App.Models.Quiz", "Quiz")
+                    b.HasOne("Uniquizbit.Data.Models.Quiz", "Quiz")
                         .WithMany()
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("App.Models.User", "User")
+                    b.HasOne("Uniquizbit.Data.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("App.Models.Score", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.Score", b =>
                 {
-                    b.HasOne("App.Models.Quiz", "Quiz")
+                    b.HasOne("Uniquizbit.Data.Models.Quiz", "Quiz")
                         .WithMany("Scores")
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("App.Models.User", "User")
+                    b.HasOne("Uniquizbit.Data.Models.User", "User")
                         .WithMany("Scores")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("App.Models.UsersGroups", b =>
+            modelBuilder.Entity("Uniquizbit.Data.Models.UsersGroups", b =>
                 {
-                    b.HasOne("App.Models.QuizGroup", "QuizGroup")
+                    b.HasOne("Uniquizbit.Data.Models.QuizGroup", "QuizGroup")
                         .WithMany("Members")
                         .HasForeignKey("QuizGroupId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("App.Models.User", "User")
+                    b.HasOne("Uniquizbit.Data.Models.User", "User")
                         .WithMany("InQuizGroups")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -634,7 +634,7 @@ namespace Uniquizbit.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("App.Models.User")
+                    b.HasOne("Uniquizbit.Data.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -642,7 +642,7 @@ namespace Uniquizbit.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("App.Models.User")
+                    b.HasOne("Uniquizbit.Data.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -655,7 +655,7 @@ namespace Uniquizbit.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("App.Models.User")
+                    b.HasOne("Uniquizbit.Data.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -663,7 +663,7 @@ namespace Uniquizbit.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("App.Models.User")
+                    b.HasOne("Uniquizbit.Data.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);

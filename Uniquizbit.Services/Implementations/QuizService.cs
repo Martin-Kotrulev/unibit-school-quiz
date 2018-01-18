@@ -1,15 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Uniquizbit.Controllers;
-using Uniquizbit.Config;
-using Uniquizbit.Models;
-using Uniquizbit.Persistence.Repositories.Interfaces;
-using Microsoft.Extensions.Options;
-
 namespace Uniquizbit.Services
 {
+  using Data;
+  using Data.Models;
+  using Common.Config;
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Threading.Tasks;
+  using Microsoft.Extensions.Options;
+
   public class QuizService : IQuizService
   {
     private readonly IUnitOfWork _unitOfWork;
