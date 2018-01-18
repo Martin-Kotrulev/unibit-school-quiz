@@ -4,7 +4,7 @@ namespace Uniquizbit.Data.Models
   using Microsoft.AspNetCore.Identity;
   using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
   
-  public class ApplicationUser : IdentityUser
+  public class User : IdentityUser
   {
     public ICollection<Quiz> OwnQuizzes { get; set; }
 
@@ -18,7 +18,7 @@ namespace Uniquizbit.Data.Models
 
     public ICollection<Notification> Notifications { get; set; }
     
-    public ApplicationUser() {
+    public User() {
       OwnQuizzes = new HashSet<Quiz>();
       TakenQuizzes = new HashSet<QuizzesUsers>();
       Scores = new HashSet<Score>();

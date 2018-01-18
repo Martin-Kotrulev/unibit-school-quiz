@@ -69,7 +69,7 @@ namespace Uniquizbit.Services
     }
 
     public async void ScoreUserAsync(
-        ApplicationUser user, int quizId, ICollection<int> answersIds)
+        User user, int quizId, ICollection<int> answersIds)
     {
       var totalScore = await _unitOfWork.Quizzes
         .GetQuizTotalScoreAsync(quizId);
@@ -164,7 +164,7 @@ namespace Uniquizbit.Services
     }
 
     public async Task<IEnumerable<Quiz>> GetUserTakenQuizzesAsync(
-      ApplicationUser user, int page = 1, int pageSize = 10)
+      User user, int page = 1, int pageSize = 10)
     {
       return await _unitOfWork.Users
         .GetUserTakenQuizzesPaged(user.Id, page, pageSize);

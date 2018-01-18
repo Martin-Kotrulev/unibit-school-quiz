@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Uniquizbit.Persistence.Repositories
 {
-  internal class UserRepository : Repository<ApplicationUser>, IUserRepository
+  internal class UserRepository : Repository<User>, IUserRepository
   {
     public UniquizbitDbContext UniquizbitDbContext { get { return Context as UniquizbitDbContext; } }
     public UserRepository(UniquizbitDbContext context)

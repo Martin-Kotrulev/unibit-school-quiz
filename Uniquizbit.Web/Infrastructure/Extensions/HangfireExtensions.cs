@@ -1,5 +1,6 @@
 namespace Uniquizbit.Extensions
 {
+  using Data;
   using Hangfire;
   using Microsoft.AspNetCore.Builder;
   using Microsoft.AspNetCore.Hosting;

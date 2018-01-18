@@ -15,7 +15,7 @@ namespace Uniquizbit.Services
 
     Task CreateAnswerAsync(Answer answer);
 
-    void ScoreUserAsync(ApplicationUser user, int quizId, ICollection<int> answersIds);
+    void ScoreUserAsync(User user, int quizId, ICollection<int> answersIds);
 
     void MarkQuizAsTaken(int quizId, string userId);
 
@@ -52,7 +52,7 @@ namespace Uniquizbit.Services
     Task<bool> GroupExistsAsync(QuizGroup quizGroup);
 
     Task<IEnumerable<Quiz>> GetUserTakenQuizzesAsync(
-      ApplicationUser user, int page = 1, int pageSize = 10);
+      User user, int page = 1, int pageSize = 10);
 
     IEnumerable<Tag> CheckForExistingTags(ICollection<string> tags);
 

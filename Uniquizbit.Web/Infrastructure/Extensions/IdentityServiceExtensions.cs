@@ -1,6 +1,7 @@
 namespace Uniquizbit.Extensions
 {
-  using Models;
+  using Data;
+  using Data.Models;
   using Microsoft.AspNetCore.Builder;
   using Microsoft.AspNetCore.Identity;
   using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -33,7 +34,7 @@ namespace Uniquizbit.Extensions
         options.User.RequireUniqueEmail = true;
       });
 
-      return services.AddIdentity<ApplicationUser, IdentityRole>()
+      return services.AddIdentity<User, IdentityRole>()
           .AddEntityFrameworkStores<UniquizbitDbContext>()
           .AddDefaultTokenProviders();
     }

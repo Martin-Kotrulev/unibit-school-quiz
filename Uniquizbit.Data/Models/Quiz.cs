@@ -32,7 +32,7 @@ namespace Uniquizbit.Data.Models
 
     public string CreatorName { get; set; }
     
-    public ApplicationUser Creator { get; set; }
+    public User Creator { get; set; }
 
     public ICollection<QuizzesTags> Tags { get; set; }
 

@@ -16,7 +16,7 @@ namespace Uniquizbit.Data.Models
 
     public QuizGroup QuizGroup { get; set; }
 
-    public ApplicationUser Issuer { get; set; }
+    public User Issuer { get; set; }
 
     public bool Seen { get; set; } = false;
   }

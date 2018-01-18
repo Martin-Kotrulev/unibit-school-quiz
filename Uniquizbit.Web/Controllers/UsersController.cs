@@ -20,13 +20,13 @@ namespace Uniquizbit.Controllers
 
   public class UsersController : Controller
   {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly UserManager<User> _userManager;
+    private readonly SignInManager<User> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly JWTSettings _options;
 
-    public UsersController(UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
+    public UsersController(UserManager<User> userManager,
+        SignInManager<User> signInManager,
         RoleManager<IdentityRole> roleManager,
         IOptions<JWTSettings> optionsAccessor)
     {
@@ -42,7 +42,7 @@ namespace Uniquizbit.Controllers
     {
       if (ModelState.IsValid)
       {
-        var user = new ApplicationUser() {
+        var user = new User() {
           UserName = credentials.Username,
           Email = credentials.Email
         };
@@ -95,7 +95,7 @@ namespace Uniquizbit.Controllers
       }, $"You have successfully { registered }logged in.");
     }
 
-    private string GetToken(ApplicationUser user)
+    private string GetToken(User user)
     {
       var symmetricKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.SecretKey));
 

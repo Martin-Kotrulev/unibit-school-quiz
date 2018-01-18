@@ -50,7 +50,7 @@ namespace Uniquizbit.Migrations
                     b.ToTable("Answers");
                 });
 
-            modelBuilder.Entity("App.Models.ApplicationUser", b =>
+            modelBuilder.Entity("App.Models.User", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
@@ -507,7 +507,7 @@ namespace Uniquizbit.Migrations
 
             modelBuilder.Entity("App.Models.Notification", b =>
                 {
-                    b.HasOne("App.Models.ApplicationUser", "Issuer")
+                    b.HasOne("App.Models.User", "Issuer")
                         .WithMany("Notifications")
                         .HasForeignKey("IssuerId");
 
@@ -543,7 +543,7 @@ namespace Uniquizbit.Migrations
 
             modelBuilder.Entity("App.Models.Quiz", b =>
                 {
-                    b.HasOne("App.Models.ApplicationUser", "Creator")
+                    b.HasOne("App.Models.User", "Creator")
                         .WithMany("OwnQuizzes")
                         .HasForeignKey("CreatorId");
 
@@ -555,7 +555,7 @@ namespace Uniquizbit.Migrations
 
             modelBuilder.Entity("App.Models.QuizGroup", b =>
                 {
-                    b.HasOne("App.Models.ApplicationUser", "Creator")
+                    b.HasOne("App.Models.User", "Creator")
                         .WithMany("OwnGroups")
                         .HasForeignKey("CreatorId");
                 });
@@ -580,7 +580,7 @@ namespace Uniquizbit.Migrations
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("App.Models.ApplicationUser", "User")
+                    b.HasOne("App.Models.User", "User")
                         .WithMany("TakenQuizzes")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -593,7 +593,7 @@ namespace Uniquizbit.Migrations
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("App.Models.ApplicationUser", "User")
+                    b.HasOne("App.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -606,7 +606,7 @@ namespace Uniquizbit.Migrations
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("App.Models.ApplicationUser", "User")
+                    b.HasOne("App.Models.User", "User")
                         .WithMany("Scores")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -619,7 +619,7 @@ namespace Uniquizbit.Migrations
                         .HasForeignKey("QuizGroupId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("App.Models.ApplicationUser", "User")
+                    b.HasOne("App.Models.User", "User")
                         .WithMany("InQuizGroups")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -635,7 +635,7 @@ namespace Uniquizbit.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("App.Models.ApplicationUser")
+                    b.HasOne("App.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -643,7 +643,7 @@ namespace Uniquizbit.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("App.Models.ApplicationUser")
+                    b.HasOne("App.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -656,7 +656,7 @@ namespace Uniquizbit.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("App.Models.ApplicationUser")
+                    b.HasOne("App.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -664,7 +664,7 @@ namespace Uniquizbit.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("App.Models.ApplicationUser")
+                    b.HasOne("App.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);

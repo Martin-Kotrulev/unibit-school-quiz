@@ -5,7 +5,7 @@ namespace Uniquizbit.Data
 	using Microsoft.EntityFrameworkCore;
 	using Models;
 
-	public class UniquizbitDbContext : IdentityDbContext<ApplicationUser>
+	public class UniquizbitDbContext : IdentityDbContext<User>
 	{
 		public DbSet<Answer> Answers { get; set; }
 
@@ -100,7 +100,7 @@ namespace Uniquizbit.Data
 					.WithOne(ga => ga.Progress)
 					.OnDelete(DeleteBehavior.Cascade);
 
-				modelBuilder.Entity<ApplicationUser>()
+				modelBuilder.Entity<User>()
 					.HasMany(u => u.OwnQuizzes)
 					.WithOne(q => q.Creator);
 
