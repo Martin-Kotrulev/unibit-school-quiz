@@ -1,4 +1,4 @@
-namespace Uniquizbit.Config
+namespace Uniquizbit.Common.Config
 {
   public class JWTSettings
   {

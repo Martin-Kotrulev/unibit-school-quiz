@@ -1,10 +1,10 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Uniquizbit.Controllers;
-using Uniquizbit.Models;
-
 namespace Uniquizbit.Services
 {
+  using System.Collections.Generic;
+  using System.Threading.Tasks;
+  using Uniquizbit.Controllers;
+  using Uniquizbit.Models;
+
   public interface IQuizService
   {
     void CreateGroup(QuizGroup quizGroup);

@@ -1,23 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Uniquizbit.Controllers;
-using Uniquizbit.Web.Models;
-using Uniquizbit.Models;
-using Uniquizbit.Services;
-using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Npgsql;
-
-namespace Uniquizbit.Controllers
+namespace Uniquizbit.Web.Controllers
 {
+  using AutoMapper;
+  using Microsoft.AspNetCore.Authorization;
+  using Microsoft.AspNetCore.Mvc;
+  using Microsoft.EntityFrameworkCore;
+  using Newtonsoft.Json;
+  using Npgsql;
+  using System;
+  using System.Collections.Generic;
+  using System.Data;
+  using System.Data.SqlClient;
+  using System.Linq;
+  using System.Text.RegularExpressions;
+  using System.Threading.Tasks;
+  using Models;
+  using Uniquizbit.Services;
+
   public class GroupsController : BaseApiController
   {
     private readonly IQuizService _quizService;

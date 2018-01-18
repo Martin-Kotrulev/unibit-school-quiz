@@ -13,9 +13,8 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Uniquizbit.Services
 {
-  using Uniquizbit.Config;
-  using Uniquizbit.DTOs;
-  using Uniquizbit.Models;
+  using Common.Config;
+  using Data.Models;
 
   public class AuthenticationService : IAuthenticationService
   {
@@ -50,52 +49,8 @@ namespace Uniquizbit.Services
       return await _userManager.CreateAsync(user, password);
     }
 
-    public async Task<TokenResource> SignInUserAsync(CredentialsResource credentials)
-    {
-      var result = await _signInManager
-        .PasswordSignInAsync(credentials.Username, credentials.Password, false, false);
+    
 
-      if (result.Succeeded)
-      {
-        var user = await _userManager.FindByNameAsync(credentials.Username);
-
-        return new TokenResource()
-        {
-          User = user.UserName,
-          UserId = user.Id,
-          Token = GetToken(user),
-          Expires = DateTime.UtcNow.AddDays(_options.ExpirationDays)
-        };
-      }
-
-      return new TokenResource();
-    }
-
-    private string GetToken(ApplicationUser user)
-    {
-      var symmetricKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.SecretKey));
-
-      var claimsIdentity = new ClaimsIdentity(new List<Claim>()
-      {
-          new Claim(ClaimTypes.Name, user.UserName),
-          new Claim(ClaimTypes.Email, user.Email),
-          new Claim(ClaimTypes.NameIdentifier, user.Id)
-      });
-
-      var tokenDescriptor = new SecurityTokenDescriptor()
-      {
-        Audience = _options.Audience,
-        Issuer = _options.Issuer,
-        IssuedAt = DateTime.UtcNow,
-        NotBefore = DateTime.UtcNow,
-        Subject = claimsIdentity,
-        Expires = DateTime.UtcNow.AddDays(_options.ExpirationDays),
-        SigningCredentials = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256)
-      };
-
-      var handler = new JwtSecurityTokenHandler();
-
-      return handler.CreateEncodedJwt(tokenDescriptor);
-    }
+    
   }
 }

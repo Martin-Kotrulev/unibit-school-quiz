@@ -1,34 +1,34 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Uniquizbit.Config;
-using Uniquizbit.Controllers;
-using Uniquizbit.Models;
-using Uniquizbit.Persistence;
-using Uniquizbit.Persistence.Repositories;
-using Uniquizbit.Persistence.Repositories.Interfaces;
-using Uniquizbit.Services;
-using Uniquizbit.Extensions;
-using Hangfire;
-using Hangfire.PostgreSql;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.SpaServices.Webpack;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using AutoMapper;
-
 namespace Uniquizbit
 {
+  using System;
+  using System.Collections.Generic;
+  using System.IO;
+  using System.Linq;
+  using System.Net;
+  using System.Text;
+  using System.Threading.Tasks;
+  using Common.Config;
+  using Controllers;
+  using Data;
+  using Uniquizbit.Persistence;
+  using Uniquizbit.Persistence.Repositories;
+  using Uniquizbit.Persistence.Repositories.Interfaces;
+  using Uniquizbit.Services;
+  using Uniquizbit.Extensions;
+  using Hangfire;
+  using Hangfire.PostgreSql;
+  using Microsoft.AspNetCore.Authentication.Cookies;
+  using Microsoft.AspNetCore.Authentication.JwtBearer;
+  using Microsoft.AspNetCore.Builder;
+  using Microsoft.AspNetCore.Hosting;
+  using Microsoft.AspNetCore.Identity;
+  using Microsoft.AspNetCore.SpaServices.Webpack;
+  using Microsoft.EntityFrameworkCore;
+  using Microsoft.Extensions.Configuration;
+  using Microsoft.Extensions.DependencyInjection;
+  using Newtonsoft.Json;
+  using AutoMapper;
+  
   public class Startup
   {
     public IConfiguration Configuration { get; }

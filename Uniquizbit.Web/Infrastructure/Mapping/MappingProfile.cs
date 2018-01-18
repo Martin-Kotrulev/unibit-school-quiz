@@ -1,11 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
-using Uniquizbit.Web.Models;
-using Uniquizbit.Models;
-using AutoMapper;
-
-namespace Api.Mapping
+namespace Uniquizbit.Web.Mapping
 {
+  using System.Collections.Generic;
+  using System.Linq;
+  using Models;
+  using AutoMapper;
+  using Data.Models;
+
   public class MappingProfile : Profile
   {
     public MappingProfile()
