@@ -2,8 +2,7 @@ namespace Uniquizbit.Services
 {
   using System.Collections.Generic;
   using System.Threading.Tasks;
-  using Uniquizbit.Controllers;
-  using Uniquizbit.Models;
+  using Data.Models;
 
   public interface IQuizService
   {
