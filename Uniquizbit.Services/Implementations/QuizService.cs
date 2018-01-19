@@ -1,4 +1,4 @@
-namespace Uniquizbit.Services
+namespace Uniquizbit.Services.Implementations
 {
   using Data;
   using Data.Models;
@@ -71,7 +71,7 @@ namespace Uniquizbit.Services
     public async void ScoreUserAsync(
         User user, int quizId, ICollection<int> answersIds)
     {
-      var totalScore = await _unitOfWork.Quizzes
+      var maxScore = await _unitOfWork.Quizzes
         .GetQuizTotalScoreAsync(quizId);
 
       var userScore = await _unitOfWork.QuizProgresses
@@ -79,7 +79,7 @@ namespace Uniquizbit.Services
 
       var score = new Score() 
       { 
-        Value = GetScore(totalScore, userScore),
+        Value = GetScore(maxScore, userScore),
         ScoredAt = DateTime.Now,
         QuizId = quizId,
         UserId = user.Id 

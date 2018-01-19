@@ -56,8 +56,6 @@ namespace Uniquizbit.Web
 
       services.AddIdentityService();
 
-      services.AddScoped<IQuizService, QuizService>();
-
       services.AddSecurity(configuration: Configuration);
 
       services.AddAutoMapper();

@@ -1,9 +1,9 @@
-using System;
-using Microsoft.Extensions.Options;
-using Uniquizbit.Common.Config;
-
-namespace Uniquizbit.Web.Core
+namespace Uniquizbit.Services.Implementations
 {
+  using Common.Config;
+  using Microsoft.Extensions.Options;
+  using System;
+
   public class ScoreCalculator
   {
     private readonly GradesSettings _gradesSettings;
@@ -13,10 +13,10 @@ namespace Uniquizbit.Web.Core
       _gradesSettings = optionsAccessor.Value;
     }
 
-    public double GetScore(double totalScore, double userScore)
+    public double GetScore(double maxScore, double userScore)
     {
       double finalScore = 2.0;
-      double scoreInPercentage = Math.Round((((double)userScore / (double)totalScore)) * 100, 2);
+      double scoreInPercentage = Math.Round((((double)userScore / (double)maxScore)) * 100, 2);
 
       if (scoreInPercentage > _gradesSettings.VeryGood)
       {

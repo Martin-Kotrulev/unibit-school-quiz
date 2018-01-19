@@ -1,9 +1,9 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Uniquizbit.Data.Models;
-
 namespace Uniquizbit.Services.Implementations
 {
+	using Data.Models;
+	using System.Collections.Generic;
+	using System.Threading.Tasks;
+
   public class QuestionService : IQuestionService
   {
     public Task CreateAnswerAsync(Answer answer)
