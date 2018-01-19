@@ -15,11 +15,5 @@ namespace Uniquizbit.Services
 		Task<bool> UserOwnQuestionAsync(int questionId, string userId);
 
     bool DeleteQuestion(int questionId);
-
-		Task<bool> DeleteAnswerAsync(int answerId);
-
-		IEnumerable<Answer> GetAnswersForIds(ICollection<int> ids);
-
-		Task CreateAnswerAsync(Answer answer);
   }
 }

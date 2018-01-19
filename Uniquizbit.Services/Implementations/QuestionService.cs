@@ -1,14 +1,17 @@
 namespace Uniquizbit.Services.Implementations
 {
-	using Data.Models;
-	using System.Collections.Generic;
-	using System.Threading.Tasks;
+  using Data.Models;
+  using System.Collections.Generic;
+  using System.Threading.Tasks;
+  using Data;
 
   public class QuestionService : IQuestionService
   {
-    public Task CreateAnswerAsync(Answer answer)
+    private readonly UniquizbitDbContext _dbContext;
+
+    public QuestionService(UniquizbitDbContext dbContext)
     {
-      throw new System.NotImplementedException();
+      _dbContext = dbContext;
     }
 
     public void CreateQuestion(Question question)
@@ -16,17 +19,7 @@ namespace Uniquizbit.Services.Implementations
       throw new System.NotImplementedException();
     }
 
-    public Task<bool> DeleteAnswerAsync(int answerId)
-    {
-      throw new System.NotImplementedException();
-    }
-
     public bool DeleteQuestion(int questionId)
-    {
-      throw new System.NotImplementedException();
-    }
-
-    public IEnumerable<Answer> GetAnswersForIds(ICollection<int> ids)
     {
       throw new System.NotImplementedException();
     }

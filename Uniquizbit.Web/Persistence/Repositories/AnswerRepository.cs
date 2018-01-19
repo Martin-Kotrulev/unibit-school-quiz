@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Uniquizbit.Models;
-using Uniquizbit.Persistence.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
-
 namespace Uniquizbit.Persistence.Repositories
 {
   internal class AnswerRepository : Repository<Answer>, IAnswerRepository
