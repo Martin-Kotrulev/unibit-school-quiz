@@ -12,14 +12,14 @@ namespace Uniquizbit.Services.Implementations
 
   public class QuizService : IQuizService
   {
-    private readonly IUnitOfWork _unitOfWork;
-
     private readonly GradesSettings _gradesSettings;
 
-    public QuizService(IUnitOfWork unitOfWork, 
+    private readonly UniquizbitDbContext _dbContext;
+
+    public QuizService(UniquizbitDbContext dbContext,
       IOptions<GradesSettings> optionsAccessor)
     {
-      _unitOfWork = unitOfWork;
+      _dbContext = dbContext;
       _gradesSettings = optionsAccessor.Value;
     }
 
@@ -77,12 +77,12 @@ namespace Uniquizbit.Services.Implementations
       var userScore = await _unitOfWork.QuizProgresses
         .GetProgressAnswersWeightSumAsync(user.Id, quizId);
 
-      var score = new Score() 
-      { 
+      var score = new Score()
+      {
         Value = GetScore(maxScore, userScore),
         ScoredAt = DateTime.Now,
         QuizId = quizId,
-        UserId = user.Id 
+        UserId = user.Id
       };
 
       _unitOfWork.Scores.Add(score);
@@ -99,34 +99,6 @@ namespace Uniquizbit.Services.Implementations
     {
       return await _unitOfWork.Quizzes
         .GetGroupQuizzesPagedAsync(quizGroupId, page, pageSize);
-    }
-
-    /// <summary>
-    /// Used to get a quiz with all questions and answers
-    /// </summary>
-    /// <param name="quizId"></param>
-    /// <returns></returns>
-    public async Task<IEnumerable<Question>> GetQuestionsAsync(int quizId, string userId)
-    {
-
-      var owner = _unitOfWork.Quizzes.UserIsQuizCreator(quizId, userId);
-
-      if (owner)  
-      {
-        return await _unitOfWork.Questions.GetUserQuizQuestionsAsync(quizId);
-      }
-      else
-      {
-        var progresAnswersIds = await _unitOfWork.QuizProgresses
-          .FindUserQuizProgressAnswersIds(quizId, userId);
-
-        if (progresAnswersIds.Count() > 0)
-          return await _unitOfWork.Questions
-            .GetQuestionsWithProgressAsync(quizId, progresAnswersIds);
-
-        return await _unitOfWork.Questions
-          .GetQuestionsForQuizAsync(quizId);
-      }
     }
 
     public async Task<IEnumerable<QuizGroup>> GetGroupsAsync(
@@ -246,7 +218,7 @@ namespace Uniquizbit.Services.Implementations
         _unitOfWork.Complete();
         return true;
       }
-      
+
       return false;
     }
 
@@ -309,4 +281,4 @@ namespace Uniquizbit.Services.Implementations
     {
       throw new System.NotImplementedException();
     }
-}
+  }

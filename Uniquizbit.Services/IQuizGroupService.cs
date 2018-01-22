@@ -6,7 +6,7 @@ namespace Uniquizbit.Services
 
   public interface IQuizGroupService : IService
   {
-    void CreateQuizGroup(QuizGroup quizGroup);
+    Task<QuizGroup> CreateQuizGroupAsync(QuizGroup quizGroup);
 
 		Task<IEnumerable<QuizGroup>> GetQuizGroupsAsync(
       int page = 1, int pageSize = 10, string search = "");
@@ -21,9 +21,9 @@ namespace Uniquizbit.Services
 
 		Task<bool> GroupExistsAsync(QuizGroup quizGroup);
 
-		bool DeleteQuizGroup(int id, string userId);
+		Task<bool> DeleteQuizGroupAsync(int id, string userId);
 
-		QuizGroup FindGroupById(int groupId);
+		Task<QuizGroup> FindGroupByIdAsync(int groupId);
 
 		Task<IEnumerable<Quiz>> GetGroupQuizzesAsync(
       int quizGroupId, int page = 1, int pageSize = 10);

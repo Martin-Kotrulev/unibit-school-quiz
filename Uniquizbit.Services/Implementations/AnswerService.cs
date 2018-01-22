@@ -75,16 +75,5 @@ namespace Uniquizbit.Services.Implementations
 			=>  await _dbContext.Answers
 						.Where(a => answersIds.Contains(a.Id))
 						.ToListAsync();
-
-    public async Task<IEnumerable<int>> GetRandomOrderForAnswersIdsAsync(int quizId)
-    {
-      var rnd = new Random();
-
-      return await _dbContext.Answers
-        .Where(a => a.QuestionId == quizId)
-        .Select(a => a.Id)
-        .OrderBy(a => rnd.Next())
-        .ToListAsync();
-    }
   }
 }

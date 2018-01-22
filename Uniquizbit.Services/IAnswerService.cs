@@ -11,7 +11,5 @@ namespace Uniquizbit.Services
     Task<bool> DeleteAnswerAsync(int answerId);
 
     Task<IEnumerable<Answer>> FindAnswersByIds(ICollection<int> answersIds);
-
-		Task<IEnumerable<int>> GetRandomOrderForAnswersIdsAsync(int quizId);
   }
 }

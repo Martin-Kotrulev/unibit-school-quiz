@@ -8,7 +8,7 @@ namespace Uniquizbit.Services
 
   public interface IQuizService : IService
   {
-    void CreateQuiz(Quiz quiz); 
+    Task<QuizGroup> CreateQuizAsync(Quiz quiz); 
 
     void ScoreUserAsync(User user, int quizId, ICollection<int> answersIds);
 
