@@ -62,7 +62,7 @@ namespace Uniquizbit.Services.Implementations
         page,
         pageSize);
 
-    public async Task<bool> GroupExistsAsync(string groupName)
+    public async Task<bool> QuizGroupExistsAsync(string groupName)
       => await _dbContext.QuizGroups
           .FirstOrDefaultAsync(qg => qg.Name == groupName) != null;
 

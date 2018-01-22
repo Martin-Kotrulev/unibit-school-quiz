@@ -19,7 +19,7 @@ namespace Uniquizbit.Services
 		Task<IEnumerable<QuizGroup>> GetUserOwnGroupsAsync(
       string userId, int page = 1, int pageSize = 10);
 
-		Task<bool> GroupExistsAsync(QuizGroup quizGroup);
+		Task<bool> QuizGroupExistsAsync(string groupName);
 
 		Task<bool> DeleteQuizGroupAsync(int id, string userId);
 
