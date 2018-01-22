@@ -24,12 +24,9 @@ namespace Uniquizbit.Services.Implementations
       _gradesSettings = optionsAccessor.Value;
     }
 
-    public async Task CreateProgressAsync(
-        QuizProgress progress, IEnumerable<int> answersIds)
+    public Task AddQuizProgressAsync(int quizId, string userId, int answerId)
     {
-      await _unitOfWork.QuizProgresses
-        .AddProgressAsync(progress, answersIds);
-      _unitOfWork.Complete();
+      throw new NotImplementedException();
     }
 
     public void MarkQuizAsTaken(int quizId, string userId)
@@ -57,11 +54,6 @@ namespace Uniquizbit.Services.Implementations
 
       _unitOfWork.Scores.Add(score);
       _unitOfWork.Complete();
-    }
-
-    public IEnumerable<Answer> GetAnswersForIds(ICollection<int> ids)
-    {
-      return _unitOfWork.Answers.Find(a => ids.Contains(a.Id));
     }
 
     public async Task<IEnumerable<Quiz>> GetQuizzesAsync(
@@ -196,8 +188,4 @@ namespace Uniquizbit.Services.Implementations
       => await _dbContext.Quizzes
           .FirstOrDefaultAsync(q => q.Id == quizId);
           
-    public Task CreateQuizProgressAsync(QuizProgress progress, IEnumerable<int> answersIds)
-    {
-      throw new NotImplementedException();
-    }
   }

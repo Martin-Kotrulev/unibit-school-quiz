@@ -59,7 +59,7 @@ namespace Uniquizbit.Web.Controllers
             quizGroup.Tags.Add(new GroupsTags() 
             {
               Group = quizGroup, 
-              Tag = new Tag() { Name = tag}
+              Tag = new Tag() { Name = tag }
             }); 
             
         }
