@@ -25,7 +25,7 @@ namespace Uniquizbit.Services.Implementations
 			return question;
     }
 
-    public async Task<bool> DeleteQuestionAsync(int questionId)
+    public async Task<bool> DeleteQuestionAsync(int questionId, string userId)
     {
       var question = await _dbContext.Questions.FindAsync(questionId);
 

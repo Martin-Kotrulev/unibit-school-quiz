@@ -27,15 +27,13 @@ namespace Uniquizbit.Services
     Task<IEnumerable<Quiz>> GetUserTakenQuizzesAsync(
       User user, int page = 1, int pageSize = 10);
 
-    IEnumerable<Tag> CheckForExistingTags(ICollection<string> tags);
-
     Task<Quiz> GetQuizWithPasswordAsync(int quizId, string password);
 
     Task<QuizEnum> EnterQuizAsync(int quizId, string userId);
 
     Task<bool> QuizExistsAsync(Quiz quiz);
 
-    bool DeleteQuiz(int id, string userId);
+    Task<bool> DeleteQuizAsync(int id, string userId);
     
     Task<bool> UserCanAddQuestionToQuizAsync(int quizId, string userId);
 

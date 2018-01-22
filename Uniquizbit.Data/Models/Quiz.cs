@@ -31,6 +31,8 @@ namespace Uniquizbit.Data.Models
     public string CreatorId { get; set; }
 
     public string CreatorName { get; set; }
+
+    public bool Published { get; set; }
     
     public User Creator { get; set; }
 

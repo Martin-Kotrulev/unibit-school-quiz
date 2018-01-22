@@ -91,17 +91,20 @@ namespace Uniquizbit.Services.Implementations
 
     public async Task<IEnumerable<Quiz>> GetUserOwnQuizzesAsync(
       string userId, int page = 1, int pageSize = 10)
-    {
-      return await _unitOfWork.Quizzes
-        .PagedAsync(page, pageSize, q => q.CreatorId == userId);
-    }
+      => await ApplyPaging(q => 
+          q.CreatorId == userId,
+          page,
+          pageSize);
 
     public async Task<IEnumerable<Quiz>> GetUserTakenQuizzesAsync(
-      User user, int page = 1, int pageSize = 10)
-    {
-      return await _unitOfWork.Users
-        .GetUserTakenQuizzesPaged(user.Id, page, pageSize);
-    }
+      string userId, int page = 1, int pageSize = 10)
+      => await _dbContext.QuizzesUsers
+          .Include(qu => qu.Quiz)
+          .Where(qu => qu.UserId == userId)
+          .Skip((page - 1) * pageSize)
+          .Take(pageSize)
+          .Select(qu => qu.Quiz)
+          .ToListAsync();
 
     public async Task<IEnumerable<Quiz>> GetQuizzesAsync(
       int page = 1, int pageSize = 10, string search = "")
@@ -146,9 +149,9 @@ namespace Uniquizbit.Services.Implementations
         .FirstOrDefaultAsync(q => q.Name == quiz.Name) != null;
     }
 
-    public bool DeleteQuiz(int id, string userId)
+    public async Task<bool> DeleteQuizAsync(int quizId, string userId)
     {
-      var quiz = _unitOfWork.Quizzes.Get(id);
+      var quiz = await _dbContext.Quizzes.FindAsync(quizId);
 
       if (quiz.CreatorId != userId)
         return false;
@@ -163,18 +166,6 @@ namespace Uniquizbit.Services.Implementations
       return false;
     }
 
-    public bool DeleteQuestion(int id)
-    {
-      var question = _unitOfWork.Questions.Get(id);
-
-      if (question == null)
-        return false;
-
-      _unitOfWork.Questions.Remove(question);
-      _unitOfWork.Complete();
-      return true;
-    }
-
     public async Task<bool> UserCanAddQuestionToQuizAsync(int quizId, string userId)
     {
       var quiz = await _dbContext.Quizzes.FindAsync(quizId);
@@ -185,11 +176,6 @@ namespace Uniquizbit.Services.Implementations
     {
       var group = await _dbContext.QuizGroups.FindAsync(quizId);
       return group != null && group.CreatorId == userId;
-    }
-
-    public void Subscribe(QuizSubscription subscription)
-    {
-      throw new System.NotImplementedException();
     }
 
     public async Task<Quiz> AddQuizAsync(Quiz quiz)
@@ -215,6 +201,11 @@ namespace Uniquizbit.Services.Implementations
         .Skip((page - 1) * pageSize)
         .Take(pageSize)
         .ToListAsync();
+    }
+
+    public void Subscribe(QuizSubscription subscription)
+    {
+      throw new System.NotImplementedException();
     }
   }
 }

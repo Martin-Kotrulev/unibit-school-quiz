@@ -41,12 +41,11 @@ namespace Uniquizbit.Services.Implementations
       return answer;
     }
 
-    public async Task<bool> DeleteAnswerAsync(int answerId)
+    public async Task<bool> DeleteAnswerAsync(int answerId, string userId)
     {
-      var answer = await _dbContext.Answers
-        .FirstOrDefaultAsync(a => a.Id == answerId);
+      var answer = await _dbContext.Answers.FindAsync(answerId);
 
-      if (answer != null)
+      if (answer != null && answer.CreatorId == userId)
       {
         _dbContext.Answers.Remove(answer);
         _dbContext.SaveChanges();

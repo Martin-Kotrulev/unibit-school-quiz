@@ -8,7 +8,7 @@ namespace Uniquizbit.Services
   {
     Task<Answer> AddAnswerAsync(Answer answer);
 
-    Task<bool> DeleteAnswerAsync(int answerId);
+    Task<bool> DeleteAnswerAsync(int answerId, string userId);
 
     Task<IEnumerable<Answer>> FindAnswersByIds(ICollection<int> answersIds);
   }
