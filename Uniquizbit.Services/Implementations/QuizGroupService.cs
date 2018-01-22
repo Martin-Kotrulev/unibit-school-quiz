@@ -18,7 +18,7 @@ namespace Uniquizbit.Services.Implementations
       _dbContext = dbContext;
     }
 
-    public async Task<QuizGroup> CreateQuizGroupAsync(QuizGroup quizGroup)
+    public async Task<QuizGroup> AddQuizGroupAsync(QuizGroup quizGroup)
     {
       await _dbContext.QuizGroups.AddAsync(quizGroup);
       await _dbContext.SaveChangesAsync();

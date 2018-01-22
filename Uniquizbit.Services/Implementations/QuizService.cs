@@ -9,6 +9,7 @@ namespace Uniquizbit.Services.Implementations
   using System.Linq;
   using System.Threading.Tasks;
   using Microsoft.Extensions.Options;
+  using Microsoft.EntityFrameworkCore;
 
   public class QuizService : IQuizService
   {
@@ -21,37 +22,6 @@ namespace Uniquizbit.Services.Implementations
     {
       _dbContext = dbContext;
       _gradesSettings = optionsAccessor.Value;
-    }
-
-    public void CreateGroup(QuizGroup quizGroup)
-    {
-      _unitOfWork.QuizGroups.Add(quizGroup);
-      _unitOfWork.Complete();
-    }
-
-    public void CreateQuiz(Quiz quiz)
-    {
-      _unitOfWork.Quizzes.Add(quiz);
-      _unitOfWork.Complete();
-    }
-
-    public void CreateQuestion(Question question)
-    {
-      _unitOfWork.Questions.Add(question);
-      _unitOfWork.Complete();
-    }
-
-    public async Task CreateAnswerAsync(Answer answer)
-    {
-      await _unitOfWork.Answers.AddAnswerAsync(answer);
-      _unitOfWork.Complete();
-    }
-
-    public async Task<bool> DeleteAnswerAsync(int answerId)
-    {
-      var deleted = await _unitOfWork.Answers.DeleteAnswerAsync(answerId);
-      _unitOfWork.Complete();
-      return deleted;
     }
 
     public async Task CreateProgressAsync(
@@ -94,20 +64,6 @@ namespace Uniquizbit.Services.Implementations
       return _unitOfWork.Answers.Find(a => ids.Contains(a.Id));
     }
 
-    public async Task<IEnumerable<Quiz>> GetGroupQuizzesAsync(
-      int quizGroupId, int page = 1, int pageSize = 10)
-    {
-      return await _unitOfWork.Quizzes
-        .GetGroupQuizzesPagedAsync(quizGroupId, page, pageSize);
-    }
-
-    public async Task<IEnumerable<QuizGroup>> GetGroupsAsync(
-      int page = 1, int pageSize = 10, string search = "")
-    {
-      return await _unitOfWork.QuizGroups
-        .GetGroupsPagedBySearchAsync(page, pageSize, search);
-    }
-
     public async Task<IEnumerable<Quiz>> GetQuizzesAsync(
       int page = 1, int pageSize = 10, string search = "")
     {
@@ -128,13 +84,6 @@ namespace Uniquizbit.Services.Implementations
         .PagedAsync(page, pageSize, q => q.CreatorId == userId);
     }
 
-    public async Task<IEnumerable<QuizGroup>> GetUserOwnGroupsAsync(
-      string userId, int page = 1, int pageSize = 10)
-    {
-      return await _unitOfWork.QuizGroups
-        .GetUserGroupsPagedAsync(userId, page, pageSize);
-    }
-
     public async Task<IEnumerable<Quiz>> GetUserTakenQuizzesAsync(
       User user, int page = 1, int pageSize = 10)
     {
@@ -142,25 +91,11 @@ namespace Uniquizbit.Services.Implementations
         .GetUserTakenQuizzesPaged(user.Id, page, pageSize);
     }
 
-    public async Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(
-      ICollection<string> tags, int page = 1, int pageSize = 10)
-    {
-      return await _unitOfWork.QuizGroups
-        .SearchQuizGroupByTagsAsync(tags, page, pageSize);
-    }
-
     public async Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(
       ICollection<string> tags, int page = 1, int pageSize = 10)
     {
       return await _unitOfWork.Quizzes
         .SearchQuizzesByTagsAsync(tags, page, pageSize);
-    }
-
-
-    public async Task<IEnumerable<int>> GetRandomQuestionsOrderAsync(int quizId)
-    {
-      return await _unitOfWork.Answers
-        .GetRandomOrderForAnswerIdsAsync(quizId);
     }
 
     public async Task<QuizEnum> EnterQuizAsync(int quizId, string userId)
@@ -184,12 +119,6 @@ namespace Uniquizbit.Services.Implementations
       quiz.Participants.Add(new QuizzesUsers() { Quiz = quiz, UserId = userId });
       _unitOfWork.Complete();
       return QuizEnum.Enter;
-    }
-
-    public async Task<bool> GroupExistsAsync(QuizGroup quizGroup)
-    {
-      return await _unitOfWork.QuizGroups
-        .FirstOrDefaultAsync(g => g.Name == quizGroup.Name) != null;
     }
 
     public async Task<bool> QuizExistsAsync(Quiz quiz)
@@ -222,18 +151,6 @@ namespace Uniquizbit.Services.Implementations
       return false;
     }
 
-    public bool DeleteQuizGroup(int id, string userId)
-    {
-      var quizGroup = _unitOfWork.QuizGroups.Get(id);
-
-      if (quizGroup == null || quizGroup.CreatorId != userId)
-        return false;
-
-      _unitOfWork.QuizGroups.Remove(quizGroup);
-      _unitOfWork.Complete();
-      return true;
-    }
-
     public bool DeleteQuestion(int id)
     {
       var question = _unitOfWork.Questions.Get(id);
@@ -262,23 +179,25 @@ namespace Uniquizbit.Services.Implementations
       return group != null && group.CreatorId == userId;
     }
 
-    public QuizGroup GetGroup(int id)
-    {
-      return _unitOfWork.QuizGroups.Get(id);
-    }
-
-    public Quiz GetQuiz(int id)
-    {
-      return _unitOfWork.Quizzes.Get(id);
-    }
-
     public void Subscribe(QuizSubscription subscription)
     {
       throw new System.NotImplementedException();
     }
 
-    public void Subscribe(GroupSubscription subscription)
+    public async Task<Quiz> AddQuizAsync(Quiz quiz)
     {
-      throw new System.NotImplementedException();
+      await _dbContext.Quizzes.AddAsync(quiz);
+      await _dbContext.SaveChangesAsync();
+
+      return quiz;
+    }
+
+    public async Task<Quiz> FindQuizByIdAsync(int quizId)
+      => await _dbContext.Quizzes
+          .FirstOrDefaultAsync(q => q.Id == quizId);
+          
+    public Task CreateQuizProgressAsync(QuizProgress progress, IEnumerable<int> answersIds)
+    {
+      throw new NotImplementedException();
     }
   }

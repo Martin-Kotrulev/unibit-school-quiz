@@ -8,7 +8,7 @@ namespace Uniquizbit.Services
 
   public interface IQuizService : IService
   {
-    Task<QuizGroup> CreateQuizAsync(Quiz quiz); 
+    Task<Quiz> AddQuizAsync(Quiz quiz); 
 
     void ScoreUserAsync(User user, int quizId, ICollection<int> answersIds);
 
@@ -16,7 +16,7 @@ namespace Uniquizbit.Services
 
     void Subscribe(QuizSubscription subscription);
 
-    Task CreateQuizProgressAsync(QuizProgress progress, IEnumerable<int> answersIds);
+    Task AddQuizProgressAsync(int quizId, string userId, int answerId);
 
     Task<IEnumerable<Quiz>> GetQuizzesAsync(
       int page = 1, int pageSize = 10, string search = "");
@@ -43,6 +43,6 @@ namespace Uniquizbit.Services
 
     bool UserCanAddQuizzes(int id, string userId);
 
-    Quiz FindQuizById(int id);
+    Task<Quiz> FindQuizByIdAsync(int quizId);
   }
 }

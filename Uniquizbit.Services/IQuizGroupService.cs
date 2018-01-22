@@ -6,7 +6,7 @@ namespace Uniquizbit.Services
 
   public interface IQuizGroupService : IService
   {
-    Task<QuizGroup> CreateQuizGroupAsync(QuizGroup quizGroup);
+    Task<QuizGroup> AddQuizGroupAsync(QuizGroup quizGroup);
 
 		Task<IEnumerable<QuizGroup>> GetQuizGroupsAsync(
       int page = 1, int pageSize = 10, string search = "");
