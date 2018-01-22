@@ -12,8 +12,9 @@ namespace Uniquizbit.Data.Models
     [Required]
     public int QuizId { get; set; }
 
-    [Required]
-    public int QuestionId { get; set; }
+    public string QuestionsOrder { get; set; }
+
+    public string AnswersOrder { get; set; }
 
     public ICollection<ProgressesAnswers> GivenAnswers { get; set; }
 

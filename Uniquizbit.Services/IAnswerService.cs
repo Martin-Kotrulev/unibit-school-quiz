@@ -6,11 +6,11 @@ namespace Uniquizbit.Services
 
   public interface IAnswerService : IService
   {
+    Task<Answer> AddAnswerAsync(Answer answer);
+
     Task<bool> DeleteAnswerAsync(int answerId);
 
     Task<IEnumerable<Answer>> FindAnswersByIds(ICollection<int> answersIds);
-
-    Task<Answer> CreateAnswerAsync(Answer answer);
 
 		Task<IEnumerable<int>> GetRandomOrderForAnswersIdsAsync(int quizId);
   }

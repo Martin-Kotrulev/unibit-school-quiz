@@ -6,14 +6,12 @@ namespace Uniquizbit.Services
 
   public interface IQuestionService : IService
   {
-		void CreateQuestion(Question question);
+		Task<Question> AddQuestionAsync(Question question);
 
-		Task<IEnumerable<Question>> GetQuestionsAsync(int quizId, string userId);
-
-		Task<IEnumerable<int>> GetRandomQuestionsOrderAsync(int quizId);
+		Task<IEnumerable<Question>> GetQuestionsForQuizAsync(int quizId, string userId);
 
 		Task<bool> UserOwnQuestionAsync(int questionId, string userId);
 
-    bool DeleteQuestion(int questionId);
+    Task<bool> DeleteQuestionAsync(int questionId);
   }
 }

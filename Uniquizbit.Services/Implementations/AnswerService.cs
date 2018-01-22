@@ -17,7 +17,7 @@ namespace Uniquizbit.Services.Implementations
       _dbContext = dbContext;
     }
 
-    public async Task<Answer> CreateAnswerAsync(Answer answer)
+    public async Task<Answer> AddAnswerAsync(Answer answer)
     {
       var question = await _dbContext.Questions
         .FirstOrDefaultAsync(q => q.Id == answer.QuestionId);
