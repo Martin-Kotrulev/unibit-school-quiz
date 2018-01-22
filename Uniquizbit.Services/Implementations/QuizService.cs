@@ -10,6 +10,7 @@ namespace Uniquizbit.Services.Implementations
   using System.Threading.Tasks;
   using Microsoft.Extensions.Options;
   using Microsoft.EntityFrameworkCore;
+  using System.Linq.Expressions;
 
   public class QuizService : IQuizService
   {
@@ -17,56 +18,75 @@ namespace Uniquizbit.Services.Implementations
 
     private readonly UniquizbitDbContext _dbContext;
 
+    private readonly ScoreCalculator _scoreCalculator;
+
     public QuizService(UniquizbitDbContext dbContext,
-      IOptions<GradesSettings> optionsAccessor)
+      IOptions<GradesSettings> optionsAccessor,
+      ScoreCalculator scoreCalculator)
     {
+      _scoreCalculator = scoreCalculator;
       _dbContext = dbContext;
       _gradesSettings = optionsAccessor.Value;
     }
 
-    public Task AddQuizProgressAsync(int quizId, string userId, int answerId)
+    public async Task<bool> MarkQuizAsTakenAsync(int quizId, string userId)
     {
-      throw new NotImplementedException();
+      var quizUser = await _dbContext.QuizzesUsers
+        .FirstOrDefaultAsync(qu => qu.UserId == userId && qu.QuizId == quizId);
+
+      if (quizUser != null)
+      {
+        quizUser.Finished = true;
+        return quizUser.Finished;
+      }
+      else
+      {
+        var newQuizUser = new QuizzesUsers()
+        {
+          QuizId = quizId,
+          UserId = userId,
+          Finished = false
+        };
+
+        await _dbContext.QuizzesUsers.AddAsync(newQuizUser);
+        await _dbContext.SaveChangesAsync();
+
+        return newQuizUser.Finished;
+      }
     }
 
-    public void MarkQuizAsTaken(int quizId, string userId)
+    public async Task<Score> ScoreUserAsync(string userId, int quizId)
     {
-      _unitOfWork.Quizzes.MarkQuizAsTaken(quizId, userId);
-      _unitOfWork.Complete();
-    }
+      var quizMaxScore = await _dbContext.Answers
+        .Where(a => a.QuizId == quizId && a.IsRight)
+        .SumAsync(a => a.Weight);
 
-    public async void ScoreUserAsync(
-        User user, int quizId, ICollection<int> answersIds)
-    {
-      var maxScore = await _unitOfWork.Quizzes
-        .GetQuizTotalScoreAsync(quizId);
-
-      var userScore = await _unitOfWork.QuizProgresses
-        .GetProgressAnswersWeightSumAsync(user.Id, quizId);
+      var userScore = await _dbContext.QuizProgresses
+        .Where(qp => qp.UserId == userId && qp.QuizId == quizId)
+        .Include(qp => qp.GivenAnswers)
+          .ThenInclude(ga => ga.Answer)
+        .SelectMany(qp => qp.GivenAnswers
+          .Where(ga => ga.Answer.IsRight))
+        .SumAsync(ga => ga.Answer.Weight); ;
 
       var score = new Score()
       {
-        Value = GetScore(maxScore, userScore),
+        Value = _scoreCalculator.GetScore(quizMaxScore, userScore),
         ScoredAt = DateTime.Now,
         QuizId = quizId,
-        UserId = user.Id
+        UserId = userId
       };
 
-      _unitOfWork.Scores.Add(score);
-      _unitOfWork.Complete();
-    }
+      await _dbContext.Scores.AddAsync(score);
+      await _dbContext.SaveChangesAsync();
 
-    public async Task<IEnumerable<Quiz>> GetQuizzesAsync(
-      int page = 1, int pageSize = 10, string search = "")
-    {
-      return await _unitOfWork.Quizzes
-        .GetQuizzesPagedBySearchAsync(page, pageSize, search);
+      return score;
     }
 
     public async Task<Quiz> GetQuizWithPasswordAsync(int quizId, string password)
     {
-      return await _unitOfWork.Quizzes
-        .GetQuizWithPasswordAsync(quizId, password);
+      return await _dbContext.Quizzes
+        .FirstOrDefaultAsync(q => q.Id == quizId && q.Password == password);
     }
 
     public async Task<IEnumerable<Quiz>> GetUserOwnQuizzesAsync(
@@ -83,12 +103,19 @@ namespace Uniquizbit.Services.Implementations
         .GetUserTakenQuizzesPaged(user.Id, page, pageSize);
     }
 
+    public async Task<IEnumerable<Quiz>> GetQuizzesAsync(
+      int page = 1, int pageSize = 10, string search = "")
+      => await ApplyPaging(q =>
+          q.Name.ToLowerInvariant().Contains(search.ToLowerInvariant()),
+          page,
+          pageSize);
+
     public async Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(
       ICollection<string> tags, int page = 1, int pageSize = 10)
-    {
-      return await _unitOfWork.Quizzes
-        .SearchQuizzesByTagsAsync(tags, page, pageSize);
-    }
+      => await ApplyPaging(q =>
+          q.Tags.Select(t => t.Tag.Name).Any(n => tags.Contains(n)),
+          page,
+          pageSize);
 
     public async Task<QuizEnum> EnterQuizAsync(int quizId, string userId)
     {
@@ -115,15 +142,8 @@ namespace Uniquizbit.Services.Implementations
 
     public async Task<bool> QuizExistsAsync(Quiz quiz)
     {
-      return await _unitOfWork.Quizzes
+      return await _dbContext.Quizzes
         .FirstOrDefaultAsync(q => q.Name == quiz.Name) != null;
-    }
-
-    public IEnumerable<Tag> CheckForExistingTags(ICollection<string> tags)
-    {
-      return _unitOfWork.Tags
-        .Find(t => tags.Contains(t.Name))
-        .ToList();
     }
 
     public bool DeleteQuiz(int id, string userId)
@@ -155,19 +175,15 @@ namespace Uniquizbit.Services.Implementations
       return true;
     }
 
-    public bool UserCanAddQuestion(int quizId, string userId)
+    public async Task<bool> UserCanAddQuestionToQuizAsync(int quizId, string userId)
     {
-      return _unitOfWork.Quizzes.UserIsQuizCreator(quizId, userId);
+      var quiz = await _dbContext.Quizzes.FindAsync(quizId);
+      return quiz != null && quiz.CreatorId == userId;
     }
 
-    public Task<bool> UserOwnQuestionAsync(int questionId, string userId)
+    public async Task<bool> UserCanAddQuizzes(int quizId, string userId)
     {
-      return _unitOfWork.Questions.UserOwnQuestionAsync(questionId, userId);
-    }
-
-    public bool UserCanAddQuizzes(int id, string userId)
-    {
-      var group = _unitOfWork.QuizGroups.Get(id);
+      var group = await _dbContext.QuizGroups.FindAsync(quizId);
       return group != null && group.CreatorId == userId;
     }
 
@@ -187,5 +203,18 @@ namespace Uniquizbit.Services.Implementations
     public async Task<Quiz> FindQuizByIdAsync(int quizId)
       => await _dbContext.Quizzes
           .FirstOrDefaultAsync(q => q.Id == quizId);
-          
+
+    private async Task<IEnumerable<Quiz>> ApplyPaging(
+      Expression<Func<Quiz, bool>> predicate, int page, int pageSize)
+    {
+      return await _dbContext.Quizzes
+        .Include(qg => qg.Tags)
+          .ThenInclude(t => t.Tag)
+        .Where(predicate)
+        .OrderByDescending(qg => qg.CreatedOn)
+        .Skip((page - 1) * pageSize)
+        .Take(pageSize)
+        .ToListAsync();
+    }
   }
+}

@@ -79,6 +79,12 @@ namespace Uniquizbit.Services.Implementations
       throw new System.NotImplementedException();
     }
 
+    public async Task<bool> UserCanAddQuizzesToGroupAsync(int groupId, string userId)
+    {
+      var group = await _dbContext.QuizGroups.FindAsync(groupId);
+      return group != null && group.CreatorId == userId;
+    }
+
     private async Task<IEnumerable<QuizGroup>> ApplyPaging(Expression<Func<QuizGroup, bool>> predicate, int page, int pageSize)
       => await _dbContext.QuizGroups
         .Include(qg => qg.Tags)

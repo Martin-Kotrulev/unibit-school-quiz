@@ -58,11 +58,6 @@ namespace Uniquizbit.Services.Implementations
 			}
     }
 
-    public async Task<bool> UserOwnQuestionAsync(int questionId, string userId)
-      => await _dbContext.Questions
-        .Include(q => q.Quiz)
-        .FirstOrDefaultAsync(q => q.Id == questionId && q.Quiz.CreatorId == userId) != null;
-
 		private async Task<IEnumerable<Question>> GetQuestionsWithAnswersForQuizAsync(int quizId)
 		{
 			var questions = await _dbContext.Questions

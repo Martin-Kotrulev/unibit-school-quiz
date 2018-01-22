@@ -24,6 +24,10 @@ namespace Uniquizbit.Data.Models
     public bool IsSelected { get; set; } = false;
 
     public int QuestionId { get; set; }
+
+    public string CreatorId { get; set; }
+
+    public User Creator { get; set; }
     
     public Question Question { get; set; }
 

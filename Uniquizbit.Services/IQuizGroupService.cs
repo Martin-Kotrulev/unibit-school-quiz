@@ -27,5 +27,7 @@ namespace Uniquizbit.Services
 
 		Task<IEnumerable<Quiz>> GetGroupQuizzesAsync(
       int quizGroupId, int page = 1, int pageSize = 10);
+
+    Task<bool> UserCanAddQuizzesToGroupAsync(int groupId, string userId);
   }
 }

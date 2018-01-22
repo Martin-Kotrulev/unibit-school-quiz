@@ -9,5 +9,7 @@ namespace Uniquizbit.Data.Models
         public int QuizId { get; set; }
 
         public Quiz Quiz { get; set; }
+
+        public bool Finished { get; set; }
     }
 }

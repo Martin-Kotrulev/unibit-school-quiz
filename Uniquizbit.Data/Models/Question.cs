@@ -14,6 +14,10 @@ namespace Uniquizbit.Data.Models
 
     public bool IsMultiselect { get; set; } = false;
 
+    public string CreatorId { get; set; }
+
+    public User Creator { get; set; }
+
     public int QuizId { get; set; }
     
     public Quiz Quiz { get; set; }

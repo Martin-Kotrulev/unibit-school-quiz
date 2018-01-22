@@ -10,13 +10,11 @@ namespace Uniquizbit.Services
   {
     Task<Quiz> AddQuizAsync(Quiz quiz); 
 
-    void ScoreUserAsync(User user, int quizId, ICollection<int> answersIds);
+    Task<Score> ScoreUserAsync(string userId, int quizId);
 
-    void MarkQuizAsTaken(int quizId, string userId);
+    Task<bool> MarkQuizAsTakenAsync(int quizId, string userId);
 
     void Subscribe(QuizSubscription subscription);
-
-    Task AddQuizProgressAsync(int quizId, string userId, int answerId);
 
     Task<IEnumerable<Quiz>> GetQuizzesAsync(
       int page = 1, int pageSize = 10, string search = "");
@@ -39,9 +37,7 @@ namespace Uniquizbit.Services
 
     bool DeleteQuiz(int id, string userId);
     
-    bool UserCanAddQuestion(int quizId, string userId);
-
-    bool UserCanAddQuizzes(int id, string userId);
+    Task<bool> UserCanAddQuestionToQuizAsync(int quizId, string userId);
 
     Task<Quiz> FindQuizByIdAsync(int quizId);
   }
