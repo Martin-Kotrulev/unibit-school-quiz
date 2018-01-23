@@ -19,11 +19,17 @@ namespace Uniquizbit.Web.Controllers
   public class QuizzesController : Controller
   {
     private readonly IQuizService _quizService;
+
+    private readonly IQuestionService _questionService;
+
     private readonly ITagService _tagService;
+
     private readonly IMapper _mapper;
+
     private readonly UserManager<User> _userManager;
 
     public QuizzesController(IQuizService quizService,
+      IQuestionService questionService,
       ITagService tagService,
       IMapper mapper,
       UserManager<User> userManager)
@@ -31,12 +37,13 @@ namespace Uniquizbit.Web.Controllers
       _userManager = userManager;
       _mapper = mapper;
       _quizService = quizService;
+      _questionService = questionService;
       _tagService = tagService;
     }
 
     [Authorize]
-    [HttpPost("[action]")]
-    public async Task<IActionResult> Add([FromBody] QuizResource quizResource)
+    [HttpPost]
+    public async Task<IActionResult> AddQuiz([FromBody] QuizResource quizResource)
     {
       if (ModelState.IsValid)
       {
@@ -50,19 +57,9 @@ namespace Uniquizbit.Web.Controllers
           ));
         }
 
-        var existingTags = _tagService.UpdateTagsAsync(quizResource.Tags);
+        var existingTags = await _tagService.UpdateTagsAsync(quizResource.Tags);
 
-        // Add the new tags
-        foreach (var tag in existingTags)
-        {
-            quiz.Tags.Add(new QuizzesTags()
-            {
-              Quiz = quiz,
-              Tag = new Tag() { Name = tag }
-            });
-        }
-
-        // Add the existing tags
+        // Add the tags
         foreach (var tag in existingTags)
         {
           quiz.Tags.Add(new QuizzesTags()
@@ -72,37 +69,39 @@ namespace Uniquizbit.Web.Controllers
           });
         }
 
+        // Add creation stamps
         quiz.CreatedOn = DateTime.Now;
         quiz.CreatorId = user.Id;
         quiz.CreatorName = user.UserName;
 
-        _quizService.CreateQuiz(quiz);
+        await _quizService.AddQuizAsync(quiz);
 
-        return Ok(new ApiResponse(_mapper.Map<Quiz, QuizResource>(quiz),
+        return Ok(new ApiResponse(
+          _mapper.Map<Quiz, QuizResource>(quiz),
           "You have successfully added a new quiz."));
       }
 
       return BadRequest(new ApiResponse(ModelState));
     }
 
-    [HttpPost("{id}/questions/add")]
     [Authorize]
-    public IActionResult AddQuestionToQuiz(int id, [FromBody] QuestionResource questionResource)
+    [HttpPost("{quizId}/questions")]
+    public async Task<IActionResult> AddQuestionToQuiz(int quizId, [FromBody] QuestionResource questionResource)
     {
       if (ModelState.IsValid)
       {
-        var userId = _authenticationService.GetAuthenticatedUserId(User);
+        var userId = _userManager.GetUserId(this.User);
         var question = _mapper.Map<QuestionResource, Question>(questionResource);
 
-        if (_quizService.UserCanAddQuestion(id, userId))
+        if (await _quizService.UserCanAddQuestionToQuizAsync(quizId, userId))
         {
-          question.QuizId = id;
-          _quizService.CreateQuestion(question);
+          question.QuizId = quizId;
+          await _questionService.AddQuestionAsync(question);
         }
         else
         {
           return BadRequest(new ApiResponse(
-            "You can't add questions to other users quizzes.",
+            "You can't add questions to the specified quiz.",
             false
           ));
         }
@@ -116,12 +115,12 @@ namespace Uniquizbit.Web.Controllers
       return BadRequest(new ApiResponse(ModelState));
     }
 
-    [HttpPost("{id}/[action]")]
     [Authorize]
-    public IActionResult Delete(int id)
+    [HttpDelete("{quizId}")]
+    public async Task<IActionResult> Delete(int quizId)
     {
       var userId = _userManager.GetUserId(User);
-      if (_quizService.DeleteQuiz(id, userId))
+      if (await _quizService.DeleteQuizAsync(quizId, userId))
       {
         return Ok(new ApiResponse("You have successfully deleted the quiz."));
       }
@@ -129,8 +128,8 @@ namespace Uniquizbit.Web.Controllers
       return BadRequest(new ApiResponse("Quiz does not exist, or you are not the owner.", false));
     }
 
-    [HttpPost("{id}/enter")]
     [Authorize]
+    [HttpPost("{id}/enter")]
     public async Task<IActionResult> EnterAsync(int id)
     {
       var userId = _userManager.GetUserId(User);
@@ -168,15 +167,15 @@ namespace Uniquizbit.Web.Controllers
       {
         var userId = _userManager.GetUserId(User);
         var progress = _mapper.Map<ProgressResource, QuizProgress>(progressResource);
-        await _quizService.CreateProgressAsync(progress, progressResource.GivenAnswers);
+        //await _quizService.(progress, progressResource.GivenAnswers);
         return Ok();
       }
 
       return BadRequest(new ApiResponse(ModelState));
     }
 
-    [HttpGet("[action]")]
-    public async Task<IActionResult> All([FromQuery] string search, [FromQuery] int page = 1)
+    [HttpGet]
+    public async Task<IActionResult> AllQuizes([FromQuery] string search, [FromQuery] int page = 1)
     {
       search = search ?? "";
       ICollection<QuizResource> quizzes;
@@ -205,15 +204,15 @@ namespace Uniquizbit.Web.Controllers
       return Ok(quizzes);
     }
 
-    [HttpGet("{id}/questions/all")]
     [Authorize]
-    public async Task<IActionResult> AllQuestionsForQuizAsync(int id)
+    [HttpGet("{quizId}/questions")]
+    public async Task<IActionResult> AllQuestionsForQuizAsync(int quizId)
     {
       var userId = _userManager.GetUserId(User);
-      var quiz = _quizService.GetQuiz(id);
+      var quiz = await _quizService.FindQuizByIdAsync(quizId);
 
       var questions = _mapper.Map<IEnumerable<Question>, ICollection<QuestionResource>>(
-        await _quizService.GetQuestionsAsync(id, userId)
+        await _questionService.GetQuestionsForQuizAsync(quizId, userId)
       );
 
       return Ok(new
