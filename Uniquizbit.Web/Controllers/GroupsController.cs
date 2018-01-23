@@ -2,13 +2,13 @@ namespace Uniquizbit.Web.Controllers
 {
   using AutoMapper;
   using Data.Models;
+  using Core.Models;
   using Microsoft.AspNetCore.Authorization;
   using Microsoft.AspNetCore.Mvc;
   using Microsoft.EntityFrameworkCore;
   using Models;
   using Microsoft.AspNetCore.Identity;
-  using Newtonsoft.Json;
-  using Npgsql;
+  using Services;
   using System;
   using System.Collections.Generic;
   using System.Data;
@@ -16,69 +16,61 @@ namespace Uniquizbit.Web.Controllers
   using System.Linq;
   using System.Text.RegularExpressions;
   using System.Threading.Tasks;
-  using Uniquizbit.Services;
 
   public class GroupsController : BaseApiController
   {
     private readonly IQuizService _quizService;
+    private readonly IQuizGroupService _quizGroupService;
+    private readonly ITagService _tagService;
     private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
 
     public GroupsController(IQuizService quizService,
+      IQuizGroupService quizGroupService,
+      ITagService tagService,
       IMapper mapper,
       UserManager<User> userManager)
     {
-      this._userManager = userManager;
-      this._mapper = mapper;
-      this._quizService = quizService;
+      _userManager = userManager;
+      _mapper = mapper;
+      _quizService = quizService;
+      _quizGroupService = quizGroupService;
+      _tagService = tagService;
     }
 
-    [HttpPost("[action]")]
     [Authorize]
-    public async Task<IActionResult> Add([FromBody] QuizGroupResource quizGroupResource)
+    [HttpPost]
+    public async Task<IActionResult> AddQuizGroup([FromBody] QuizGroupResource quizGroupResource)
     {
       if (ModelState.IsValid)
       {
         var user = await _userManager.GetUserAsync(this.User);
         var quizGroup = _mapper.Map<QuizGroupResource, QuizGroup>(quizGroupResource);
 
-        if (await _quizService.GroupExistsAsync(quizGroup))
+        if (await _quizGroupService.QuizGroupExistsAsync(quizGroup.Name))
         {
           return BadRequest(new ApiResponse(
             $"Quiz group with name '{quizGroup.Name}' already exists.", false
           ));
         }
 
-        var existingTags = _quizService.CheckForExistingTags(quizGroupResource.Tags);
+        var existingTags = await _tagService.UpdateTagsAsync(quizGroupResource.Tags);
         var tagNames = existingTags.Select(t => t.Name);
 
-        // Add the new tags
-        foreach (var tag in quizGroupResource.Tags)
-        {
-          if (!tagNames.Contains(tag))
-            quizGroup.Tags.Add(new GroupsTags() 
-            {
-              Group = quizGroup, 
-              Tag = new Tag() { Name = tag }
-            }); 
-            
-        }
-
-        // Add the existing tags
         foreach (var tag in existingTags)
         {
-          quizGroup.Tags.Add(new GroupsTags() 
-            {
-              Group = quizGroup, 
-              Tag = tag
-            }); 
+          quizGroup.Tags.Add(new GroupsTags()
+          {
+            Group = quizGroup,
+            Tag = tag
+          });
         }
-        
+
         quizGroup.CreatedOn = DateTime.Now;
         quizGroup.CreatorId = user.Id;
         quizGroup.CreatorName = user.UserName;
 
-        _quizService.CreateGroup(quizGroup);
+        await _quizGroupService.AddQuizGroupAsync(quizGroup);
 
         return Ok(new ApiResponse(
           _mapper.Map<QuizGroup, QuizGroupResource>(quizGroup),
@@ -89,29 +81,30 @@ namespace Uniquizbit.Web.Controllers
       return BadRequest(new ApiResponse(ModelState));
     }
 
-    [HttpPost("{id}/[action]")]
     [Authorize]
-    public IActionResult Delete(int id)
+    [HttpDelete("{groupId}")]
+    public async Task<IActionResult> DeleteQuizGroup(int groupId)
     {
       var userId = _userManager.GetUserId(this.User);
 
-      if (_quizService.DeleteQuizGroup(id, userId))
+      if (await _quizGroupService.DeleteQuizGroupAsync(groupId, userId))
       {
         return Ok(new ApiResponse("You successfully deleteted the quiz group."));
       }
       else
       {
         return BadRequest(
-          new ApiResponse("Quiz group does not exist, or you are not the owner.", false));
+          new ApiResponse("You can't delete the specified quiz group.", false));
       }
     }
 
-    [HttpGet("[action]")]
-    public async Task<IActionResult> All([FromQuery] string search, [FromQuery] int page = 1)
+    [HttpGet]
+    public async Task<IActionResult> GetAllGroups([FromQuery] string search, [FromQuery] int page = 1)
     {
       System.Console.WriteLine(search);
       search = search ?? "";
       ICollection<QuizGroupResource> quizGroups;
+
       if (search.Contains("*"))
       {
         var searchTags = Regex
@@ -123,7 +116,7 @@ namespace Uniquizbit.Web.Controllers
         {
           quizGroups = _mapper
             .Map<IEnumerable<QuizGroup>, ICollection<QuizGroupResource>>(
-              await _quizService.SearchQuizGroupsByTagsAsync(searchTags, page)
+              await _quizGroupService.SearchQuizGroupsByTagsAsync(searchTags, page)
             );
 
           return Ok(quizGroups);
@@ -132,20 +125,21 @@ namespace Uniquizbit.Web.Controllers
 
       quizGroups = _mapper
         .Map<IEnumerable<QuizGroup>, ICollection<QuizGroupResource>>(
-          await _quizService.GetGroupsAsync(page, search: search));
+          await _quizGroupService.GetQuizGroupsAsync(page, search: search));
 
       return Ok(quizGroups);
     }
 
-    [HttpGet("{id}/quizzes/all")]
-    public async Task<IActionResult> ListGroupQuizzesAsync(int id, [FromQuery] int page = 1)
+    [HttpGet("{id}/quizzes")]
+    public async Task<IActionResult> GetGroupQuizzesAsync(int id, [FromQuery] int page = 1)
     {
-      var group = _mapper.Map<QuizGroup, IdNamePairResource>(_quizService.GetGroup(id));
+      var group = _mapper.Map<QuizGroup, IdNamePairResource>(
+        await _quizGroupService.FindGroupByIdAsync(id));
       var groupQuizzes = _mapper
         .Map<IEnumerable<Quiz>, ICollection<QuizResource>>(
-          await _quizService.GetGroupQuizzesAsync(id, page));
+          await _quizGroupService.GetGroupQuizzesAsync(id, page));
 
-      return Ok(new 
+      return Ok(new
       {
         Group = group,
         Quizzes = groupQuizzes
@@ -160,7 +154,7 @@ namespace Uniquizbit.Web.Controllers
 
       var userGroups = _mapper
         .Map<IEnumerable<QuizGroup>, ICollection<QuizGroupResource>>(
-          await _quizService.GetUserOwnGroupsAsync(userId, page));
+          await _quizGroupService.GetUserOwnGroupsAsync(userId, page));
 
       return Ok(userGroups);
     }

@@ -2,87 +2,75 @@ namespace Uniquizbit.Web.Controllers
 {
   using AutoMapper;
   using Data.Models;
+  using Core.Models;
   using Microsoft.AspNetCore.Mvc;
-  using System.Threading.Tasks;
-  using Uniquizbit.Services;
-  using Web.Models;
   using Microsoft.AspNetCore.Identity;
+  using Services;
+  using System.Threading.Tasks;
+  using Web.Models;
 
   [Route("api/[controller]")]
   public class QuestionsController : Controller
   {
     private readonly IQuizService _quizService;
+    private readonly IQuestionService _questionService;
     private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
 
     public QuestionsController(IQuizService quizService,
+      IQuestionService questionService,
+      IAnswerService answerService,
       IMapper mapper,
       UserManager<User> userManager)
     {
-      this._userManager = userManager;
-      this._mapper = mapper;
-      this._quizService = quizService;
+      _userManager = userManager;
+      _mapper = mapper;
+      _quizService = quizService;
+      _questionService = questionService;
+      _answerService = answerService;
     }
 
-    [HttpPost("{id}/delete")]
-    public async Task<IActionResult> DeleteAsync(int id)
-    {
-      var userId = _userManager.GetUserId(User);
-			var ownQuestion = await _quizService.UserOwnQuestionAsync(id, userId);
-
-			if (ownQuestion)
-			{
-				var deleted = _quizService.DeleteQuestion(id);
-
-				if (!deleted)
-					return BadRequest(new ApiResponse("Question does not exist.", false));
-				
-				return Ok(new ApiResponse("You successfully deleted the question."));
-			}
-
-			return BadRequest(new ApiResponse("You can't delete other users questions.", false));
-    }
-
-    [HttpPost("{id}/answers/add")]
-    public async Task<IActionResult> AddAnswerForQuestionAsync(int id, [FromBody] AnswerResource answerResource)
+    [HttpPost("{questionId}/answers")]
+    public async Task<IActionResult> AddAnswerForQuestion(int questionId,
+      [FromBody] AnswerResource answerResource)
     {
       var answer = _mapper.Map<AnswerResource, Answer>(answerResource);
       var userId = _userManager.GetUserId(User);
 
       if (ModelState.IsValid)
       {
-        if (_quizService.UserCanAddQuestion(id, userId))
+        if (await _quizService.UserCanAddQuestionToQuizAsync(questionId, userId))
         {
-					answer.QuestionId = id;
-          await _quizService.CreateAnswerAsync(answer);
+          answer.QuestionId = questionId;
+          await _answerService.AddAnswerAsync(answer);
           return Ok(new ApiResponse("You successfully added a new answer."));
         }
         else
           return BadRequest(new ApiResponse(
-						"You can't add answers to other users questions.", false));
+            "You can't add answer to the specified question.", false));
       }
-			else
-				return BadRequest(new ApiResponse(ModelState));
+      else
+        return BadRequest(new ApiResponse(ModelState));
 
     }
 
-    [HttpPost("{questionId}/answers/{answerId}/delete")]
-    public async Task<IActionResult> DeleteAnswerFromQuestionAsync(int questionId, int answerId)
+    [HttpDelete("{questionId}")]
+    public async Task<IActionResult> DeleteAsync(int questionId)
     {
       var userId = _userManager.GetUserId(User);
-			var ownQuestion = await _quizService.UserOwnQuestionAsync(questionId, userId);
+      var ownQuestion = await _quizService.UserOwnQuestionAsync(id, userId);
 
       if (ownQuestion)
       {
-        var deleted = await _quizService.DeleteAnswerAsync(answerId);
-        if (deleted)
-          return Ok(new ApiResponse("You successfully deleted an answer."));
-        else
-          return BadRequest(new ApiResponse("You successfully deleted an answer.", deleted));
+        var deleted = _quizService.DeleteQuestion(id);
+
+        if (!deleted)
+          return BadRequest(new ApiResponse("Question does not exist.", false));
+
+        return Ok(new ApiResponse("You successfully deleted the question."));
       }
-      else
-        return BadRequest(new ApiResponse(
-					"You can't delete answers from other users questions.", false));
+
+      return BadRequest(new ApiResponse("You can't delete other users questions.", false));
     }
   }
 }

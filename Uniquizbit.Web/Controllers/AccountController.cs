@@ -1,6 +1,7 @@
 namespace Uniquizbit.Web.Controllers
 {
   using Common.Config;
+  using Core.Models;
   using Data.Models;
   using Microsoft.AspNetCore.Authorization;
   using Microsoft.AspNetCore.Identity;
@@ -8,7 +9,7 @@ namespace Uniquizbit.Web.Controllers
   using Microsoft.AspNetCore.Mvc;
   using Microsoft.Extensions.Options;
   using Microsoft.IdentityModel.Tokens;
-  using Newtonsoft.Json;
+  using Models;
   using System;
   using System.Collections.Generic;
   using System.Net;
@@ -16,7 +17,6 @@ namespace Uniquizbit.Web.Controllers
   using System.Threading.Tasks;
   using System.IdentityModel.Tokens.Jwt;
   using System.Text;
-  using Web.Models;
 
   public class AccountController : Controller
   {

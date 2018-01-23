@@ -1,4 +1,4 @@
-namespace Uniquizbit.Web.Core.Models
+namespace Uniquizbit.Core.Models
 {
   using System;
   using System.Collections.Generic;
