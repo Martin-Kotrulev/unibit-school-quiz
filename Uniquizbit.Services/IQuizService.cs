@@ -22,12 +22,14 @@ namespace Uniquizbit.Services
     Task<IEnumerable<Quiz>> SearchQuizzesByTagsAsync(
       ICollection<string> tags, int page = 1, int pageSize = 10);
 
-    Task<IEnumerable<Quiz>> GetUserOwnQuizzesAsync(string userId, int page = 1, int pageSize = 10);
+    Task<IEnumerable<Quiz>> GetUserOwnQuizzesAsync(
+      string userId, int page = 1, int pageSize = 10);
 
     Task<IEnumerable<Quiz>> GetUserTakenQuizzesAsync(
-      User user, int page = 1, int pageSize = 10);
+      string userId, int page = 1, int pageSize = 10);
 
-    Task<Quiz> GetQuizWithPasswordAsync(int quizId, string password);
+    Task<Quiz> GetQuizWithPasswordAsync(
+      int quizId, string password);
 
     Task<QuizEnum> EnterQuizAsync(int quizId, string userId);
 
@@ -35,7 +37,8 @@ namespace Uniquizbit.Services
 
     Task<bool> DeleteQuizAsync(int id, string userId);
     
-    Task<bool> UserCanAddQuestionToQuizAsync(int quizId, string userId);
+    Task<bool> UserCanAddQuestionToQuizAsync(
+      int quizId, string userId);
 
     Task<Quiz> FindQuizByIdAsync(int quizId);
   }

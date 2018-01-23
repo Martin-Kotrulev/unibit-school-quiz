@@ -29,6 +29,14 @@ namespace Uniquizbit.Services.Implementations
       _gradesSettings = optionsAccessor.Value;
     }
 
+    public async Task<Quiz> AddQuizAsync(Quiz quiz)
+    {
+      await _dbContext.Quizzes.AddAsync(quiz);
+      await _dbContext.SaveChangesAsync();
+
+      return quiz;
+    }
+
     public async Task<bool> MarkQuizAsTakenAsync(int quizId, string userId)
     {
       var quizUser = await _dbContext.QuizzesUsers
@@ -67,7 +75,7 @@ namespace Uniquizbit.Services.Implementations
           .ThenInclude(ga => ga.Answer)
         .SelectMany(qp => qp.GivenAnswers
           .Where(ga => ga.Answer.IsRight))
-        .SumAsync(ga => ga.Answer.Weight); ;
+        .SumAsync(ga => ga.Answer.Weight);
 
       var score = new Score()
       {
@@ -122,7 +130,9 @@ namespace Uniquizbit.Services.Implementations
 
     public async Task<QuizEnum> EnterQuizAsync(int quizId, string userId)
     {
-      var quiz = await _unitOfWork.Quizzes.GetQuizWithParticipantsAsync(quizId);
+      var quiz = await _dbContext.Quizzes
+        .Include(q => q.Participants)
+        .FirstOrDefaultAsync(q => q.Id == quizId);
 
       if (quiz == null)
         return QuizEnum.NotExistent;
@@ -138,8 +148,14 @@ namespace Uniquizbit.Services.Implementations
       else if (inQuiz)
         return QuizEnum.Enter;
 
-      quiz.Participants.Add(new QuizzesUsers() { Quiz = quiz, UserId = userId });
-      _unitOfWork.Complete();
+      quiz.Participants.Add(new QuizzesUsers()
+      { 
+        Quiz = quiz,
+        UserId = userId,
+        Finished = false
+      });
+      await _dbContext.SaveChangesAsync();
+
       return QuizEnum.Enter;
     }
 
@@ -153,17 +169,13 @@ namespace Uniquizbit.Services.Implementations
     {
       var quiz = await _dbContext.Quizzes.FindAsync(quizId);
 
-      if (quiz.CreatorId != userId)
+      if (quiz == null || quiz.CreatorId != userId)
         return false;
 
-      if (quiz != null)
-      {
-        _unitOfWork.Quizzes.Remove(quiz);
-        _unitOfWork.Complete();
-        return true;
-      }
+      _dbContext.Quizzes.Remove(quiz);
+      await _dbContext.SaveChangesAsync();
 
-      return false;
+      return true;
     }
 
     public async Task<bool> UserCanAddQuestionToQuizAsync(int quizId, string userId)
@@ -176,14 +188,6 @@ namespace Uniquizbit.Services.Implementations
     {
       var group = await _dbContext.QuizGroups.FindAsync(quizId);
       return group != null && group.CreatorId == userId;
-    }
-
-    public async Task<Quiz> AddQuizAsync(Quiz quiz)
-    {
-      await _dbContext.Quizzes.AddAsync(quiz);
-      await _dbContext.SaveChangesAsync();
-
-      return quiz;
     }
 
     public async Task<Quiz> FindQuizByIdAsync(int quizId)
