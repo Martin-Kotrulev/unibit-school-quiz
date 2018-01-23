@@ -71,8 +71,8 @@ namespace Uniquizbit.Services.Implementations
     }
 
     public async Task<IEnumerable<Answer>> FindAnswersByIds(ICollection<int> answersIds)
-			=>  await _dbContext.Answers
-						.Where(a => answersIds.Contains(a.Id))
-						.ToListAsync();
+      => await _dbContext.Answers
+            .Where(a => answersIds.Contains(a.Id))
+            .ToListAsync();
   }
 }

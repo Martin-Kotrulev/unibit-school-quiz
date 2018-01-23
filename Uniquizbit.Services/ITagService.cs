@@ -7,5 +7,5 @@ namespace Uniquizbit.Services
   public interface ITagService : IService
   {
     Task<IEnumerable<Tag>> UpdateTagsAsync(ICollection<string> tags);
-	}
+  }
 }

@@ -52,7 +52,7 @@ namespace Uniquizbit.Services.Implementations
           .ToListAsync();
 
     public async Task<IEnumerable<QuizGroup>> GetQuizGroupsAsync(int page = 1, int pageSize = 10, string search = "")
-      => await ApplyPaging(qg => 
+      => await ApplyPaging(qg =>
         qg.Name.ToLowerInvariant().Contains(search.ToLowerInvariant()),
         page,
         pageSize);

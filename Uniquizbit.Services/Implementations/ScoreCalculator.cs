@@ -38,7 +38,7 @@ namespace Uniquizbit.Services.Implementations
       return finalScore;
     }
 
-		private double Difference(double upperBound, double actualScore)
+    private double Difference(double upperBound, double actualScore)
     {
       // Makes sure the difference is always 1.0 point max
       var diff = actualScore - upperBound;

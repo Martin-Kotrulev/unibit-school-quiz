@@ -8,24 +8,24 @@ namespace Uniquizbit.Services
   {
     Task<QuizGroup> AddQuizGroupAsync(QuizGroup quizGroup);
 
-		Task<IEnumerable<QuizGroup>> GetQuizGroupsAsync(
+    Task<IEnumerable<QuizGroup>> GetQuizGroupsAsync(
       int page = 1, int pageSize = 10, string search = "");
 
-		Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(
+    Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(
       ICollection<string> tags, int page = 1, int pageSize = 10);
 
     void Subscribe(GroupSubscription subscription);
 
-		Task<IEnumerable<QuizGroup>> GetUserOwnGroupsAsync(
+    Task<IEnumerable<QuizGroup>> GetUserOwnGroupsAsync(
       string userId, int page = 1, int pageSize = 10);
 
-		Task<bool> QuizGroupExistsAsync(string groupName);
+    Task<bool> QuizGroupExistsAsync(string groupName);
 
-		Task<bool> DeleteQuizGroupAsync(int id, string userId);
+    Task<bool> DeleteQuizGroupAsync(int id, string userId);
 
-		Task<QuizGroup> FindGroupByIdAsync(int groupId);
+    Task<QuizGroup> FindGroupByIdAsync(int groupId);
 
-		Task<IEnumerable<Quiz>> GetGroupQuizzesAsync(
+    Task<IEnumerable<Quiz>> GetGroupQuizzesAsync(
       int quizGroupId, int page = 1, int pageSize = 10);
 
     Task<bool> UserCanAddQuizzesToGroupAsync(int groupId, string userId);

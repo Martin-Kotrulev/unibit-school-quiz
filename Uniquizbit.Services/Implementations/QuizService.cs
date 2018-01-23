@@ -99,7 +99,7 @@ namespace Uniquizbit.Services.Implementations
 
     public async Task<IEnumerable<Quiz>> GetUserOwnQuizzesAsync(
       string userId, int page = 1, int pageSize = 10)
-      => await ApplyPaging(q => 
+      => await ApplyPaging(q =>
           q.CreatorId == userId,
           page,
           pageSize);
@@ -149,7 +149,7 @@ namespace Uniquizbit.Services.Implementations
         return QuizEnum.Enter;
 
       quiz.Participants.Add(new QuizzesUsers()
-      { 
+      {
         Quiz = quiz,
         UserId = userId,
         Finished = false

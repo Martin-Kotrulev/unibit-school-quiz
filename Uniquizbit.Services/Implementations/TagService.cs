@@ -1,9 +1,9 @@
 namespace Uniquizbit.Services.Implementations
 {
-	using Data;
-	using Data.Models;
-	using System.Collections.Generic;
-	using System.Threading.Tasks;
+  using Data;
+  using Data.Models;
+  using System.Collections.Generic;
+  using System.Threading.Tasks;
   using System.Linq;
   using Microsoft.EntityFrameworkCore;
 
@@ -19,12 +19,12 @@ namespace Uniquizbit.Services.Implementations
     public async Task<IEnumerable<Tag>> UpdateTagsAsync(ICollection<string> tags)
     {
       var existingTags = await _dbContext.Tags
-				.Where(t => tags.Contains(t.Name))
-				.ToListAsync();
+        .Where(t => tags.Contains(t.Name))
+        .ToListAsync();
 
-			var newTags = tags
-					.Where(t => !existingTags.Exists(tag => tag.Name == t))
-					.Select(t => new Tag { Name = t });
+      var newTags = tags
+          .Where(t => !existingTags.Exists(tag => tag.Name == t))
+          .Select(t => new Tag { Name = t });
 
       await _dbContext.Tags.AddRangeAsync(newTags);
       await _dbContext.SaveChangesAsync();

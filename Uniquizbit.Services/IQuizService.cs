@@ -8,7 +8,7 @@ namespace Uniquizbit.Services
 
   public interface IQuizService : IService
   {
-    Task<Quiz> AddQuizAsync(Quiz quiz); 
+    Task<Quiz> AddQuizAsync(Quiz quiz);
 
     Task<Score> ScoreUserAsync(string userId, int quizId);
 
@@ -36,7 +36,7 @@ namespace Uniquizbit.Services
     Task<bool> QuizExistsAsync(Quiz quiz);
 
     Task<bool> DeleteQuizAsync(int id, string userId);
-    
+
     Task<bool> UserCanAddQuestionToQuizAsync(
       int quizId, string userId);
 
