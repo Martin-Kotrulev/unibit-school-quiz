@@ -3,7 +3,7 @@ namespace Uniquizbit.Web.Models
   using System;
   using System.Collections.Generic;
   using System.ComponentModel.DataAnnotations;
-  
+
   public class QuizGroupResource
   {
     public int Id { get; set; }

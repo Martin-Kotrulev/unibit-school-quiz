@@ -7,6 +7,7 @@ namespace Uniquizbit.Web
   using Extensions;
   using Hangfire;
   using Hangfire.PostgreSql;
+  using Infrastructure.Extensions;
   using System;
   using System.Collections.Generic;
   using System.IO;
@@ -25,7 +26,7 @@ namespace Uniquizbit.Web
   using Microsoft.Extensions.Configuration;
   using Microsoft.Extensions.DependencyInjection;
   using Newtonsoft.Json;
-  
+
   public class Startup
   {
     public IConfiguration Configuration { get; }
@@ -55,6 +56,8 @@ namespace Uniquizbit.Web
       // });
 
       services.AddIdentityService();
+
+      services.AddDomainServices();
 
       services.AddSecurity(configuration: Configuration);
 

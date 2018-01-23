@@ -1,10 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-
 namespace Uniquizbit.Persistence.Repositories.Interfaces
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Linq.Expressions;
+  using System.Threading.Tasks;
+
   public interface IRepository<TEntity> where TEntity : class
   {
     TEntity Get(int id);

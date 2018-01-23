@@ -61,12 +61,12 @@ namespace Uniquizbit.Persistence.Repositories
       var q = this.Context.Set<TEntity>()
         .Where(predicate ?? (p => true));
 
-        foreach (var i in includes)
-          q = q.Include(i);
+      foreach (var i in includes)
+        q = q.Include(i);
 
-        return q.Skip((page - 1) * pageSize)
-          .Take(pageSize)
-          .ToList();
+      return q.Skip((page - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
     }
 
     public async Task<IEnumerable<TEntity>> PagedAsync(int page = 1, int pageSize = 10,
@@ -76,12 +76,12 @@ namespace Uniquizbit.Persistence.Repositories
       var q = this.Context.Set<TEntity>()
         .Where(predicate ?? (p => true));
 
-        foreach (var i in includes)
-          q = q.Include(i);
+      foreach (var i in includes)
+        q = q.Include(i);
 
-        return await q.Skip((page - 1) * pageSize)
-          .Take(pageSize)
-          .ToListAsync();
+      return await q.Skip((page - 1) * pageSize)
+        .Take(pageSize)
+        .ToListAsync();
     }
 
     public TEntity Get(int id)

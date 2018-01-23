@@ -12,7 +12,7 @@ namespace Uniquizbit.Web.Mapping
     {
       // Domain to resource
       CreateMap<Answer, AnswerResource>()
-        .ForMember(a => a.IsRight, opt => opt.Ignore());      
+        .ForMember(a => a.IsRight, opt => opt.Ignore());
 
       CreateMap<QuizGroup, QuizGroupResource>()
         .ForMember(qg => qg.Tags, opt =>
@@ -26,7 +26,7 @@ namespace Uniquizbit.Web.Mapping
         .ForMember(q => q.Scores, opt => opt.Ignore())
         .ForMember(q => q.Participants, opt => opt.Ignore())
         .ForMember(q => q.Tags, opt =>
-          opt.MapFrom(q => 
+          opt.MapFrom(q =>
             q.Tags.Select(t => t.Tag.Name)));
 
       CreateMap<Quiz, IdNamePairResource>();

@@ -1,12 +1,14 @@
 namespace Uniquizbit.Web.Controllers
 {
   using AutoMapper;
+  using Common.Enums;
+  using Core.Models;
   using Data.Models;
-  using Services;
-  using System.Threading.Tasks;
   using Microsoft.AspNetCore.Authorization;
   using Microsoft.AspNetCore.Mvc;
   using Microsoft.AspNetCore.Identity;
+  using Services;
+  using System.Threading.Tasks;
   using System;
   using System.Collections.Generic;
   using System.Linq;
@@ -17,16 +19,19 @@ namespace Uniquizbit.Web.Controllers
   public class QuizzesController : Controller
   {
     private readonly IQuizService _quizService;
+    private readonly ITagService _tagService;
     private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
 
     public QuizzesController(IQuizService quizService,
+      ITagService tagService,
       IMapper mapper,
       UserManager<User> userManager)
     {
       _userManager = userManager;
       _mapper = mapper;
       _quizService = quizService;
+      _tagService = tagService;
     }
 
     [Authorize]
@@ -45,13 +50,11 @@ namespace Uniquizbit.Web.Controllers
           ));
         }
 
-        var existingTags = _quizService.CheckForExistingTags(quizResource.Tags);
-        var tagNames = existingTags.Select(t => t.Name);
+        var existingTags = _tagService.UpdateTagsAsync(quizResource.Tags);
 
         // Add the new tags
-        foreach (var tag in quizResource.Tags)
+        foreach (var tag in existingTags)
         {
-          if (!tagNames.Contains(tag))
             quiz.Tags.Add(new QuizzesTags()
             {
               Quiz = quiz,

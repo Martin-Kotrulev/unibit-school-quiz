@@ -1,7 +1,7 @@
 namespace Uniquizbit.Web.Models
 {
   using System.ComponentModel.DataAnnotations;
-  
+
   public class RegisterResource : CredentialsResource
   {
     [Required]
