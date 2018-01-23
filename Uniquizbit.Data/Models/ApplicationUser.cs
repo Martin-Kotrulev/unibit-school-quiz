@@ -3,7 +3,7 @@ namespace Uniquizbit.Data.Models
   using System.Collections.Generic;
   using Microsoft.AspNetCore.Identity;
   using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-  
+
   public class User : IdentityUser
   {
     public ICollection<Quiz> OwnQuizzes { get; set; }
@@ -17,8 +17,9 @@ namespace Uniquizbit.Data.Models
     public ICollection<UsersGroups> InQuizGroups { get; set; }
 
     public ICollection<Notification> Notifications { get; set; }
-    
-    public User() {
+
+    public User()
+    {
       OwnQuizzes = new HashSet<Quiz>();
       TakenQuizzes = new HashSet<QuizzesUsers>();
       Scores = new HashSet<Score>();

@@ -23,7 +23,7 @@ namespace Uniquizbit.Data.Models
 
     public QuizProgress()
     {
-        this.GivenAnswers = new HashSet<ProgressesAnswers>();
+      this.GivenAnswers = new HashSet<ProgressesAnswers>();
     }
   }
 }

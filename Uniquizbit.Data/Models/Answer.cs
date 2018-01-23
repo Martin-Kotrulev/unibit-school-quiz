@@ -3,7 +3,7 @@ namespace Uniquizbit.Data.Models
   using System.Collections.Generic;
   using System.ComponentModel.DataAnnotations;
   using System.ComponentModel.DataAnnotations.Schema;
-  
+
   public class Answer
   {
     public int Id { get; set; }
@@ -28,7 +28,7 @@ namespace Uniquizbit.Data.Models
     public string CreatorId { get; set; }
 
     public User Creator { get; set; }
-    
+
     public Question Question { get; set; }
 
     public int QuizId { get; set; }

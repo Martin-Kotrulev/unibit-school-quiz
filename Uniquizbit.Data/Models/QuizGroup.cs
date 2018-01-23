@@ -3,7 +3,7 @@ namespace Uniquizbit.Data.Models
   using System;
   using System.Collections.Generic;
   using System.ComponentModel.DataAnnotations;
-  
+
   public class QuizGroup
   {
     public int Id { get; set; }
@@ -17,7 +17,7 @@ namespace Uniquizbit.Data.Models
     public string CreatorId { get; set; }
 
     public string CreatorName { get; set; }
-    
+
     public User Creator { get; set; }
 
     public ICollection<Quiz> Quizzes { get; set; }

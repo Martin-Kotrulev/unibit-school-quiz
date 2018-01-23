@@ -1,7 +1,7 @@
 namespace Uniquizbit.Data.Models
 {
   using System.ComponentModel.DataAnnotations;
-  
+
   public class QuizSubscription
   {
     [Required]
