@@ -8,6 +8,7 @@ namespace Uniquizbit.Web.Controllers
   using Services;
   using System.Threading.Tasks;
   using Web.Models;
+  using Microsoft.AspNetCore.Authorization;
 
   public class QuestionsController : BaseApiController
   {
@@ -30,6 +31,7 @@ namespace Uniquizbit.Web.Controllers
       _answerService = answerService;
     }
 
+    [Authorize]
     [HttpPost("{questionId}/answers")]
     public async Task<IActionResult> AddAnswerForQuestion(int questionId,
       [FromBody] AnswerResource answerResource)
