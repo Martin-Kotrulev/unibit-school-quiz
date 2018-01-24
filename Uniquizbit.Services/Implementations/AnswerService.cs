@@ -12,7 +12,7 @@ namespace Uniquizbit.Services.Implementations
   {
     private readonly UniquizbitDbContext _dbContext;
 
-    AnswerService(UniquizbitDbContext dbContext)
+    public AnswerService(UniquizbitDbContext dbContext)
     {
       _dbContext = dbContext;
     }
