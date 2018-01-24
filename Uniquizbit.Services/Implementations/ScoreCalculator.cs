@@ -4,7 +4,7 @@ namespace Uniquizbit.Services.Implementations
   using Microsoft.Extensions.Options;
   using System;
 
-  public class ScoreCalculator
+  public class ScoreCalculator : IScoreCalculator
   {
     private readonly GradesSettings _gradesSettings;
 

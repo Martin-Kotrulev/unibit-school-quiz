@@ -18,11 +18,11 @@ namespace Uniquizbit.Services.Implementations
 
     private readonly UniquizbitDbContext _dbContext;
 
-    private readonly ScoreCalculator _scoreCalculator;
+    private readonly IScoreCalculator _scoreCalculator;
 
     public QuizService(UniquizbitDbContext dbContext,
       IOptions<GradesSettings> optionsAccessor,
-      ScoreCalculator scoreCalculator)
+      IScoreCalculator scoreCalculator)
     {
       _scoreCalculator = scoreCalculator;
       _dbContext = dbContext;

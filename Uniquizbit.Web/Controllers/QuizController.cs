@@ -19,13 +19,9 @@ namespace Uniquizbit.Web.Controllers
   public class QuizzesController : Controller
   {
     private readonly IQuizService _quizService;
-
     private readonly IQuestionService _questionService;
-
     private readonly ITagService _tagService;
-
     private readonly IMapper _mapper;
-
     private readonly UserManager<User> _userManager;
 
     public QuizzesController(IQuizService quizService,
