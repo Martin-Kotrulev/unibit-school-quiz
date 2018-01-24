@@ -18,7 +18,7 @@ namespace Uniquizbit.Web.Controllers
   using System.IdentityModel.Tokens.Jwt;
   using System.Text;
 
-  public class AccountController : Controller
+  public class AccountController : BaseApiController
   {
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
