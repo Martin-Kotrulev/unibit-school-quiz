@@ -93,11 +93,12 @@ namespace Uniquizbit.Services.Implementations
       var questionOrder = GetListFromOrderString(progress.QuestionsOrder);
       var answersOrder = GetListFromOrderString(progress.AnswersOrder);
 
-      var progressAnswersIds = await _dbContext.QuizProgresses
+      var progressAnswers = await _dbContext.QuizProgresses
         .Include(qp => qp.GivenAnswers)
+					.ThenInclude(ga => ga.ProgressAnswer)
         .Where(qp => qp.QuizId == quizId && qp.UserId == userId)
         .SelectMany(qp => qp.GivenAnswers)
-        .Select(ga => ga.AnswerId)
+        .Select(ga => ga.ProgressAnswer)
         .ToListAsync();
 
       var questions = await _dbContext.Questions
@@ -114,8 +115,14 @@ namespace Uniquizbit.Services.Implementations
         q.Answers = q.Answers
           .Select(a =>
           {
-            if (progressAnswersIds.Contains(a.Id))
-              a.IsSelected = true;
+            progressAnswers.Any(pa => {
+							var equal = pa.AnswerId == a.Id;
+
+							if (equal)
+								a.IsChecked = pa.IsChecked;
+
+							return equal;
+						});
             return a;
           })
           .OrderBy(a => answersOrder.IndexOf(a.Id))

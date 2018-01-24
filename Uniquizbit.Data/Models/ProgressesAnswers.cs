@@ -6,8 +6,8 @@ namespace Uniquizbit.Data.Models
 
     public QuizProgress Progress { get; set; }
 
-    public int AnswerId { get; set; }
+    public int ProgressAnswerId { get; set; }
 
-    public Answer Answer { get; set; }
+    public ProgressAnswer ProgressAnswer { get; set; }
   }
 }

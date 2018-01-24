@@ -57,6 +57,8 @@ namespace Uniquizbit.Web.Mapping
 
       CreateMap<AnswerResource, Answer>()
         .ForMember(a => a.Id, opt => opt.Ignore());
+
+      CreateMap<ProgressAnswerResource, ProgressAnswer>(); 
     }
   }
 }

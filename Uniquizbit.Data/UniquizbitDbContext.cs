@@ -93,7 +93,7 @@ namespace Uniquizbit.Data
         .HasKey(qu => new { qu.GroupId, qu.TagId });
 
       modelBuilder.Entity<ProgressesAnswers>()
-        .HasKey(qu => new { qu.ProgressId, qu.AnswerId });
+        .HasKey(qu => new { qu.ProgressId, qu.ProgressAnswerId });
 
       modelBuilder.Entity<QuizProgress>()
         .HasMany(qp => qp.GivenAnswers)

@@ -1,19 +1,19 @@
 namespace Uniquizbit.Web.Controllers
 {
   using AutoMapper;
-  using Data.Models;
   using Core.Models;
+  using Data.Models;
   using Microsoft.AspNetCore.Mvc;
   using Microsoft.AspNetCore.Identity;
   using Services;
   using System.Threading.Tasks;
   using Web.Models;
 
-  [Route("api/[controller]")]
-  public class QuestionsController : Controller
+  public class QuestionsController : BaseApiController
   {
     private readonly IQuizService _quizService;
     private readonly IQuestionService _questionService;
+    private readonly IAnswerService _answerService;
     private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
 
@@ -51,26 +51,19 @@ namespace Uniquizbit.Web.Controllers
       }
       else
         return BadRequest(new ApiResponse(ModelState));
-
     }
 
     [HttpDelete("{questionId}")]
     public async Task<IActionResult> DeleteAsync(int questionId)
     {
       var userId = _userManager.GetUserId(User);
-      var ownQuestion = await _quizService.UserOwnQuestionAsync(id, userId);
 
-      if (ownQuestion)
+      if (await _questionService.DeleteQuestionAsync(questionId, userId))
       {
-        var deleted = _quizService.DeleteQuestion(id);
-
-        if (!deleted)
-          return BadRequest(new ApiResponse("Question does not exist.", false));
-
         return Ok(new ApiResponse("You successfully deleted the question."));
       }
 
-      return BadRequest(new ApiResponse("You can't delete other users questions.", false));
+      return BadRequest(new ApiResponse("You can't delete the specified question.", false));
     }
   }
 }

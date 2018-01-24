@@ -161,14 +161,22 @@ namespace Uniquizbit.Web.Controllers
     }
 
     [HttpPost("progress")]
-    public async Task<IActionResult> AddProgressAsync([FromBody] ProgressResource progressResource)
+    public async Task<IActionResult> AddProgressAsync([FromBody] ProgressAnswerResource progressAnswerResource)
     {
       if (ModelState.IsValid)
       {
         var userId = _userManager.GetUserId(User);
-        var progress = _mapper.Map<ProgressResource, QuizProgress>(progressResource);
-        //await _quizService.(progress, progressResource.GivenAnswers);
-        return Ok();
+        var progressAnswer = _mapper.Map<ProgressAnswerResource, ProgressAnswer>(progressAnswerResource);
+        var progress = await _quizService.AddProgressToQuizAsync(userId, progressAnswer);
+
+        if (progress == null)
+        {
+          ModelState.AddModelError("Progress error", "Progress does not exists");
+
+          return NotFound(new ApiResponse(ModelState));
+        }
+        
+        return Ok(new ApiResponse(progress));
       }
 
       return BadRequest(new ApiResponse(ModelState));

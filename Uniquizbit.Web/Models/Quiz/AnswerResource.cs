@@ -6,7 +6,6 @@ namespace Uniquizbit.Web.Models
   {
     public int Id { get; set; }
 
-    [Required]
     public char Letter { get; set; }
 
     [Required]

@@ -72,10 +72,11 @@ namespace Uniquizbit.Services.Implementations
       var userScore = await _dbContext.QuizProgresses
         .Where(qp => qp.UserId == userId && qp.QuizId == quizId)
         .Include(qp => qp.GivenAnswers)
-          .ThenInclude(ga => ga.Answer)
+          .ThenInclude(ga => ga.ProgressAnswer)
+          .ThenInclude(pa => pa.Answer)
         .SelectMany(qp => qp.GivenAnswers
-          .Where(ga => ga.Answer.IsRight))
-        .SumAsync(ga => ga.Answer.Weight);
+          .Where(ga => ga.ProgressAnswer.Answer.IsRight))
+        .SumAsync(ga => ga.ProgressAnswer.Answer.Weight);
 
       var score = new Score()
       {
@@ -210,6 +211,38 @@ namespace Uniquizbit.Services.Implementations
     public void Subscribe(QuizSubscription subscription)
     {
       throw new System.NotImplementedException();
+    }
+
+    public async Task<QuizProgress> AddProgressToQuizAsync(string userId, ProgressAnswer answer)
+    {
+      var progress = await _dbContext.QuizProgresses
+        .Include(qp => qp.GivenAnswers)
+          .ThenInclude(ga => ga.ProgressAnswer)
+        .FirstOrDefaultAsync(qp => qp.UserId == userId && qp.QuizId == answer.QuizId);
+
+      if (progress != null)
+      {
+        var progressAnswer = progress.GivenAnswers
+          .FirstOrDefault(ga => ga.ProgressAnswer.AnswerId == answer.AnswerId)
+          ?.ProgressAnswer;
+
+        if (progressAnswer != null)
+        {
+          progressAnswer.IsChecked = answer.IsChecked;
+        }
+        else
+        {
+          progress.GivenAnswers.Add(new ProgressesAnswers()
+          {
+            Progress = progress,
+            ProgressAnswer = answer
+          });
+        }
+
+        await _dbContext.SaveChangesAsync();
+      }
+
+      return progress;
     }
   }
 }

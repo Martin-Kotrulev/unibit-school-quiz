@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 using System.Collections.Generic;
 
-namespace Uniquizbit.Migrations
+namespace Uniquizbit.Data.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,10 +13,10 @@ namespace Uniquizbit.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
-                    Name = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                    Id = table.Column<string>(nullable: false),
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -27,21 +27,21 @@ namespace Uniquizbit.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int4", nullable: false),
-                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
-                    Email = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bool", nullable: false),
-                    LockoutEnabled = table.Column<bool>(type: "bool", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
-                    PasswordHash = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bool", nullable: false),
-                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
-                    TwoFactorEnabled = table.Column<bool>(type: "bool", nullable: false),
-                    UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                    Id = table.Column<string>(nullable: false),
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(nullable: false),
+                    LockoutEnabled = table.Column<bool>(nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
+                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
+                    PasswordHash = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(nullable: false),
+                    SecurityStamp = table.Column<string>(nullable: true),
+                    TwoFactorEnabled = table.Column<bool>(nullable: false),
+                    UserName = table.Column<string>(maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -52,8 +52,8 @@ namespace Uniquizbit.Migrations
                 name: "GroupSubscriptions",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    QuizGroupId = table.Column<int>(type: "int4", nullable: false)
+                    UserId = table.Column<string>(nullable: false),
+                    QuizGroupId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,22 +64,23 @@ namespace Uniquizbit.Migrations
                 name: "QuizProgresses",
                 columns: table => new
                 {
-                    QuizId = table.Column<int>(type: "int4", nullable: false),
-                    QuestionId = table.Column<int>(type: "int4", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    ValidTo = table.Column<DateTime>(type: "timestamp", nullable: false)
+                    QuizId = table.Column<int>(nullable: false),
+                    UserId = table.Column<string>(nullable: false),
+                    AnswersOrder = table.Column<string>(nullable: true),
+                    QuestionsOrder = table.Column<string>(nullable: true),
+                    ValidTo = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QuizProgresses", x => new { x.QuizId, x.QuestionId, x.UserId });
+                    table.PrimaryKey("PK_QuizProgresses", x => new { x.QuizId, x.UserId });
                 });
 
             migrationBuilder.CreateTable(
                 name: "QuizSubscriptions",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    QuizId = table.Column<int>(type: "int4", nullable: false)
+                    UserId = table.Column<string>(nullable: false),
+                    QuizId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -90,9 +91,9 @@ namespace Uniquizbit.Migrations
                 name: "Tags",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int4", nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    Name = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                    Name = table.Column<string>(maxLength: 20, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -103,11 +104,11 @@ namespace Uniquizbit.Migrations
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int4", nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    ClaimType = table.Column<string>(type: "text", nullable: true),
-                    ClaimValue = table.Column<string>(type: "text", nullable: true),
-                    RoleId = table.Column<string>(type: "text", nullable: false)
+                    ClaimType = table.Column<string>(nullable: true),
+                    ClaimValue = table.Column<string>(nullable: true),
+                    RoleId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -124,11 +125,11 @@ namespace Uniquizbit.Migrations
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int4", nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    ClaimType = table.Column<string>(type: "text", nullable: true),
-                    ClaimValue = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: false)
+                    ClaimType = table.Column<string>(nullable: true),
+                    ClaimValue = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -145,10 +146,10 @@ namespace Uniquizbit.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "text", nullable: false),
-                    ProviderKey = table.Column<string>(type: "text", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: false)
+                    LoginProvider = table.Column<string>(nullable: false),
+                    ProviderKey = table.Column<string>(nullable: false),
+                    ProviderDisplayName = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -165,8 +166,8 @@ namespace Uniquizbit.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    RoleId = table.Column<string>(type: "text", nullable: false)
+                    UserId = table.Column<string>(nullable: false),
+                    RoleId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -189,10 +190,10 @@ namespace Uniquizbit.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    LoginProvider = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Value = table.Column<string>(type: "text", nullable: true)
+                    UserId = table.Column<string>(nullable: false),
+                    LoginProvider = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    Value = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -209,18 +210,19 @@ namespace Uniquizbit.Migrations
                 name: "QuizGroups",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int4", nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp", nullable: false),
-                    Name = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
-                    OwnerId = table.Column<string>(type: "text", nullable: true)
+                    CreatedOn = table.Column<DateTime>(nullable: false),
+                    CreatorId = table.Column<string>(nullable: true),
+                    CreatorName = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_QuizGroups", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_QuizGroups_AspNetUsers_OwnerId",
-                        column: x => x.OwnerId,
+                        name: "FK_QuizGroups_AspNetUsers_CreatorId",
+                        column: x => x.CreatorId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -230,8 +232,8 @@ namespace Uniquizbit.Migrations
                 name: "GroupsTags",
                 columns: table => new
                 {
-                    GroupId = table.Column<int>(type: "int4", nullable: false),
-                    TagId = table.Column<int>(type: "int4", nullable: false)
+                    GroupId = table.Column<int>(nullable: false),
+                    TagId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -254,17 +256,19 @@ namespace Uniquizbit.Migrations
                 name: "Quizzes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int4", nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp", nullable: false),
-                    CreatorId = table.Column<string>(type: "text", nullable: true),
-                    Ends = table.Column<DateTime>(type: "timestamp", nullable: false),
-                    GroupId = table.Column<int>(type: "int4", nullable: true),
-                    Locked = table.Column<bool>(type: "bool", nullable: false),
-                    Once = table.Column<bool>(type: "bool", nullable: false),
-                    Password = table.Column<string>(type: "text", nullable: true),
-                    Starts = table.Column<DateTime>(type: "timestamp", nullable: false),
-                    Title = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                    CreatedOn = table.Column<DateTime>(nullable: false),
+                    CreatorId = table.Column<string>(nullable: true),
+                    CreatorName = table.Column<string>(nullable: true),
+                    Ends = table.Column<DateTime>(nullable: true),
+                    GroupId = table.Column<int>(nullable: true),
+                    Locked = table.Column<bool>(nullable: false),
+                    Name = table.Column<string>(maxLength: 255, nullable: false),
+                    Once = table.Column<bool>(nullable: false),
+                    Password = table.Column<string>(nullable: true),
+                    Published = table.Column<bool>(nullable: false),
+                    Starts = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -287,8 +291,8 @@ namespace Uniquizbit.Migrations
                 name: "UsersGroups",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    QuizGroupId = table.Column<int>(type: "int4", nullable: false)
+                    UserId = table.Column<string>(nullable: false),
+                    QuizGroupId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -311,14 +315,14 @@ namespace Uniquizbit.Migrations
                 name: "Notifications",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int4", nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    Date = table.Column<DateTime>(type: "timestamp", nullable: false),
-                    IssuerId = table.Column<string>(type: "text", nullable: true),
-                    Message = table.Column<string>(type: "text", nullable: true),
-                    QuizGroupId = table.Column<int>(type: "int4", nullable: true),
-                    QuizId = table.Column<int>(type: "int4", nullable: true),
-                    Seen = table.Column<bool>(type: "bool", nullable: false)
+                    Date = table.Column<DateTime>(nullable: false),
+                    IssuerId = table.Column<string>(nullable: true),
+                    Message = table.Column<string>(nullable: true),
+                    QuizGroupId = table.Column<int>(nullable: true),
+                    QuizId = table.Column<int>(nullable: true),
+                    Seen = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -347,16 +351,23 @@ namespace Uniquizbit.Migrations
                 name: "Questions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int4", nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    IsMultiselect = table.Column<bool>(type: "bool", nullable: false),
-                    MaxAnswers = table.Column<int>(type: "int4", nullable: false),
-                    QuizId = table.Column<int>(type: "int4", nullable: false),
-                    Value = table.Column<string>(type: "text", nullable: false)
+                    CreatorId = table.Column<string>(nullable: true),
+                    IsMultiselect = table.Column<bool>(nullable: false),
+                    MaxAnswers = table.Column<int>(nullable: false),
+                    QuizId = table.Column<int>(nullable: false),
+                    Value = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Questions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Questions_AspNetUsers_CreatorId",
+                        column: x => x.CreatorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Questions_Quizzes_QuizId",
                         column: x => x.QuizId,
@@ -369,8 +380,8 @@ namespace Uniquizbit.Migrations
                 name: "QuizzesTags",
                 columns: table => new
                 {
-                    QuizId = table.Column<int>(type: "int4", nullable: false),
-                    TagId = table.Column<int>(type: "int4", nullable: false)
+                    QuizId = table.Column<int>(nullable: false),
+                    TagId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -393,8 +404,9 @@ namespace Uniquizbit.Migrations
                 name: "QuizzesUsers",
                 columns: table => new
                 {
-                    QuizId = table.Column<int>(type: "int4", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false)
+                    QuizId = table.Column<int>(nullable: false),
+                    UserId = table.Column<string>(nullable: false),
+                    Finished = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -417,9 +429,9 @@ namespace Uniquizbit.Migrations
                 name: "Ratings",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    QuizId = table.Column<int>(type: "int4", nullable: false),
-                    Value = table.Column<double>(type: "float8", nullable: false)
+                    UserId = table.Column<string>(nullable: false),
+                    QuizId = table.Column<int>(nullable: false),
+                    Value = table.Column<double>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -442,10 +454,10 @@ namespace Uniquizbit.Migrations
                 name: "Scores",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    QuizId = table.Column<int>(type: "int4", nullable: false),
-                    ScoredAt = table.Column<DateTime>(type: "timestamp", nullable: false),
-                    Value = table.Column<double>(type: "float8", nullable: false)
+                    UserId = table.Column<string>(nullable: false),
+                    QuizId = table.Column<int>(nullable: false),
+                    ScoredAt = table.Column<DateTime>(nullable: false),
+                    Value = table.Column<double>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -468,18 +480,25 @@ namespace Uniquizbit.Migrations
                 name: "Answers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int4", nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    IsRight = table.Column<bool>(type: "bool", nullable: false),
-                    Letter = table.Column<char>(type: "char", nullable: false),
-                    QuestionId = table.Column<int>(type: "int4", nullable: false),
-                    QuizId = table.Column<int>(type: "int4", nullable: false),
-                    Value = table.Column<string>(type: "text", nullable: false),
-                    Weight = table.Column<int>(type: "int4", nullable: false)
+                    CreatorId = table.Column<string>(nullable: true),
+                    IsRight = table.Column<bool>(nullable: false),
+                    Letter = table.Column<string>(maxLength: 1, nullable: false),
+                    QuestionId = table.Column<int>(nullable: false),
+                    QuizId = table.Column<int>(nullable: false),
+                    Value = table.Column<string>(nullable: false),
+                    Weight = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Answers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Answers_AspNetUsers_CreatorId",
+                        column: x => x.CreatorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Answers_Questions_QuestionId",
                         column: x => x.QuestionId,
@@ -495,31 +514,56 @@ namespace Uniquizbit.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProgressesAnswers",
+                name: "ProgressAnswer",
                 columns: table => new
                 {
-                    ProgressId = table.Column<int>(type: "int4", nullable: false),
-                    AnswerId = table.Column<int>(type: "int4", nullable: false),
-                    ProgressQuestionId = table.Column<int>(type: "int4", nullable: true),
-                    ProgressQuizId = table.Column<int>(type: "int4", nullable: true),
-                    ProgressUserId = table.Column<string>(type: "text", nullable: true)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    AnswerId = table.Column<int>(nullable: false),
+                    IsChecked = table.Column<bool>(nullable: false),
+                    QuizId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProgressesAnswers", x => new { x.ProgressId, x.AnswerId });
+                    table.PrimaryKey("PK_ProgressAnswer", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProgressesAnswers_Answers_AnswerId",
+                        name: "FK_ProgressAnswer_Answers_AnswerId",
                         column: x => x.AnswerId,
                         principalTable: "Answers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProgressesAnswers",
+                columns: table => new
+                {
+                    ProgressId = table.Column<int>(nullable: false),
+                    ProgressAnswerId = table.Column<int>(nullable: false),
+                    ProgressQuizId = table.Column<int>(nullable: true),
+                    ProgressUserId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProgressesAnswers", x => new { x.ProgressId, x.ProgressAnswerId });
                     table.ForeignKey(
-                        name: "FK_ProgressesAnswers_QuizProgresses_ProgressQuizId_ProgressQuestionId_ProgressUserId",
-                        columns: x => new { x.ProgressQuizId, x.ProgressQuestionId, x.ProgressUserId },
+                        name: "FK_ProgressesAnswers_ProgressAnswer_ProgressAnswerId",
+                        column: x => x.ProgressAnswerId,
+                        principalTable: "ProgressAnswer",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProgressesAnswers_QuizProgresses_ProgressQuizId_ProgressUserId",
+                        columns: x => new { x.ProgressQuizId, x.ProgressUserId },
                         principalTable: "QuizProgresses",
-                        principalColumns: new[] { "QuizId", "QuestionId", "UserId" },
+                        principalColumns: new[] { "QuizId", "UserId" },
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Answers_CreatorId",
+                table: "Answers",
+                column: "CreatorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Answers_QuestionId",
@@ -589,14 +633,24 @@ namespace Uniquizbit.Migrations
                 column: "QuizId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProgressesAnswers_AnswerId",
-                table: "ProgressesAnswers",
+                name: "IX_ProgressAnswer_AnswerId",
+                table: "ProgressAnswer",
                 column: "AnswerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProgressesAnswers_ProgressQuizId_ProgressQuestionId_ProgressUserId",
+                name: "IX_ProgressesAnswers_ProgressAnswerId",
                 table: "ProgressesAnswers",
-                columns: new[] { "ProgressQuizId", "ProgressQuestionId", "ProgressUserId" });
+                column: "ProgressAnswerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProgressesAnswers_ProgressQuizId_ProgressUserId",
+                table: "ProgressesAnswers",
+                columns: new[] { "ProgressQuizId", "ProgressUserId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Questions_CreatorId",
+                table: "Questions",
+                column: "CreatorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Questions_QuizId",
@@ -604,15 +658,15 @@ namespace Uniquizbit.Migrations
                 column: "QuizId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_QuizGroups_CreatorId",
+                table: "QuizGroups",
+                column: "CreatorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_QuizGroups_Name",
                 table: "QuizGroups",
                 column: "Name",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_QuizGroups_OwnerId",
-                table: "QuizGroups",
-                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Quizzes_CreatorId",
@@ -625,9 +679,9 @@ namespace Uniquizbit.Migrations
                 column: "GroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Quizzes_Title",
+                name: "IX_Quizzes_Name",
                 table: "Quizzes",
-                column: "Title",
+                column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -713,13 +767,16 @@ namespace Uniquizbit.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Answers");
+                name: "ProgressAnswer");
 
             migrationBuilder.DropTable(
                 name: "QuizProgresses");
 
             migrationBuilder.DropTable(
                 name: "Tags");
+
+            migrationBuilder.DropTable(
+                name: "Answers");
 
             migrationBuilder.DropTable(
                 name: "Questions");

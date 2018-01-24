@@ -21,7 +21,7 @@ namespace Uniquizbit.Data.Models
     public bool IsRight { get; set; } = false;
 
     [NotMapped]
-    public bool IsSelected { get; set; } = false;
+    public bool IsChecked { get; set; } = false;
 
     public int QuestionId { get; set; }
 

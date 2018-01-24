@@ -11,17 +11,6 @@ namespace Uniquizbit.Web.Models
     [Required]
     public int QuizId { get; set; }
 
-    [Required]
-    public int QuestionId { get; set; }
-
-    public ICollection<int> GivenAnswers { get; set; }
-
-    [Required]
-    public DateTime ValidTo { get; set; }
-
-    public ProgressResource()
-    {
-      this.GivenAnswers = new HashSet<int>();
-    }
+    public AnswerResource Answer { get; set; }
   }
 }
