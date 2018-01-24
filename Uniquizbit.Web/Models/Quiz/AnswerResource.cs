@@ -16,7 +16,7 @@ namespace Uniquizbit.Web.Models
 
     public bool IsRight { get; set; } = false;
 
-    public bool IsSelected { get; set; } = false;
+    public bool IsChecked { get; set; } = false;
 
     public int QuestionId { get; set; }
 
