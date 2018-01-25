@@ -61,7 +61,7 @@ namespace Uniquizbit.Web.Controllers
           quiz.Tags.Add(new QuizzesTags()
           {
             Quiz = quiz,
-            Tag = tag
+            TagId = tag.Id
           });
         }
 

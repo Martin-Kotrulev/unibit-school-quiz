@@ -62,7 +62,7 @@ namespace Uniquizbit.Web.Controllers
           quizGroup.Tags.Add(new GroupsTags()
           {
             Group = quizGroup,
-            Tag = tag
+            TagId = tag.Id
           });
         }
 
@@ -96,6 +96,57 @@ namespace Uniquizbit.Web.Controllers
         return BadRequest(
           new ApiResponse("You can't delete the specified quiz group.", false));
       }
+    }
+
+    [Authorize]
+    [HttpPost("{groupId}/quizzes")]
+    public async Task<IActionResult> AddQuizToGroup(int groupId, [FromBody] QuizResource quizResource)
+    {
+      if (ModelState.IsValid)
+      {
+        var user = await _userManager.GetUserAsync(User);
+        var quiz = _mapper.Map<QuizResource, Quiz>(quizResource);
+
+        if (await _quizService.QuizExistsAsync(quiz))
+        {
+          return BadRequest(new ApiResponse(
+            $"Quiz group with title '{quiz.Name}' already exists.", false
+          ));
+        }
+
+        if (!await _quizGroupService.QuizGroupExistsAsync(groupId))
+        {
+          return BadRequest(new ApiResponse(
+            "Group does not exists.", false
+          ));
+        }
+
+        var existingTags = await _tagService.UpdateTagsAsync(quizResource.Tags);
+
+        // Add the tags
+        foreach (var tag in existingTags)
+        {
+          quiz.Tags.Add(new QuizzesTags()
+          {
+            Quiz = quiz,
+            TagId = tag.Id
+          });
+        }
+
+        // Add creation stamps
+        quiz.CreatedOn = DateTime.Now;
+        quiz.CreatorId = user.Id;
+        quiz.CreatorName = user.UserName;
+        quiz.GroupId = groupId;
+
+        await _quizService.AddQuizAsync(quiz);
+
+        return Ok(new ApiResponse(
+          _mapper.Map<Quiz, QuizResource>(quiz),
+          "You have successfully added a new quiz."));
+      }
+
+      return BadRequest(new ApiResponse(ModelState));
     }
 
     [HttpGet]

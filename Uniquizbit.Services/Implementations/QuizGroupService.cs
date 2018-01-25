@@ -66,6 +66,9 @@ namespace Uniquizbit.Services.Implementations
       => await _dbContext.QuizGroups
           .FirstOrDefaultAsync(qg => qg.Name == groupName) != null;
 
+    public async Task<bool> QuizGroupExistsAsync(int groupId)
+      => await _dbContext.QuizGroups.FindAsync(groupId) != null;
+
     public async Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(ICollection<string> tags, int page = 1, int pageSize = 10)
       => await ApplyPaging(qg =>
           qg.Tags

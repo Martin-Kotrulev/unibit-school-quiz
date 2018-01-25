@@ -21,6 +21,8 @@ namespace Uniquizbit.Services
 
     Task<bool> QuizGroupExistsAsync(string groupName);
 
+    Task<bool> QuizGroupExistsAsync(int groupId);
+
     Task<bool> DeleteQuizGroupAsync(int id, string userId);
 
     Task<QuizGroup> FindGroupByIdAsync(int groupId);

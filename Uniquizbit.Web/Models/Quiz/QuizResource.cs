@@ -29,8 +29,6 @@ namespace Uniquizbit.Web.Models
 
     public string CreatorName { get; set; }
 
-    public int? GroupId { get; set; }
-
     public ICollection<string> Tags { get; set; }
 
     public int Scores { get; set; }

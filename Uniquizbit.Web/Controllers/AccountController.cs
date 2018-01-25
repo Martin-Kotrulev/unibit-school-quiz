@@ -60,8 +60,8 @@ namespace Uniquizbit.Web.Controllers
       return BadRequest(new ApiResponse(ModelState));
     }
 
-    [HttpPost("[action]")]
     [AllowAnonymous]
+    [HttpPost("[action]")]
     public async Task<IActionResult> Login([FromBody] CredentialsResource credentials)
     {
       if (ModelState.IsValid)
