@@ -117,7 +117,7 @@ namespace Uniquizbit.Web.Controllers
         if (!await _quizGroupService.QuizGroupExistsAsync(groupId))
         {
           return BadRequest(new ApiResponse(
-            "Group does not exists.", false
+            "Group does not exist.", false
           ));
         }
 

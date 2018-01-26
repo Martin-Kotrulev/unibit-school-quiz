@@ -29,7 +29,7 @@ namespace Uniquizbit.Services.Implementations
     {
       var question = await _dbContext.Questions.FindAsync(questionId);
 
-      if (question == null)
+      if (question == null || question.CreatorId != userId)
         return false;
 
       _dbContext.Questions.Remove(question);
@@ -180,5 +180,8 @@ namespace Uniquizbit.Services.Implementations
 
     private List<int> GetListFromOrderString(string orderString)
       => orderString.Split('.').Select(Int32.Parse).ToList();
+
+    public async Task<Question> FindQuestionByIdAsync(int questionId)
+      => await _dbContext.Questions.FindAsync(questionId);
   }
 }

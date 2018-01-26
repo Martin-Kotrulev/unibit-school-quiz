@@ -92,6 +92,8 @@ namespace Uniquizbit.Web.Controllers
         if (await _quizService.UserCanAddQuestionToQuizAsync(quizId, userId))
         {
           question.QuizId = quizId;
+          question.CreatorId = userId;
+          
           await _questionService.AddQuestionAsync(question);
         }
         else
@@ -113,7 +115,7 @@ namespace Uniquizbit.Web.Controllers
 
     [Authorize]
     [HttpDelete("{quizId}")]
-    public async Task<IActionResult> Delete(int quizId)
+    public async Task<IActionResult> DeleteQuiz(int quizId)
     {
       var userId = _userManager.GetUserId(User);
       if (await _quizService.DeleteQuizAsync(quizId, userId))
@@ -167,11 +169,11 @@ namespace Uniquizbit.Web.Controllers
 
         if (progress == null)
         {
-          ModelState.AddModelError("Progress error", "Progress does not exists");
+          ModelState.AddModelError("Progress error", "Progress does not exist");
 
           return NotFound(new ApiResponse(ModelState));
         }
-        
+
         return Ok(new ApiResponse(progress));
       }
 
@@ -215,15 +217,22 @@ namespace Uniquizbit.Web.Controllers
       var userId = _userManager.GetUserId(User);
       var quiz = await _quizService.FindQuizByIdAsync(quizId);
 
-      var questions = _mapper.Map<IEnumerable<Question>, ICollection<QuestionResource>>(
-        await _questionService.GetQuestionsForQuizAsync(quizId, userId)
-      );
-
-      return Ok(new
+      if (quiz != null)
       {
-        Quiz = _mapper.Map<Quiz, IdNamePairResource>(quiz),
-        Questions = questions
-      });
+        var questions = _mapper.Map<IEnumerable<Question>, ICollection<QuestionResource>>(
+          await _questionService.GetQuestionsForQuizAsync(quizId, userId));
+
+        return Ok(new
+        {
+          Quiz = _mapper.Map<Quiz, IdNamePairResource>(quiz),
+          Questions = questions
+        });
+      }
+      else
+      {
+        ModelState.AddModelError("Quizz error", "Quiz does not exist.");
+        return NotFound(new ApiResponse(ModelState));
+      }
     }
 
     [Authorize]

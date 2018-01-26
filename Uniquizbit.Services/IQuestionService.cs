@@ -11,5 +11,7 @@ namespace Uniquizbit.Services
     Task<IEnumerable<Question>> GetQuestionsForQuizAsync(int quizId, string userId);
 
     Task<bool> DeleteQuestionAsync(int questionId, string userId);
+
+    Task<Question> FindQuestionByIdAsync(int questionId);
   }
 }
