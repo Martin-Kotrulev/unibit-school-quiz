@@ -36,19 +36,15 @@ namespace Uniquizbit.Web.Controllers
     public async Task<IActionResult> AddAnswerForQuestion(int questionId,
       [FromBody] AnswerResource answerResource)
     {
+      var answer = _mapper.Map<AnswerResource, Answer>(answerResource);
+      var userId = _userManager.GetUserId(User);
+
       if (ModelState.IsValid)
       {
-        var answer = _mapper.Map<AnswerResource, Answer>(answerResource);
-        var userId = _userManager.GetUserId(User);
-        var question = await _questionService.FindQuestionByIdAsync(questionId);
-
-        if (question != null && question.CreatorId == userId)
+        if (await _quizService.UserCanAddQuestionToQuizAsync(questionId, userId))
         {
           answer.QuestionId = questionId;
-          answer.CreatorId = userId;
-          answer.QuizId = question.QuizId;
           await _answerService.AddAnswerAsync(answer);
-
           return Ok(new ApiResponse("You successfully added a new answer."));
         }
         else
@@ -60,7 +56,7 @@ namespace Uniquizbit.Web.Controllers
     }
 
     [HttpDelete("{questionId}")]
-    public async Task<IActionResult> DeleteQuestion(int questionId)
+    public async Task<IActionResult> DeleteAsync(int questionId)
     {
       var userId = _userManager.GetUserId(User);
 

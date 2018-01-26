@@ -95,7 +95,7 @@ namespace Uniquizbit.Services.Implementations
 
       var progressAnswers = await _dbContext.QuizProgresses
         .Include(qp => qp.GivenAnswers)
-					.ThenInclude(ga => ga.ProgressAnswer)
+          .ThenInclude(ga => ga.ProgressAnswer)
         .Where(qp => qp.QuizId == quizId && qp.UserId == userId)
         .SelectMany(qp => qp.GivenAnswers)
         .Select(ga => ga.ProgressAnswer)
@@ -115,14 +115,15 @@ namespace Uniquizbit.Services.Implementations
         q.Answers = q.Answers
           .Select(a =>
           {
-            progressAnswers.Any(pa => {
-							var equal = pa.AnswerId == a.Id;
+            progressAnswers.Any(pa =>
+            {
+              var equal = pa.AnswerId == a.Id;
 
-							if (equal)
-								a.IsChecked = pa.IsChecked;
+              if (equal)
+                a.IsChecked = pa.IsChecked;
 
-							return equal;
-						});
+              return equal;
+            });
             return a;
           })
           .OrderBy(a => answersOrder.IndexOf(a.Id))
@@ -183,5 +184,32 @@ namespace Uniquizbit.Services.Implementations
 
     public async Task<Question> FindQuestionByIdAsync(int questionId)
       => await _dbContext.Questions.FindAsync(questionId);
+
+    public async Task<ICollection<Question>> UpdateQuestionsForQuiz(int quizId,
+      ICollection<Question> questions)
+    {
+      var quiz = await _dbContext.Quizzes
+        .Include(q => q.Questions)
+          .ThenInclude(qn => qn.Answers)
+        .FirstOrDefaultAsync(q => q.Id == quizId);
+
+      if (quiz != null)
+      {
+        foreach (var question in quiz.Questions)
+        {
+          if (!questions.Any(q => q.Id == question.Id))
+            _dbContext.Questions.Remove(question);
+        }
+
+        foreach (var question in questions)
+        {
+          _dbContext.Entry(question).State = question.Id == 0 ?
+                                             EntityState.Added :
+                                             EntityState.Modified; 
+        }
+      }
+
+      return questions;
+    }
   }
 }
