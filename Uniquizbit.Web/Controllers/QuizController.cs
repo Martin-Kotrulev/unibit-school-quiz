@@ -82,21 +82,25 @@ namespace Uniquizbit.Web.Controllers
 
     [Authorize]
     [HttpPost("{quizId}/questions")]
-    public async Task<IActionResult> AddQuestionToQuiz(int quizId,
+    public async Task<IActionResult> UpdateQuizQuestions(int quizId,
       [FromBody] ICollection<QuestionResource> questionResource)
     {
       if (ModelState.IsValid)
       {
         var userId = _userManager.GetUserId(this.User);
-        var question = _mapper.Map<ICollection<QuestionResource>, ICollection<Question>>(
+        var questions = _mapper.Map<ICollection<QuestionResource>, ICollection<Question>>(
           questionResource);
+
+        foreach (var q in questions) System.Console.WriteLine(q.Id);
 
         if (await _quizService.UserCanAddQuestionToQuizAsync(quizId, userId))
         {
-          // question.QuizId = quizId;
-          // question.CreatorId = userId;
-          
-          // await _questionService.AddQuestionAsync(question);
+          await _questionService.UpdateQuestionsForQuiz(quizId, userId, questions);
+
+          return Ok(new ApiResponse(
+            _mapper.Map<ICollection<Question>, ICollection<QuestionResource>>(questions),
+            "You successfully updated quiz's questions."
+          ));
         }
         else
         {
@@ -105,11 +109,6 @@ namespace Uniquizbit.Web.Controllers
             false
           ));
         }
-
-        // return Ok(new ApiResponse(
-        //   _mapper.Map<Question, QuestionResource>(question),
-        //   "You have successfully created a new question.")
-        // );
       }
 
       return BadRequest(new ApiResponse(ModelState));

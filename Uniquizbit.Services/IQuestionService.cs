@@ -9,7 +9,7 @@ namespace Uniquizbit.Services
   {
     Task<Question> AddQuestionAsync(Question question);
 
-    Task<ICollection<Question>> UpdateQuestionsForQuiz(int quizId, ICollection<Question> questions);
+    Task<ICollection<Question>> UpdateQuestionsForQuiz(int quizId, string userId, ICollection<Question> questions);
 
     Task<IEnumerable<Question>> GetQuestionsForQuizAsync(int quizId, string userId);
 

@@ -51,7 +51,7 @@ namespace Uniquizbit.Web.Controllers
 
         if (result.Succeeded)
         {
-          return Ok(GetTokenResponse(user.UserName, true));
+          return Ok(await GetTokenResponse(user.UserName, true));
         }
 
         return BadRequest(new ApiResponse(result));
@@ -71,7 +71,7 @@ namespace Uniquizbit.Web.Controllers
 
         if (result.Succeeded)
         {
-          return Ok(GetTokenResponse(credentials.Username, false));
+          return Ok(await GetTokenResponse(credentials.Username, false));
         }
 
         return BadRequest(new ApiResponse("Wrong user name or password.", false));

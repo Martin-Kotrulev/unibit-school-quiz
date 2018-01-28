@@ -23,5 +23,10 @@ namespace Uniquizbit.Data.Models
     public Quiz Quiz { get; set; }
 
     public ICollection<Answer> Answers { get; set; }
+
+    public Question()
+    {
+        Answers = new HashSet<Answer>();
+    }
   }
 }
