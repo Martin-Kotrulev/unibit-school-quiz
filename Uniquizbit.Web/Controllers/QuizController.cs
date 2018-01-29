@@ -98,7 +98,7 @@ namespace Uniquizbit.Web.Controllers
           var resultQuestions = _mapper.Map<ICollection<Question>,
             ICollection<QuestionResource>>(questions);
 
-          MarkQuestionsAsMine(resultQuestions);
+          MarkQuestionsAsOwn(resultQuestions);
 
           return Ok(new ApiResponse(
             resultQuestions,
@@ -227,7 +227,7 @@ namespace Uniquizbit.Web.Controllers
           await _questionService.GetQuestionsForQuizAsync(quizId, userId));
 
         if (quiz.CreatorId == userId)
-          MarkQuestionsAsMine(questions);
+          MarkQuestionsAsOwn(questions);
 
         return Ok(new
         {
@@ -255,7 +255,7 @@ namespace Uniquizbit.Web.Controllers
       return Ok(userQuizzes);
     }
 
-    private void MarkQuestionsAsMine(ICollection<QuestionResource> questions)
+    private void MarkQuestionsAsOwn(ICollection<QuestionResource> questions)
     {
       // Mark all answer as own for serializing IsRight property
       foreach (var question in questions)
