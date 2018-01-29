@@ -85,6 +85,15 @@ namespace Uniquizbit.Web.Controllers
     public async Task<IActionResult> UpdateQuizQuestions(int quizId,
       [FromBody] ICollection<QuestionResource> questionsResources)
     {
+      var userId = _userManager.GetUserId(this.User);
+      if (!await _quizService.UserCanAddQuestionToQuizAsync(quizId, userId))
+      {
+        return BadRequest(new ApiResponse(
+          "You can't add questions to the specified quiz.",
+          false
+        ));
+      }
+
       if (ModelState.IsValid)
       {
         if (!CheckQuestionsValidity(questionsResources))
@@ -92,31 +101,20 @@ namespace Uniquizbit.Web.Controllers
           return BadRequest(new ApiResponse(ModelState));
         }
 
-        var userId = _userManager.GetUserId(this.User);
         var questions = _mapper.Map<ICollection<QuestionResource>, ICollection<Question>>(
           questionsResources);
 
-        if (await _quizService.UserCanAddQuestionToQuizAsync(quizId, userId))
-        {
-          await _questionService.UpdateQuestionsForQuiz(quizId, userId, questions);
+        await _questionService.UpdateQuestionsForQuiz(quizId, userId, questions);
 
-          var resultQuestions = _mapper.Map<ICollection<Question>,
-            ICollection<QuestionResource>>(questions);
+        var resultQuestions = _mapper.Map<ICollection<Question>,
+          ICollection<QuestionResource>>(questions);
 
-          MarkQuestionsAsOwn(resultQuestions);
+        MarkQuestionsAsOwn(resultQuestions);
 
-          return Ok(new ApiResponse(
-            resultQuestions,
-            "You successfully updated quiz's questions."
-          ));
-        }
-        else
-        {
-          return BadRequest(new ApiResponse(
-            "You can't add questions to the specified quiz.",
-            false
-          ));
-        }
+        return Ok(new ApiResponse(
+          resultQuestions,
+          "You successfully updated quiz's questions."
+        ));
       }
 
       return BadRequest(new ApiResponse(ModelState));
@@ -279,7 +277,7 @@ namespace Uniquizbit.Web.Controllers
         {
           ModelState.AddModelError($"{question.Id}",
             $"The number of answer for question '{question.Value}' exceeds {question.MaxAnswers}");
-          
+
           return false;
         }
 
