@@ -176,7 +176,7 @@ namespace Uniquizbit.Web.Controllers
 
         if (progress == null)
         {
-          ModelState.AddModelError("Progress error", "Progress does not exist");
+          ModelState.AddModelError($"Progress error", "Progress does not exist");
 
           return NotFound(new ApiResponse(ModelState));
         }

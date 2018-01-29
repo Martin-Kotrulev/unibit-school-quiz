@@ -234,7 +234,7 @@ namespace Uniquizbit.Services.Implementations
         {
           progress.GivenAnswers.Add(new ProgressesAnswers()
           {
-            Progress = progress,
+            ProgressId = progress.Id,
             ProgressAnswer = answer
           });
         }

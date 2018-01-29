@@ -11,9 +11,10 @@ using Uniquizbit.Data;
 namespace Uniquizbit.Data.Migrations
 {
     [DbContext(typeof(UniquizbitDbContext))]
-    partial class UniquizbitDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180129142150_ChangedQuizProgress")]
+    partial class ChangedQuizProgress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

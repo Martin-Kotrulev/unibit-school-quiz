@@ -105,7 +105,12 @@ namespace Uniquizbit.Data
         .WithOne(q => q.Creator);
 
       modelBuilder.Entity<QuizProgress>()
-        .HasKey(qp => new { qp.QuizId, qp.UserId });
+        .HasIndex(qp => qp.QuizId)
+        .IsUnique();
+
+      modelBuilder.Entity<QuizProgress>()
+        .HasIndex(qp => qp.UserId)
+        .IsUnique();
 
       modelBuilder.Entity<Question>()
         .HasMany(q => q.Answers)
