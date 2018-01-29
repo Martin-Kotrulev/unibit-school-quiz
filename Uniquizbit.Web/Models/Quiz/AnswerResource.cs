@@ -28,8 +28,9 @@ namespace Uniquizbit.Web.Models
     public bool IsOwnAnswer { get; set; } = false;
 
     public bool ShouldSerializeIsRight()
-    {
-      return IsOwnAnswer;
-    }
+      => IsOwnAnswer;
+
+    public bool ShouldSerializeWeight()
+      => IsOwnAnswer;
   }
 }
