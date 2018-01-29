@@ -33,6 +33,8 @@ namespace Uniquizbit.Web.Infrastructure.Mapping
 
       CreateMap<Question, QuestionResource>();
 
+      CreateMap<QuizProgress, ProgressResource>();
+
       // Resource to domain
       CreateMap<QuizGroupResource, QuizGroup>()
         .ForMember(qgr => qgr.CreatedOn, opt => opt.Ignore())

@@ -181,7 +181,7 @@ namespace Uniquizbit.Web.Controllers
           return NotFound(new ApiResponse(ModelState));
         }
 
-        return Ok(new ApiResponse(progress));
+        return Ok(new ApiResponse(progressAnswer));
       }
 
       return BadRequest(new ApiResponse(ModelState));

@@ -7,7 +7,7 @@ namespace Uniquizbit.Data.Models
   public class QuizProgress
   {
     public int Id { get; set; }
-    
+
     [Required]
     public string UserId { get; set; }
 
@@ -21,7 +21,7 @@ namespace Uniquizbit.Data.Models
     public ICollection<ProgressesAnswers> GivenAnswers { get; set; }
 
     [Required]
-    public DateTime ValidTo { get; set; }
+    public DateTime ValidTo { get; set; } = DateTime.UtcNow.AddDays(3);
 
     public QuizProgress()
     {
