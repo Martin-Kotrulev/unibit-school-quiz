@@ -12,8 +12,7 @@ namespace Uniquizbit.Web.Infrastructure.Mapping
     public AutoMapperProfile()
     {
       // Domain to resource
-      CreateMap<Answer, AnswerResource>()
-        .ForMember(a => a.IsRight, opt => opt.Ignore());
+      CreateMap<Answer, AnswerResource>();
 
       CreateMap<QuizGroup, QuizGroupResource>()
         .ForMember(qg => qg.Tags, opt =>
@@ -54,11 +53,9 @@ namespace Uniquizbit.Web.Infrastructure.Mapping
       CreateMap<QuestionResource, Question>()
         .ForMember(qr => qr.QuizId, opt => opt.Ignore());
 
-      CreateMap<AnswerResource, Answer>()
-        .ForMember(a => a.Id, opt => opt.Ignore());
+      CreateMap<AnswerResource, Answer>();
 
       CreateMap<ProgressAnswerResource, ProgressAnswer>();
-
       
       var allTypes = AppDomain
           .CurrentDomain

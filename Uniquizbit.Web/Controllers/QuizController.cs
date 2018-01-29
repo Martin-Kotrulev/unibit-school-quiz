@@ -83,13 +83,18 @@ namespace Uniquizbit.Web.Controllers
     [Authorize]
     [HttpPost("{quizId}/questions")]
     public async Task<IActionResult> UpdateQuizQuestions(int quizId,
-      [FromBody] ICollection<QuestionResource> questionResource)
+      [FromBody] ICollection<QuestionResource> questionsResources)
     {
       if (ModelState.IsValid)
       {
+        if (!CheckQuestionsValidity(questionsResources))
+        {
+          return BadRequest(new ApiResponse(ModelState));
+        }
+
         var userId = _userManager.GetUserId(this.User);
         var questions = _mapper.Map<ICollection<QuestionResource>, ICollection<Question>>(
-          questionResource);
+          questionsResources);
 
         if (await _quizService.UserCanAddQuestionToQuizAsync(quizId, userId))
         {
@@ -132,7 +137,7 @@ namespace Uniquizbit.Web.Controllers
 
     [Authorize]
     [HttpPost("{id}/enter")]
-    public async Task<IActionResult> EnterAsync(int id)
+    public async Task<IActionResult> Enter(int id)
     {
       var userId = _userManager.GetUserId(User);
       var state = await _quizService.EnterQuizAsync(id, userId);
@@ -263,6 +268,46 @@ namespace Uniquizbit.Web.Controllers
         foreach (var answer in question.Answers)
           answer.IsOwnAnswer = true;
       }
+    }
+
+    private bool CheckQuestionsValidity(ICollection<QuestionResource> questionsResources)
+    {
+      foreach (var question in questionsResources)
+      {
+        var answerCount = question.Answers.Count;
+        if (answerCount > question.MaxAnswers)
+        {
+          ModelState.AddModelError($"{question.Id}",
+            $"The number of answer for question '{question.Value}' exceeds {question.MaxAnswers}");
+          
+          return false;
+        }
+
+        var rightCount = 0;
+        foreach (var answer in question.Answers)
+        {
+          if (answer.IsRight)
+            rightCount++;
+        }
+
+        if (rightCount == 0)
+        {
+          ModelState.AddModelError($"{question.Id}",
+            $"Question '{question.Value}' has no right answer!");
+
+          return false;
+        }
+
+        if (!question.IsMultiselect && rightCount > 1)
+        {
+          ModelState.AddModelError($"{question.Id}",
+            $"Question '{question.Value}' is not multiselect!");
+
+          return false;
+        }
+      }
+
+      return true;
     }
   }
 }
