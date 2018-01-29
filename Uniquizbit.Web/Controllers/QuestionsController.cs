@@ -55,8 +55,9 @@ namespace Uniquizbit.Web.Controllers
         return BadRequest(new ApiResponse(ModelState));
     }
 
+    [Authorize]
     [HttpDelete("{questionId}")]
-    public async Task<IActionResult> DeleteAsync(int questionId)
+    public async Task<IActionResult> DeleteQuestion(int questionId)
     {
       var userId = _userManager.GetUserId(User);
 

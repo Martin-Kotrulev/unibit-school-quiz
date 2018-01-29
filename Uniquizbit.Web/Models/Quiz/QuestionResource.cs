@@ -16,7 +16,7 @@ namespace Uniquizbit.Web.Models
 
     public int QuizId { get; set; }
 
-    public ICollection<AnswerResource> Answers { get; set; }
+    public virtual ICollection<AnswerResource> Answers { get; set; }
 
     public QuestionResource()
     {

@@ -91,14 +91,17 @@ namespace Uniquizbit.Web.Controllers
         var questions = _mapper.Map<ICollection<QuestionResource>, ICollection<Question>>(
           questionResource);
 
-        foreach (var q in questions) System.Console.WriteLine(q.Id);
-
         if (await _quizService.UserCanAddQuestionToQuizAsync(quizId, userId))
         {
           await _questionService.UpdateQuestionsForQuiz(quizId, userId, questions);
 
+          var resultQuestions = _mapper.Map<ICollection<Question>,
+            ICollection<QuestionResource>>(questions);
+
+          MarkQuestionsAsMine(resultQuestions);
+
           return Ok(new ApiResponse(
-            _mapper.Map<ICollection<Question>, ICollection<QuestionResource>>(questions),
+            resultQuestions,
             "You successfully updated quiz's questions."
           ));
         }
@@ -160,7 +163,7 @@ namespace Uniquizbit.Web.Controllers
     }
 
     [HttpPost("progress")]
-    public async Task<IActionResult> AddProgressAsync([FromBody] ProgressAnswerResource progressAnswerResource)
+    public async Task<IActionResult> AddProgress([FromBody] ProgressAnswerResource progressAnswerResource)
     {
       if (ModelState.IsValid)
       {
@@ -213,7 +216,7 @@ namespace Uniquizbit.Web.Controllers
 
     [Authorize]
     [HttpGet("{quizId}/questions")]
-    public async Task<IActionResult> AllQuestionsForQuizAsync(int quizId)
+    public async Task<IActionResult> AllQuestionsForQuiz(int quizId)
     {
       var userId = _userManager.GetUserId(User);
       var quiz = await _quizService.FindQuizByIdAsync(quizId);
@@ -222,6 +225,9 @@ namespace Uniquizbit.Web.Controllers
       {
         var questions = _mapper.Map<IEnumerable<Question>, ICollection<QuestionResource>>(
           await _questionService.GetQuestionsForQuizAsync(quizId, userId));
+
+        if (quiz.CreatorId == userId)
+          MarkQuestionsAsMine(questions);
 
         return Ok(new
         {
@@ -247,6 +253,16 @@ namespace Uniquizbit.Web.Controllers
           await _quizService.GetUserOwnQuizzesAsync(userId, page));
 
       return Ok(userQuizzes);
+    }
+
+    private void MarkQuestionsAsMine(ICollection<QuestionResource> questions)
+    {
+      // Mark all answer as own for serializing IsRight property
+      foreach (var question in questions)
+      {
+        foreach (var answer in question.Answers)
+          answer.IsOwnAnswer = true;
+      }
     }
   }
 }

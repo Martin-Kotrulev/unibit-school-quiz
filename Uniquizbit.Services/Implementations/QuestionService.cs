@@ -59,6 +59,66 @@ namespace Uniquizbit.Services.Implementations
       }
     }
 
+    public async Task<ICollection<Question>> UpdateQuestionsForQuiz(int quizId,
+      string userId,
+      ICollection<Question> questions)
+    {
+      var quiz = await _dbContext.Quizzes
+        .FirstOrDefaultAsync(q => q.Id == quizId);
+
+      if (quiz != null)
+      {
+        // Track changes or insert new questions
+        foreach (var question in questions)
+        {
+          question.CreatorId = userId;
+          question.QuizId = quizId;
+          _dbContext.Entry(question).State = question.Id == 0 ?
+                                             EntityState.Added :
+                                             EntityState.Modified;
+        }
+
+        await _dbContext.Entry(quiz)
+          .Collection(q => q.Questions)
+          .LoadAsync();
+
+        // Clean up questions from database that are not part of the new list
+        foreach (var question in quiz.Questions)
+        {
+          if (!questions.Any(q => q.Id == question.Id))
+            _dbContext.Questions.Remove(question);
+        }
+
+        var newAnswersList = questions
+          .SelectMany(q => q.Answers)
+          .ToList();
+
+        foreach (var answer in newAnswersList)
+        {
+          answer.CreatorId = userId;
+          answer.QuizId = quizId;
+          _dbContext.Entry(answer).State = answer.Id == 0 ?
+                                           EntityState.Added :
+                                           EntityState.Modified;
+        }
+
+        var existingAnswersList = _dbContext.Answers
+          .Where(a => a.QuizId == quizId)
+          .ToList();
+
+        // Clean up answers from database that are not part of the new list
+        foreach (var existingAnswer in existingAnswersList)
+        {
+          if (!newAnswersList.Any(a => a.Id == existingAnswer.Id))
+            _dbContext.Answers.Remove(existingAnswer);
+        }
+      }
+
+      await _dbContext.SaveChangesAsync();
+
+      return questions;
+    }
+
     private async Task<IEnumerable<Question>> GetQuestionsWithAnswersForQuizAsync(int quizId)
     {
       var questions = await _dbContext.Questions
@@ -184,62 +244,5 @@ namespace Uniquizbit.Services.Implementations
 
     public async Task<Question> FindQuestionByIdAsync(int questionId)
       => await _dbContext.Questions.FindAsync(questionId);
-
-    public async Task<ICollection<Question>> UpdateQuestionsForQuiz(int quizId,
-      string userId,
-      ICollection<Question> questions)
-    {
-      var quiz = await _dbContext.Quizzes
-        .Include(q => q.Questions)
-        .FirstOrDefaultAsync(q => q.Id == quizId);
-
-      if (quiz != null)
-      {
-        // Clean up questions from database that are not part of the new list
-        foreach (var question in quiz.Questions)
-        {
-          if (!questions.Any(q => q.Id == question.Id))
-            _dbContext.Questions.Remove(question);
-        }
-
-        // Track changes or insert new questions
-        foreach (var question in questions)
-        {
-          question.CreatorId = userId;
-          question.QuizId = quizId;
-          _dbContext.Entry(question).State = question.Id == 0 ?
-                                             EntityState.Added :
-                                             EntityState.Modified;
-        }
-
-        var existingAnswersList = quiz.Questions
-          .SelectMany(q => q.Answers)
-          .ToList();
-
-        var newAnswersList = questions
-          .SelectMany(q => q.Answers)
-          .ToList();
-
-        // Clean up answers from database that are not part of the new list
-        foreach (var existingAnswer in existingAnswersList)
-        {
-          if (!newAnswersList.Any(a => a.Id == existingAnswer.Id))
-            _dbContext.Answers.Remove(existingAnswer);
-        }
-
-        foreach (var answer in newAnswersList)
-        {
-          answer.CreatorId = userId;
-          answer.QuizId = quizId;
-          _dbContext.Entry(answer).State = answer.Id == 0 ?
-                                           EntityState.Added :
-                                           EntityState.Modified;
-        }
-      }
-
-      await _dbContext.SaveChangesAsync();
-
-      return questions;
-    }
   }
 }
