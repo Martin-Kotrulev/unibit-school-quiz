@@ -1,3 +1,4 @@
+
 namespace Uniquizbit.Web.Models
 {
     using System.ComponentModel.DataAnnotations;
@@ -5,12 +6,12 @@ namespace Uniquizbit.Web.Models
     public class ProgressAnswerResource
     {
         [Required]
-        public int QuizId { get; set; }
+        public int? QuizId { get; set; }
 
         [Required]
-        public int AnswerId { get; set; }
+        public int? AnswerId { get; set; }
 
         [Required]
-        public bool IsChecked { get; set; }
+        public bool? IsChecked { get; set; }
     }
 }

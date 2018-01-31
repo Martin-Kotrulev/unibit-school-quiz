@@ -165,6 +165,7 @@ namespace Uniquizbit.Web.Controllers
       return BadRequest(res);
     }
 
+    [Authorize]
     [HttpPost("progress")]
     public async Task<IActionResult> AddProgress([FromBody] ProgressAnswerResource progressAnswerResource)
     {
@@ -181,7 +182,7 @@ namespace Uniquizbit.Web.Controllers
           return NotFound(new ApiResponse(ModelState));
         }
 
-        return Ok(new ApiResponse(progressAnswer));
+        return Ok(new ApiResponse(progressAnswerResource));
       }
 
       return BadRequest(new ApiResponse(ModelState));
