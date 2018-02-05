@@ -72,11 +72,10 @@ namespace Uniquizbit.Services.Implementations
       var userScore = await _dbContext.QuizProgresses
         .Where(qp => qp.UserId == userId && qp.QuizId == quizId)
         .Include(qp => qp.GivenAnswers)
-          .ThenInclude(ga => ga.ProgressAnswer)
           .ThenInclude(pa => pa.Answer)
         .SelectMany(qp => qp.GivenAnswers
-          .Where(ga => ga.ProgressAnswer.Answer.IsRight))
-        .SumAsync(ga => ga.ProgressAnswer.Answer.Weight);
+          .Where(ga => ga.Answer.IsRight))
+        .SumAsync(ga => ga.Answer.Weight);
 
       var score = new Score()
       {
@@ -213,18 +212,17 @@ namespace Uniquizbit.Services.Implementations
       throw new System.NotImplementedException();
     }
 
-    public async Task<QuizProgress> AddProgressToQuizAsync(string userId, ProgressAnswer answer)
+    public async Task<QuizProgress> AddProgressToQuizAsync(
+      int quizId, string userId, ProgressAnswer answer)
     {
       var progress = await _dbContext.QuizProgresses
         .Include(qp => qp.GivenAnswers)
-          .ThenInclude(ga => ga.ProgressAnswer)
-        .FirstOrDefaultAsync(qp => qp.UserId == userId && qp.QuizId == answer.QuizId);
+        .FirstOrDefaultAsync(qp => qp.UserId == userId && qp.QuizId == quizId);
 
       if (progress != null)
       {
         var progressAnswer = progress.GivenAnswers
-          .FirstOrDefault(ga => ga.ProgressAnswer.AnswerId == answer.AnswerId)
-          ?.ProgressAnswer;
+          .FirstOrDefault(ga => ga.AnswerId == answer.AnswerId);
 
         if (progressAnswer != null)
         {
@@ -232,11 +230,23 @@ namespace Uniquizbit.Services.Implementations
         }
         else
         {
-          progress.GivenAnswers.Add(new ProgressesAnswers()
+          var question = await _dbContext.Questions
+            .FindAsync(answer.QuestionId);
+
+          if (!question.IsMultiselect)
           {
-            ProgressId = progress.Id,
-            ProgressAnswer = answer
-          });
+            var questionAnswersIds = await _dbContext.Entry(question)
+              .Collection(q => q.Answers)
+              .Query()
+              .Select(a => a.Id)
+              .ToListAsync();
+
+            progress.GivenAnswers = progress.GivenAnswers
+              .Where(ga => !questionAnswersIds.Contains(ga.AnswerId))
+              .ToList();
+          }
+
+          progress.GivenAnswers.Add(answer);
         }
 
         await _dbContext.SaveChangesAsync();

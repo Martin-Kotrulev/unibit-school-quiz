@@ -35,7 +35,7 @@ namespace Uniquizbit.Data
 
     public DbSet<QuizzesTags> QuizzesTags { get; set; }
 
-    public DbSet<ProgressesAnswers> ProgressesAnswers { get; set; }
+    public DbSet<ProgressAnswer> ProgressAnswers { get; set; }
 
     public UniquizbitDbContext(DbContextOptions options)
       : base(options)
@@ -92,12 +92,9 @@ namespace Uniquizbit.Data
       modelBuilder.Entity<GroupsTags>()
         .HasKey(qu => new { qu.GroupId, qu.TagId });
 
-      modelBuilder.Entity<ProgressesAnswers>()
-        .HasKey(qu => new { qu.ProgressId, qu.ProgressAnswerId });
-
       modelBuilder.Entity<QuizProgress>()
         .HasMany(qp => qp.GivenAnswers)
-        .WithOne(ga => ga.Progress)
+        .WithOne(ga => ga.QuizProgress)
         .OnDelete(DeleteBehavior.Cascade);
 
       modelBuilder.Entity<User>()

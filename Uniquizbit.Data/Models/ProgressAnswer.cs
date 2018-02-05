@@ -8,7 +8,11 @@ namespace Uniquizbit.Data.Models
 
     public Answer Answer { get; set; }
 
-		public int QuizId { get; set; }
+    public int QuestionId { get; set; }
+
+    public QuizProgress QuizProgress { get; set; }
+
+    public int QuizProgressId { get; set; }
 
     public bool IsChecked { get; set; }
   }

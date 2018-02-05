@@ -16,5 +16,7 @@ namespace Uniquizbit.Services
     Task<bool> DeleteQuestionAsync(int questionId, string userId);
 
     Task<Question> FindQuestionByIdAsync(int questionId);
+
+    Task<bool> QuestionHasAnswerWithId(int questionId, int answerId);
   }
 }

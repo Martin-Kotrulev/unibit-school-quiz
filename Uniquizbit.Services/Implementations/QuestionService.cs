@@ -154,11 +154,9 @@ namespace Uniquizbit.Services.Implementations
       var answersOrder = GetListFromOrderString(progress.AnswersOrder);
 
       var progressAnswers = await _dbContext.QuizProgresses
-        .Include(qp => qp.GivenAnswers)
-          .ThenInclude(ga => ga.ProgressAnswer)
         .Where(qp => qp.QuizId == quizId && qp.UserId == userId)
+        .Include(qp => qp.GivenAnswers)
         .SelectMany(qp => qp.GivenAnswers)
-        .Select(ga => ga.ProgressAnswer)
         .ToListAsync();
 
       var questions = await _dbContext.Questions
@@ -244,5 +242,8 @@ namespace Uniquizbit.Services.Implementations
 
     public async Task<Question> FindQuestionByIdAsync(int questionId)
       => await _dbContext.Questions.FindAsync(questionId);
+
+    public async Task<bool> QuestionHasAnswerWithId(int questionId, int answerId)
+      => (await _dbContext.Answers.FindAsync(answerId))?.QuestionId == questionId;
   }
 }

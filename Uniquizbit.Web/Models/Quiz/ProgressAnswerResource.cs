@@ -6,12 +6,13 @@ namespace Uniquizbit.Web.Models
     public class ProgressAnswerResource
     {
         [Required]
-        public int? QuizId { get; set; }
-
-        [Required]
         public int? AnswerId { get; set; }
 
         [Required]
         public bool? IsChecked { get; set; }
+
+        public int QuizId { get; set; }
+
+        public int QuestionId { get; set; }
     }
 }

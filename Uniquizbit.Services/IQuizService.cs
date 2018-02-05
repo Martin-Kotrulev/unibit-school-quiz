@@ -42,6 +42,7 @@ namespace Uniquizbit.Services
 
     Task<Quiz> FindQuizByIdAsync(int quizId);
 
-    Task<QuizProgress> AddProgressToQuizAsync(string userId, ProgressAnswer answer);
+    Task<QuizProgress> AddProgressToQuizAsync(
+      int quizId, string userId, ProgressAnswer answer);
   }
 }

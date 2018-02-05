@@ -11,9 +11,10 @@ using Uniquizbit.Data;
 namespace Uniquizbit.Data.Migrations
 {
     [DbContext(typeof(UniquizbitDbContext))]
-    partial class UniquizbitDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180205082946_ChangedProgressAnswer")]
+    partial class ChangedProgressAnswer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -223,15 +224,26 @@ namespace Uniquizbit.Data.Migrations
 
                     b.Property<int>("QuestionId");
 
-                    b.Property<int>("QuizProgressId");
+                    b.Property<int>("QuizId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AnswerId");
 
-                    b.HasIndex("QuizProgressId");
+                    b.ToTable("ProgressAnswer");
+                });
 
-                    b.ToTable("ProgressAnswers");
+            modelBuilder.Entity("Uniquizbit.Data.Models.ProgressesAnswers", b =>
+                {
+                    b.Property<int>("ProgressId");
+
+                    b.Property<int>("ProgressAnswerId");
+
+                    b.HasKey("ProgressId", "ProgressAnswerId");
+
+                    b.HasIndex("ProgressAnswerId");
+
+                    b.ToTable("ProgressesAnswers");
                 });
 
             modelBuilder.Entity("Uniquizbit.Data.Models.Question", b =>
@@ -599,10 +611,18 @@ namespace Uniquizbit.Data.Migrations
                         .WithMany()
                         .HasForeignKey("AnswerId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
 
-                    b.HasOne("Uniquizbit.Data.Models.QuizProgress", "QuizProgress")
+            modelBuilder.Entity("Uniquizbit.Data.Models.ProgressesAnswers", b =>
+                {
+                    b.HasOne("Uniquizbit.Data.Models.ProgressAnswer", "ProgressAnswer")
+                        .WithMany()
+                        .HasForeignKey("ProgressAnswerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Uniquizbit.Data.Models.QuizProgress", "Progress")
                         .WithMany("GivenAnswers")
-                        .HasForeignKey("QuizProgressId")
+                        .HasForeignKey("ProgressId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

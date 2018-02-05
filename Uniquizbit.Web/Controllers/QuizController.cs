@@ -15,8 +15,7 @@ namespace Uniquizbit.Web.Controllers
   using System.Text.RegularExpressions;
   using Web.Models;
 
-  [Route("api/[controller]")]
-  public class QuizzesController : Controller
+  public class QuizzesController : BaseApiController
   {
     private readonly IQuizService _quizService;
     private readonly IQuestionService _questionService;
@@ -47,11 +46,7 @@ namespace Uniquizbit.Web.Controllers
         var quiz = _mapper.Map<QuizResource, Quiz>(quizResource);
 
         if (await _quizService.QuizExistsAsync(quiz))
-        {
-          return BadRequest(new ApiResponse(
-            $"Quiz group with title '{quiz.Name}' already exists.", false
-          ));
-        }
+          return ApiBadRequest($"Quiz group with title '{quiz.Name}' already exists.");
 
         var existingTags = await _tagService.UpdateTagsAsync(quizResource.Tags);
 
@@ -72,12 +67,13 @@ namespace Uniquizbit.Web.Controllers
 
         await _quizService.AddQuizAsync(quiz);
 
-        return Ok(new ApiResponse(
+        return ApiOk(
           _mapper.Map<Quiz, QuizResource>(quiz),
-          "You have successfully added a new quiz."));
+          "You have successfully added a new quiz."
+        );
       }
 
-      return BadRequest(new ApiResponse(ModelState));
+      return ApiBadRequest(ModelState);
     }
 
     [Authorize]
@@ -88,17 +84,14 @@ namespace Uniquizbit.Web.Controllers
       var userId = _userManager.GetUserId(this.User);
       if (!await _quizService.UserCanAddQuestionToQuizAsync(quizId, userId))
       {
-        return BadRequest(new ApiResponse(
-          "You can't add questions to the specified quiz.",
-          false
-        ));
+        return ApiBadRequest("You can't add questions to the specified quiz.");
       }
 
       if (ModelState.IsValid)
       {
         if (!CheckQuestionsValidity(questionsResources))
         {
-          return BadRequest(new ApiResponse(ModelState));
+          return ApiBadRequest(ModelState);
         }
 
         var questions = _mapper.Map<ICollection<QuestionResource>, ICollection<Question>>(
@@ -111,13 +104,13 @@ namespace Uniquizbit.Web.Controllers
 
         MarkQuestionsAsOwn(resultQuestions);
 
-        return Ok(new ApiResponse(
+        return ApiOk(
           resultQuestions,
           "You successfully updated quiz's questions."
-        ));
+        );
       }
 
-      return BadRequest(new ApiResponse(ModelState));
+      return ApiBadRequest(ModelState);
     }
 
     [Authorize]
@@ -127,10 +120,10 @@ namespace Uniquizbit.Web.Controllers
       var userId = _userManager.GetUserId(User);
       if (await _quizService.DeleteQuizAsync(quizId, userId))
       {
-        return Ok(new ApiResponse("You have successfully deleted the quiz."));
+        return ApiOk("You have successfully deleted the quiz.");
       }
-
-      return BadRequest(new ApiResponse("Quiz does not exist, or you are not the owner.", false));
+      
+      return ApiBadRequest("Quiz does not exist, or you are not the owner.");
     }
 
     [Authorize]
@@ -166,26 +159,44 @@ namespace Uniquizbit.Web.Controllers
     }
 
     [Authorize]
-    [HttpPost("progress")]
-    public async Task<IActionResult> AddProgress([FromBody] ProgressAnswerResource progressAnswerResource)
+    [HttpPost("{quizId}/questions/{questionId}")]
+    public async Task<IActionResult> AddProgress(int quizId, int questionId,
+      [FromBody] ProgressAnswerResource progressAnswerResource)
     {
+      var question = await _questionService.FindQuestionByIdAsync(questionId);
+      if (question == null || question.QuizId != quizId)
+      {
+        ModelState.AddModelError("Question", "Question does not exist.");
+        return ApiNotFound(ModelState);
+      }
+
+      progressAnswerResource.QuizId = quizId;
+      progressAnswerResource.QuestionId = questionId;
+
       if (ModelState.IsValid)
       {
         var userId = _userManager.GetUserId(User);
         var progressAnswer = _mapper.Map<ProgressAnswerResource, ProgressAnswer>(progressAnswerResource);
-        var progress = await _quizService.AddProgressToQuizAsync(userId, progressAnswer);
+        var progress = await _quizService.AddProgressToQuizAsync(quizId, userId, progressAnswer);
+
+        if (!await _questionService.QuestionHasAnswerWithId(questionId, progressAnswer.AnswerId))
+        {
+          ModelState.AddModelError("Answer", "Answer not found.");
+
+          return ApiNotFound(ModelState);
+        }
 
         if (progress == null)
         {
-          ModelState.AddModelError($"Progress error", "Progress does not exist");
+          ModelState.AddModelError("Progress", "Progress does not exist");
 
-          return NotFound(new ApiResponse(ModelState));
+          return ApiNotFound(ModelState);
         }
 
-        return Ok(new ApiResponse(progressAnswerResource));
+        return ApiOk(progressAnswerResource);
       }
 
-      return BadRequest(new ApiResponse(ModelState));
+      return ApiBadRequest(ModelState);
     }
 
     [HttpGet]
@@ -241,8 +252,8 @@ namespace Uniquizbit.Web.Controllers
       }
       else
       {
-        ModelState.AddModelError("Quizz error", "Quiz does not exist.");
-        return NotFound(new ApiResponse(ModelState));
+        ModelState.AddModelError("Quizz", "Quiz does not exist.");
+        return ApiNotFound(ModelState);
       }
     }
 
@@ -256,7 +267,7 @@ namespace Uniquizbit.Web.Controllers
         .Map<IEnumerable<Quiz>, ICollection<QuizResource>>(
           await _quizService.GetUserOwnQuizzesAsync(userId, page));
 
-      return Ok(userQuizzes);
+      return ApiOk(userQuizzes);
     }
 
     private void MarkQuestionsAsOwn(ICollection<QuestionResource> questions)

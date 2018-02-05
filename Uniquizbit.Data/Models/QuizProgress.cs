@@ -18,14 +18,14 @@ namespace Uniquizbit.Data.Models
 
     public string AnswersOrder { get; set; }
 
-    public ICollection<ProgressesAnswers> GivenAnswers { get; set; }
+    public ICollection<ProgressAnswer> GivenAnswers { get; set; }
 
     [Required]
     public DateTime ValidTo { get; set; } = DateTime.UtcNow.AddDays(3);
 
     public QuizProgress()
     {
-      this.GivenAnswers = new HashSet<ProgressesAnswers>();
+      this.GivenAnswers = new HashSet<ProgressAnswer>();
     }
   }
 }
