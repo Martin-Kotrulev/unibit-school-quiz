@@ -176,9 +176,8 @@ namespace Uniquizbit.Web.Controllers
       if (ModelState.IsValid)
       {
         var userId = _userManager.GetUserId(User);
+        
         var progressAnswer = _mapper.Map<ProgressAnswerResource, ProgressAnswer>(progressAnswerResource);
-        var progress = await _quizService.AddProgressToQuizAsync(quizId, userId, progressAnswer);
-
         if (!await _questionService.QuestionHasAnswerWithId(questionId, progressAnswer.AnswerId))
         {
           ModelState.AddModelError("Answer", "Answer not found.");
@@ -186,6 +185,7 @@ namespace Uniquizbit.Web.Controllers
           return ApiNotFound(ModelState);
         }
 
+        var progress = await _quizService.AddProgressToQuizAsync(quizId, userId, progressAnswer);
         if (progress == null)
         {
           ModelState.AddModelError("Progress", "Progress does not exist");
