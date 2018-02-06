@@ -243,6 +243,8 @@ namespace Uniquizbit.Web.Controllers
 
         if (quiz.CreatorId == userId)
           MarkQuestionsAsOwn(questions);
+        else
+          FixRandomLetterOrder(questions);
 
         return Ok(new
         {
@@ -268,6 +270,27 @@ namespace Uniquizbit.Web.Controllers
           await _quizService.GetUserOwnQuizzesAsync(userId, page));
 
       return ApiOk(userQuizzes);
+    }
+
+    [Authorize]
+    [HttpPost("{quizId}/score")]
+    public async Task<IActionResult> Score(int quizId)
+    {
+      var userId = _userManager.GetUserId(User);
+
+      var score = await _quizService.ScoreUserAsync(userId, quizId);
+
+      return Ok(score);
+    }
+
+    private void FixRandomLetterOrder(ICollection<QuestionResource> questions)
+    {
+      foreach (var question in questions)
+      {
+        var letter = 'a';
+        foreach (var answer in question.Answers)
+          answer.Letter = (letter++).ToString();
+      }
     }
 
     private void MarkQuestionsAsOwn(ICollection<QuestionResource> questions)

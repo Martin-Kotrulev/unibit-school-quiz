@@ -74,8 +74,11 @@ namespace Uniquizbit.Services.Implementations
         .Include(qp => qp.GivenAnswers)
           .ThenInclude(pa => pa.Answer)
         .SelectMany(qp => qp.GivenAnswers
-          .Where(ga => ga.Answer.IsRight))
+          .Where(ga => ga.Answer.IsRight && ga.IsChecked))
         .SumAsync(ga => ga.Answer.Weight);
+
+      System.Console.WriteLine(quizMaxScore);
+      System.Console.WriteLine(userScore);
 
       var score = new Score()
       {
@@ -85,8 +88,8 @@ namespace Uniquizbit.Services.Implementations
         UserId = userId
       };
 
-      await _dbContext.Scores.AddAsync(score);
-      await _dbContext.SaveChangesAsync();
+      //await _dbContext.Scores.AddAsync(score);
+      //await _dbContext.SaveChangesAsync();
 
       return score;
     }

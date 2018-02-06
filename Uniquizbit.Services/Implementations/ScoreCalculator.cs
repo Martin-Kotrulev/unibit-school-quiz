@@ -18,33 +18,46 @@ namespace Uniquizbit.Services.Implementations
       double finalScore = 2.0;
       double scoreInPercentage = Math.Round((((double)userScore / (double)maxScore)) * 100, 2);
 
+      System.Console.WriteLine(scoreInPercentage);
+
       if (scoreInPercentage > _gradesSettings.VeryGood)
       {
-        finalScore = 6.0 - Difference(_gradesSettings.VeryGood, scoreInPercentage);
+        finalScore = 5.0 + Normalize(
+          _gradesSettings.Excellent,
+          _gradesSettings.VeryGood,
+          scoreInPercentage);
       }
       else if (scoreInPercentage > _gradesSettings.Good)
       {
-        finalScore = 5.0 - Difference(_gradesSettings.VeryGood, scoreInPercentage);
+        finalScore = 4.0 + Normalize(
+          _gradesSettings.VeryGood,
+          _gradesSettings.Good,
+          scoreInPercentage);
       }
       else if (scoreInPercentage > _gradesSettings.Average)
       {
-        finalScore = 4.0 - Difference(_gradesSettings.VeryGood, scoreInPercentage);
+        finalScore = 3.0 + Normalize(
+          _gradesSettings.Good,
+          _gradesSettings.Average,
+          scoreInPercentage);
       }
       else if (scoreInPercentage > _gradesSettings.Weak)
       {
-        finalScore = 3.0 - Difference(_gradesSettings.VeryGood, scoreInPercentage);
+        finalScore = 2.0 + Normalize(
+          _gradesSettings.Average,
+          _gradesSettings.Weak,
+          scoreInPercentage);
       }
 
       return finalScore;
     }
 
-    private double Difference(double upperBound, double actualScore)
+    private double Normalize(double upperBound, double lowerBound, double actualScore)
     {
-      // Makes sure the difference is always 1.0 point max
-      var diff = actualScore - upperBound;
-      var diffByTen = diff * 10;
+      double result = Math.Round((actualScore - lowerBound) /
+        (upperBound - lowerBound), 2);
 
-      return Math.Round((((double)diff / (double)diffByTen) * 10), 2);
+      return result;
     }
   }
 }
