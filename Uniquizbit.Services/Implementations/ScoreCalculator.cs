@@ -18,8 +18,6 @@ namespace Uniquizbit.Services.Implementations
       double finalScore = 2.0;
       double scoreInPercentage = Math.Round((((double)userScore / (double)maxScore)) * 100, 2);
 
-      System.Console.WriteLine(scoreInPercentage);
-
       if (scoreInPercentage > _gradesSettings.VeryGood)
       {
         finalScore = 5.0 + Normalize(

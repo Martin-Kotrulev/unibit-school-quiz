@@ -77,9 +77,6 @@ namespace Uniquizbit.Services.Implementations
           .Where(ga => ga.Answer.IsRight && ga.IsChecked))
         .SumAsync(ga => ga.Answer.Weight);
 
-      System.Console.WriteLine(quizMaxScore);
-      System.Console.WriteLine(userScore);
-
       var score = new Score()
       {
         Value = _scoreCalculator.GetScore(quizMaxScore, userScore),
