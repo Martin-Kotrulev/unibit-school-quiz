@@ -127,11 +127,11 @@ namespace Uniquizbit.Web.Controllers
     }
 
     [Authorize]
-    [HttpPost("{id}/enter")]
-    public async Task<IActionResult> Enter(int id)
+    [HttpPost("{quizId}/enter")]
+    public async Task<IActionResult> Enter(int quizId)
     {
       var userId = _userManager.GetUserId(User);
-      var state = await _quizService.EnterQuizAsync(id, userId);
+      var state = await _quizService.EnterQuizAsync(quizId, userId);
 
       ApiResponse res = new ApiResponse() { Success = false };
       switch (state)
@@ -200,7 +200,7 @@ namespace Uniquizbit.Web.Controllers
     }
 
     [HttpGet]
-    public async Task<IActionResult> AllQuizes([FromQuery] string search, [FromQuery] int page = 1)
+    public async Task<IActionResult> AllQuizzes([FromQuery] string search, [FromQuery] int page = 1)
     {
       search = search ?? "";
       ICollection<QuizResource> quizzes;
@@ -254,7 +254,7 @@ namespace Uniquizbit.Web.Controllers
       }
       else
       {
-        ModelState.AddModelError("Quizz", "Quiz does not exist.");
+        ModelState.AddModelError("Quiz", "Quiz does not exist.");
         return ApiNotFound(ModelState);
       }
     }
