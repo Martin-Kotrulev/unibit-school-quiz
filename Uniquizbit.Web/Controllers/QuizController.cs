@@ -53,6 +53,7 @@ namespace Uniquizbit.Web.Controllers
         // Add the tags
         foreach (var tag in existingTags)
         {
+          System.Console.WriteLine(tag.Id);
           quiz.Tags.Add(new QuizzesTags()
           {
             Quiz = quiz,

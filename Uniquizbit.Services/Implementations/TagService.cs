@@ -29,7 +29,9 @@ namespace Uniquizbit.Services.Implementations
       await _dbContext.Tags.AddRangeAsync(newTags);
       await _dbContext.SaveChangesAsync();
 
-      existingTags.AddRange(newTags);
+      existingTags = await _dbContext.Tags
+        .Where(t => tags.Contains(t.Name))
+        .ToListAsync();
 
       return existingTags;
     }
