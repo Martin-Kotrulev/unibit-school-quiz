@@ -137,16 +137,18 @@ namespace Uniquizbit.Services.Implementations
       if (quiz == null)
         return QuizEnum.NotExistent;
 
-      var inQuiz = quiz.Participants.Any(p => p.UserId == userId);
+      var participant = quiz.Participants
+        .FirstOrDefault(p => p.UserId == userId);
+      var inQuiz = participant != null;
 
       if (quiz.Starts != null && DateTime.UtcNow < quiz.Starts)
         return QuizEnum.NotStarted;
       else if (quiz.Ends != null && DateTime.UtcNow > quiz.Ends)
         return QuizEnum.Ended;
-      else if (quiz.Once && inQuiz)
-        return QuizEnum.StillTaking;
+      else if (quiz.Once && participant.Finished)
+        return QuizEnum.Taken;
       else if (inQuiz)
-        return QuizEnum.Enter;
+        return QuizEnum.StillTaking;
 
       quiz.Participants.Add(new QuizzesUsers()
       {
@@ -154,6 +156,7 @@ namespace Uniquizbit.Services.Implementations
         UserId = userId,
         Finished = false
       });
+      
       await _dbContext.SaveChangesAsync();
 
       return QuizEnum.Enter;

@@ -146,6 +146,9 @@ namespace Uniquizbit.Web.Controllers
         case QuizEnum.NotExistent:
           res.Message = "Quiz does not exist.";
           break;
+        case QuizEnum.Taken:
+          res.Message = "You can't participate in the specified quiz more than once.";
+          break;
         case QuizEnum.StillTaking:
           res.Message = "You are already taking this quiz.";
           res.Success = true;
