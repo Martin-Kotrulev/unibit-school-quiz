@@ -191,7 +191,8 @@ namespace Uniquizbit.Services.Implementations
       return questions;
     }
 
-    private async Task<IEnumerable<Question>> GetQuestionsWithNewProgressAsync(int quizId, string userId)
+    private async Task<IEnumerable<Question>> GetQuestionsWithNewProgressAsync(
+      int quizId, string userId)
     {
       var questions = await _dbContext.Questions
         .Where(q => q.QuizId == quizId)

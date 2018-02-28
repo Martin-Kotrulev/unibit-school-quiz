@@ -85,8 +85,8 @@ namespace Uniquizbit.Services.Implementations
         UserId = userId
       };
 
-      //await _dbContext.Scores.AddAsync(score);
-      //await _dbContext.SaveChangesAsync();
+      await _dbContext.Scores.AddAsync(score);
+      await _dbContext.SaveChangesAsync();
 
       return score;
     }

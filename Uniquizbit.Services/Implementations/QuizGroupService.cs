@@ -51,13 +51,15 @@ namespace Uniquizbit.Services.Implementations
           .Take(pageSize)
           .ToListAsync();
 
-    public async Task<IEnumerable<QuizGroup>> GetQuizGroupsAsync(int page = 1, int pageSize = 10, string search = "")
+    public async Task<IEnumerable<QuizGroup>> GetQuizGroupsAsync(
+      int page = 1, int pageSize = 10, string search = "")
       => await ApplyPaging(qg =>
         qg.Name.ToLowerInvariant().Contains(search.ToLowerInvariant()),
         page,
         pageSize);
 
-    public async Task<IEnumerable<QuizGroup>> GetUserOwnGroupsAsync(string userId, int page = 1, int pageSize = 10)
+    public async Task<IEnumerable<QuizGroup>> GetUserOwnGroupsAsync(
+      string userId, int page = 1, int pageSize = 10)
       => await ApplyPaging(qg => qg.CreatorId == userId,
         page,
         pageSize);
@@ -69,7 +71,8 @@ namespace Uniquizbit.Services.Implementations
     public async Task<bool> QuizGroupExistsAsync(int groupId)
       => await _dbContext.QuizGroups.FindAsync(groupId) != null;
 
-    public async Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(ICollection<string> tags, int page = 1, int pageSize = 10)
+    public async Task<IEnumerable<QuizGroup>> SearchQuizGroupsByTagsAsync(
+      ICollection<string> tags, int page = 1, int pageSize = 10)
       => await ApplyPaging(qg =>
           qg.Tags
             .Select(t => t.Tag.Name)
@@ -88,7 +91,8 @@ namespace Uniquizbit.Services.Implementations
       return group != null && group.CreatorId == userId;
     }
 
-    private async Task<IEnumerable<QuizGroup>> ApplyPaging(Expression<Func<QuizGroup, bool>> predicate, int page, int pageSize)
+    private async Task<IEnumerable<QuizGroup>> ApplyPaging(
+      Expression<Func<QuizGroup, bool>> predicate, int page, int pageSize)
       => await _dbContext.QuizGroups
         .Include(qg => qg.Tags)
           .ThenInclude(t => t.Tag)
