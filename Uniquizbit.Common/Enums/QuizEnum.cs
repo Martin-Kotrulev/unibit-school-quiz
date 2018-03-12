@@ -6,7 +6,9 @@ namespace Uniquizbit.Common.Enums
     Ended,
     StillTaking,
     Taken,
+    Finished,
     NotExistent,
+    NotInQuiz,
     Enter
   }
 }

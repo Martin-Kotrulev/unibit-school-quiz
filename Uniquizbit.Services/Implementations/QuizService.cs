@@ -85,7 +85,16 @@ namespace Uniquizbit.Services.Implementations
         UserId = userId
       };
 
-      await _dbContext.Scores.AddAsync(score);
+      var existingScore = await _dbContext.Scores
+        .FirstOrDefaultAsync(s => s.QuizId == quizId && s.UserId == userId);
+
+      if (existingScore != null) {
+        existingScore.Value = score.Value;
+        existingScore.ScoredAt = score.ScoredAt;
+      } else {
+        await _dbContext.Scores.AddAsync(score);
+      }
+
       await _dbContext.SaveChangesAsync();
 
       return score;
@@ -147,6 +156,8 @@ namespace Uniquizbit.Services.Implementations
         return QuizEnum.Ended;
       else if (quiz.Once && participant.Finished)
         return QuizEnum.Taken;
+      else if (inQuiz && participant.Finished)
+        return QuizEnum.Finished;
       else if (inQuiz)
         return QuizEnum.StillTaking;
 
@@ -160,6 +171,30 @@ namespace Uniquizbit.Services.Implementations
       await _dbContext.SaveChangesAsync();
 
       return QuizEnum.Enter;
+    }
+
+    public async Task<QuizEnum> FinishQuizAsync(int quizId, string userId)
+    {
+      var quiz = await _dbContext.Quizzes
+        .Include(q => q.Participants)
+        .FirstOrDefaultAsync(q => q.Id == quizId);
+
+      if (quiz == null)
+        return QuizEnum.NotExistent;
+
+      var participant = quiz.Participants
+        .FirstOrDefault(p => p.UserId == userId);
+
+      if (participant == null)
+        return QuizEnum.NotInQuiz;
+
+      if (!participant.Finished)
+      {
+        participant.Finished = true;
+        await _dbContext.SaveChangesAsync();
+      }
+
+      return QuizEnum.Taken;
     }
 
     public async Task<bool> QuizExistsAsync(Quiz quiz)

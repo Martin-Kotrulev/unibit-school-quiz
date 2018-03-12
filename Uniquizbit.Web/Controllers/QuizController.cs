@@ -153,6 +153,10 @@ namespace Uniquizbit.Web.Controllers
           res.Message = "You are already taking this quiz.";
           res.Success = true;
           return Ok(res);
+        case QuizEnum.Finished:
+          res.Message = "You have already finished this quiz.";
+          res.Success = true;
+          return Ok(res);
         case QuizEnum.Enter:
           res.Message = "You successfully entered the quiz.";
           res.Success = true;
@@ -283,6 +287,8 @@ namespace Uniquizbit.Web.Controllers
       var userId = _userManager.GetUserId(User);
 
       var score = await _quizService.ScoreUserAsync(userId, quizId);
+
+      var quizStatus = await _quizService.FinishQuizAsync(quizId, userId);
 
       return Ok(score);
     }

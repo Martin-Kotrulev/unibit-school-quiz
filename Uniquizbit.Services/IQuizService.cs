@@ -33,6 +33,8 @@ namespace Uniquizbit.Services
 
     Task<QuizEnum> EnterQuizAsync(int quizId, string userId);
 
+    Task<QuizEnum> FinishQuizAsync(int quizId, string userId);
+
     Task<bool> QuizExistsAsync(Quiz quiz);
 
     Task<bool> DeleteQuizAsync(int id, string userId);
