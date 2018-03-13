@@ -93,6 +93,9 @@ namespace Uniquizbit.Data
         .HasKey(qu => new { qu.GroupId, qu.TagId });
 
       modelBuilder.Entity<QuizProgress>()
+        .HasKey(qp => new {qp.QuizId, qp.UserId});
+
+      modelBuilder.Entity<QuizProgress>()
         .HasMany(qp => qp.GivenAnswers)
         .WithOne(ga => ga.QuizProgress)
         .OnDelete(DeleteBehavior.Cascade);
@@ -101,13 +104,6 @@ namespace Uniquizbit.Data
         .HasMany(u => u.OwnQuizzes)
         .WithOne(q => q.Creator);
 
-      modelBuilder.Entity<QuizProgress>()
-        .HasIndex(qp => qp.QuizId)
-        .IsUnique();
-
-      modelBuilder.Entity<QuizProgress>()
-        .HasIndex(qp => qp.UserId)
-        .IsUnique();
 
       modelBuilder.Entity<Question>()
         .HasMany(q => q.Answers)
